@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<dc-import name="LegalShell" eyebrow="Yasal" title="Kullanım Şartları" updated="Son güncelleme: Eylül 2026" sections="{{ sections }}" hint-size="100%,auto"></dc-import>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    return { sections: [
+      { h: '1. Kabul', p: ['Bu siteyi kullanarak aşağıdaki şartları kabul etmiş olursunuz. Şartları kabul etmiyorsanız siteyi kullanmayınız.'] },
+      { h: '2. Ticari kullanım', p: ['Site, toptan halı tedariki alanında faaliyet gösteren perakendeciler, iç mimarlar ve proje alıcılarına yöneliktir. Fiyat ve stok bilgileri talep üzerine, ticari hesap sahiplerine sunulur.'] },
+      { h: '3. Fikri mülkiyet', p: ['Sitedeki görsel, metin ve marka unsurları Asiatic Halı Türkiye ve Asiatic Carpets Ltd\'ye aittir; izinsiz kopyalanamaz veya çoğaltılamaz.'] },
+      { h: '4. Sorumluluk sınırı', p: ['Site içeriği bilgilendirme amaçlıdır; ürün özellikleri ve stok durumu değişiklik gösterebilir, güncel bilgi için ticari ekibimizle iletişime geçilmelidir.'] },
+      { h: '5. Uygulanacak hukuk', p: ['Bu şartlar Türkiye Cumhuriyeti kanunlarına tabidir; uyuşmazlıklarda Gaziantep mahkemeleri ve icra daireleri yetkilidir.'] }
+    ] };
+  }
+}
+</script>
+</body>
+</html>

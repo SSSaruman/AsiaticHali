@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;padding:0;background:#f2e7dd;color:#221c18;font-family:"DM Sans",system-ui,sans-serif}
+a{color:#4c260f}a:hover{color:#a55a34}
+@media (max-width:720px){
+  #hesabim-grid{grid-template-columns:1fr!important}
+  #hesabim-tabs{flex-direction:row!important;border-left:none!important;border-bottom:1px solid rgba(76,38,15,.14)!important;padding-left:0!important;padding-bottom:2px!important}
+  #hesabim-tabs button{border-left:none!important;border-bottom:2px solid transparent!important;margin-left:0!important;padding:0 10px 8px!important}
+}
+</style>
+</helmet>
+
+<div style="min-height:100vh;background:#f2e7dd">
+  <header style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px clamp(20px,3vw,48px);border-bottom:1px solid rgba(76,38,15,.14)">
+    <a href="index.html" style="font:500 15px/1 'DM Sans',sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#102a3a;text-decoration:none">Asiatic Halı Türkiye</a>
+    <div style="display:flex;align-items:center;gap:14px">
+      <button type="button" onClick="{{ setTr }}" aria-pressed="{{ isTr }}" style="{{ trStyle }}">TR</button>
+      <button type="button" onClick="{{ setEn }}" aria-pressed="{{ isEn }}" style="{{ enStyle }}">EN</button>
+      <a href="index.html" style="font:500 12px/1 'DM Sans',sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#4c260f;text-decoration:none">{{ t.backToSite }}</a>
+    </div>
+  </header>
+
+  <sc-if value="{{ showVerificationScreen }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;justify-content:center;padding:clamp(48px,8vh,96px) 20px">
+      <div style="width:min(420px,100%);background:#fbf5ee;border-radius:20px;box-shadow:0 30px 60px -30px rgba(34,28,24,.35);padding:30px;text-align:center">
+        <div style="width:52px;height:52px;margin:0 auto;border-radius:50%;background:rgba(76,38,15,.08);display:flex;align-items:center;justify-content:center">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4c260f" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"></path><path d="m22 6-10 7L2 6"></path></svg>
+        </div>
+        <h1 style="margin:16px 0 0;font:400 22px/1.3 'DM Sans',sans-serif;color:#102a3a">{{ t.verifyTitle }}</h1>
+        <p style="margin:10px 0 0;font:300 13.5px/1.55 'DM Sans',sans-serif;color:rgba(34,28,24,.7)">{{ verifyMessage }}</p>
+        <span style="display:inline-block;margin-top:14px;padding:5px 12px;border-radius:20px;background:rgba(76,38,15,.08);font:500 11px/1 'DM Sans',sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#4c260f">{{ verifyStatusLabel }}</span>
+        <sc-if value="{{ loginUnverifiedShown }}" hint-placeholder-val="{{ false }}">
+          <p style="margin:14px 0 0;font:500 13px/1.4 'DM Sans',sans-serif;color:#a5342f">{{ t.loginUnverifiedMsg }}</p>
+        </sc-if>
+        <sc-if value="{{ verifyErrorShown }}" hint-placeholder-val="{{ false }}">
+          <p role="alert" style="margin:14px 0 0;font:500 12.5px/1.4 'DM Sans',sans-serif;color:#a5342f">{{ verifyError }}</p>
+        </sc-if>
+        <sc-if value="{{ verifyNoticeShown }}" hint-placeholder-val="{{ false }}">
+          <p style="margin:14px 0 0;font:400 12.5px/1.4 'DM Sans',sans-serif;color:#3a6b3a">{{ verifyNotice }}</p>
+        </sc-if>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:22px">
+          <a href="https://mail.google.com" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;justify-content:center;min-height:48px;border-radius:14px;background:#4c260f;color:#f6ece2;font:500 12.5px/1 'DM Sans',sans-serif;letter-spacing:.1em;text-transform:uppercase;text-decoration:none">{{ t.verifyOpenMail }}</a>
+          <button type="button" onClick="{{ resendVerificationFn }}" disabled="{{ verifyBusy }}" style="min-height:46px;border-radius:14px;border:1px solid rgba(76,38,15,.32);background:none;color:#4c260f;font:500 12.5px/1 'DM Sans',sans-serif;letter-spacing:.1em;text-transform:uppercase;cursor:pointer">{{ t.verifyResend }}</button>
+          <button type="button" onClick="{{ checkVerifiedFn }}" disabled="{{ verifyBusy }}" style="min-height:46px;border-radius:14px;border:1px solid rgba(76,38,15,.32);background:none;color:#4c260f;font:500 12.5px/1 'DM Sans',sans-serif;letter-spacing:.1em;text-transform:uppercase;cursor:pointer">{{ t.verifyCheck }}</button>
+          <button type="button" onClick="{{ backToLoginFn }}" style="min-height:40px;border:none;background:none;color:rgba(34,28,24,.55);font:400 12.5px/1 'DM Sans',sans-serif;cursor:pointer">{{ t.verifyBackToLogin }}</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isNotAuthed }}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;justify-content:center;padding:clamp(48px,8vh,96px) 20px">
+      <div style="width:min(400px,100%);background:#fbf5ee;border-radius:20px;box-shadow:0 30px 60px -30px rgba(34,28,24,.35);padding:30px">
+        <h1 style="margin:0;font:400 24px/1.2 'DM Sans',sans-serif;color:#102a3a">{{ t.myAccount }}</h1>
+        <p style="margin:10px 0 0;font:300 13.5px/1.5 'DM Sans',sans-serif;color:rgba(34,28,24,.65)">{{ t.loginIntro }}</p>
+        <div style="display:flex;gap:6px;margin-top:20px;border-bottom:1px solid rgba(76,38,15,.16)">
+          <button type="button" onClick="{{ setLoginModeFn }}" style="{{ loginTabStyle }}">{{ t.signIn }}</button>
+          <button type="button" onClick="{{ setRegisterModeFn }}" style="{{ registerTabStyle }}">{{ t.createAccount }}</button>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:18px">
+          <sc-if value="{{ isRegisterMode }}" hint-placeholder-val="{{ false }}">
+            <input type="text" placeholder="{{ t.fullNamePh }}" value="{{ authForm.fullName }}" onChange="{{ onFullNameChange }}" style="{{ authInputStyle }}">
+            <input type="text" placeholder="{{ t.companyPh }}" value="{{ authForm.companyName }}" onChange="{{ onCompanyChange }}" style="{{ authInputStyle }}">
+          </sc-if>
+          <input type="email" placeholder="{{ t.emailPh }}" value="{{ authForm.email }}" onChange="{{ onEmailChange }}" style="{{ authInputStyle }}">
+          <input type="password" placeholder="{{ t.passwordPh }}" value="{{ authForm.password }}" onChange="{{ onPasswordChange }}" style="{{ authInputStyle }}">
+          <sc-if value="{{ authErrorShown }}" hint-placeholder-val="{{ false }}"><p role="alert" style="margin:0;font:500 12px/1.4 'DM Sans',sans-serif;color:#a5342f">{{ authError }}</p></sc-if>
+          <button type="button" onClick="{{ submitAuthFn }}" disabled="{{ authBusy }}" style="margin-top:6px;min-height:52px;border-radius:14px;border:none;background:#4c260f;color:#f6ece2;font:500 13px/1 'DM Sans',sans-serif;letter-spacing:.12em;text-transform:uppercase;cursor:pointer">{{ authSubmitLabel }}</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isAuthed }}" hint-placeholder-val="{{ false }}">
+    <div id="hesabim-grid" style="max-width:1080px;margin:0 auto;padding:clamp(24px,4vh,48px) clamp(20px,3vw,48px);display:grid;grid-template-columns:{{ layoutCols }};gap:clamp(20px,3vw,40px);align-items:start">
+      <div>
+        <p style="margin:0;font:500 17px/1.2 'DM Sans',sans-serif;color:#102a3a;overflow-wrap:anywhere">{{ accountDisplayName }}</p>
+        <p style="margin:4px 0 0;font:400 12.5px/1.3 'DM Sans',sans-serif;color:rgba(34,28,24,.5);overflow-wrap:anywhere">{{ authUserEmail }}</p>
+        <div id="hesabim-tabs" role="tablist" style="display:flex;flex-direction:{{ tabsDir }};gap:2px;margin-top:22px;overflow-x:auto;scrollbar-width:none;border-{{ tabsBorderSide }}:1px solid rgba(76,38,15,.14);padding-{{ tabsBorderSide }}:2px">
+          <sc-for list="{{ accountTabs }}" as="tb" hint-placeholder-count="4">
+            <button type="button" role="tab" aria-selected="{{ tb.active }}" onClick="{{ tb.onClick }}" style="{{ tb.style }}">{{ tb.label }}</button>
+          </sc-for>
+        </div>
+        <button type="button" onClick="{{ logoutFn }}" style="margin-top:22px;min-height:42px;padding:0 4px;border:none;background:none;font:500 12.5px/1 'DM Sans',sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#a5342f;cursor:pointer;text-align:left">{{ t.signOut }}</button>
+      </div>
+
+      <div style="min-width:0;background:#fbf5ee;border-radius:20px;box-shadow:0 24px 54px -30px rgba(34,28,24,.3);padding:clamp(20px,3vw,32px)">
+        <sc-if value="{{ acctTabIsOverview }}" hint-placeholder-val="{{ true }}">
+          <h2 style="margin:0;font:400 20px/1.2 'DM Sans',sans-serif;color:#102a3a">{{ t.menuOverview }}</h2>
+          <p style="margin:10px 0 22px;font:300 13.5px/1.55 'DM Sans',sans-serif;color:rgba(34,28,24,.7)">{{ t.acctOverviewIntro }}</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <button type="button" onClick="{{ goSamplesTab }}" style="text-align:left;padding:16px;border-radius:14px;background:rgba(76,38,15,.05);border:1px solid rgba(76,38,15,.12);cursor:pointer">
+              <span style="display:block;font:400 30px/1 'DM Sans',sans-serif;color:#102a3a">{{ samplesCount }}</span>
+              <span style="display:block;margin-top:6px;font:500 11px/1.3 'DM Sans',sans-serif;letter-spacing:.08em;text-transform:uppercase;color:rgba(34,28,24,.6)">{{ t.acctStatSamples }}</span>
+            </button>
+            <button type="button" onClick="{{ goRequestsTab }}" style="text-align:left;padding:16px;border-radius:14px;background:rgba(76,38,15,.05);border:1px solid rgba(76,38,15,.12);cursor:pointer">
+              <span style="display:block;font:400 30px/1 'DM Sans',sans-serif;color:#102a3a">{{ requestsCount }}</span>
+              <span style="display:block;margin-top:6px;font:500 11px/1.3 'DM Sans',sans-serif;letter-spacing:.08em;text-transform:uppercase;color:rgba(34,28,24,.6)">{{ t.acctStatRequests }}</span>
+            </button>
+          </div>
+          <button type="button" onClick="{{ goCompanyTab }}" style="display:inline-flex;align-items:center;gap:10px;margin-top:20px;padding:0;border:none;background:none;cursor:pointer;font:500 12.5px/1 'DM Sans',sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#4c260f;min-height:40px">{{ t.menuCompany }} <span aria-hidden="true">→</span></button>
+        </sc-if>
+
+        <sc-if value="{{ acctTabIsSamples }}" hint-placeholder-val="{{ false }}">
+          <h2 style="margin:0 0 16px;font:400 20px/1.2 'DM Sans',sans-serif;color:#102a3a">{{ t.menuSampleList }}</h2>
+          <sc-if value="{{ samplesHasItems }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <sc-for list="{{ samplesPanelRows }}" as="row" hint-placeholder-count="2">
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid rgba(76,38,15,.12)">
+                  <span style="font:300 14px/1.3 'DM Sans',sans-serif;color:#102a3a">{{ row.name }}</span>
+                  <button type="button" onClick="{{ row.onRemove }}" style="border:none;background:none;color:#a55a34;cursor:pointer;font:500 10.5px/1 'DM Sans',sans-serif;letter-spacing:.1em;text-transform:uppercase;min-height:32px">{{ t.samplesRemove }}</button>
+                </div>
+              </sc-for>
+            </div>
+            <button type="button" onClick="{{ requestSamplesHandler }}" disabled="{{ sampleReqBusy }}" style="display:inline-flex;align-items:center;gap:9px;margin-top:18px;min-height:46px;padding:0 24px;border-radius:14px;background:#4c260f;color:#f6ece2;font:500 12px/1 'DM Sans',sans-serif;letter-spacing:.12em;text-transform:uppercase;border:none;cursor:pointer">{{ t.samplesSendAll }} <span aria-hidden="true">→</span></button>
+            <sc-if value="{{ sampleReqSent }}" hint-placeholder-val="{{ false }}"><p style="margin:12px 0 0;font:400 12.5px/1.3 'DM Sans',sans-serif;color:#3a6b3a">{{ t.sampleReqSentMsg }}</p></sc-if>
+            <sc-if value="{{ sampleReqErrorShown }}" hint-placeholder-val="{{ false }}"><p style="margin:12px 0 0;font:400 12.5px/1.3 'DM Sans',sans-serif;color:#a5342f">{{ sampleReqError }}</p></sc-if>
+          </sc-if>
+          <sc-if value="{{ samplesIsEmpty }}" hint-placeholder-val="{{ false }}">
+            <p style="margin:0;font:300 14px/1.5 'DM Sans',sans-serif;color:rgba(34,28,24,.6)">{{ t.samplesEmpty }}</p>
+          </sc-if>
+        </sc-if>
+
+        <sc-if value="{{ acctTabIsRequests }}" hint-placeholder-val="{{ false }}">
+          <h2 style="margin:0 0 16px;font:400 20px/1.2 'DM Sans',sans-serif;color:#102a3a">{{ t.menuSampleRequests }}</h2>
+          <sc-if value="{{ mySampleRequestsLoading }}" hint-placeholder-val="{{ false }}">
+            <p style="margin:0;font:400 13.5px/1.4 'DM Sans',sans-serif;color:rgba(34,28,24,.55)">{{ t.acctLoading }}</p>
+          </sc-if>
+          <sc-if value="{{ mySampleRequestsError }}" hint-placeholder-val="{{ false }}">
+            <p style="margin:0;font:400 13.5px/1.4 'DM Sans',sans-serif;color:#a5342f">{{ mySampleRequestsError }}</p>
+          </sc-if>
+          <sc-if value="{{ mySampleRequestsEmpty }}" hint-placeholder-val="{{ false }}">
+            <p style="margin:0;font:400 13.5px/1.4 'DM Sans',sans-serif;color:rgba(34,28,24,.55)">{{ t.sampleReqPanelEmpty }}</p>
+          </sc-if>
+          <sc-for list="{{ mySampleRequestRows }}" as="r" hint-placeholder-count="0">
+            <div style="padding:15px 0;border-bottom:1px solid rgba(76,38,15,.10)">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+                <p style="margin:0;font:500 14.5px/1.3 'DM Sans',sans-serif;color:#221c18">{{ r.productNames }}</p>
+                <span style="flex:none;font:600 11px/1 'DM Sans',sans-serif;letter-spacing:.06em;text-transform:uppercase;color:{{ r.statusColor }};background:color-mix(in oklab, {{ r.statusColor }} 12%, transparent);padding:4px 9px;border-radius:20px">{{ r.statusLabel }}</span>
+              </div>
+              <p style="margin:6px 0 0;font:400 12px/1.3 'DM Sans',sans-serif;color:rgba(34,28,24,.5)">{{ r.dateLabel }}</p>
+              <sc-if value="{{ r.courierRef }}" hint-placeholder-val="{{ false }}">
+                <p style="margin:4px 0 0;font:400 12px/1.3 'DM Sans',sans-serif;color:rgba(34,28,24,.6)">{{ t.sampleReqPanelCourier }}: {{ r.courierRef }}</p>
+              </sc-if>
+            </div>
+          </sc-for>
+        </sc-if>
+
+        <sc-if value="{{ acctTabIsCompany }}" hint-placeholder-val="{{ false }}">
+          <h2 style="margin:0 0 16px;font:400 20px/1.2 'DM Sans',sans-serif;color:#102a3a">{{ t.menuCompany }}</h2>
+          <sc-if value="{{ profileLoading }}" hint-placeholder-val="{{ false }}">
+            <p style="margin:0;font:400 13.5px/1.4 'DM Sans',sans-serif;color:rgba(34,28,24,.55)">{{ t.acctLoading }}</p>
+          </sc-if>
+          <sc-if value="{{ profileReady }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:10px;max-width:360px">
+              <input type="text" placeholder="{{ t.fullNamePh }}" value="{{ profileForm.fullName }}" onChange="{{ onProfileFullNameChange }}" style="{{ authInputStyle }}">
+              <input type="text" placeholder="{{ t.companyPh }}" value="{{ profileForm.companyName }}" onChange="{{ onProfileCompanyChange }}" style="{{ authInputStyle }}">
+              <input type="text" placeholder="{{ t.acctPhonePh }}" value="{{ profileForm.phone }}" onChange="{{ onProfilePhoneChange }}" style="{{ authInputStyle }}">
+              <input type="text" placeholder="{{ t.acctAddressPh }}" value="{{ profileForm.address }}" onChange="{{ onProfileAddressChange }}" style="{{ authInputStyle }}">
+              <sc-if value="{{ profileErrorShown }}" hint-placeholder-val="{{ false }}"><p style="margin:0;font:500 12px/1.4 'DM Sans',sans-serif;color:#a5342f">{{ profileError }}</p></sc-if>
+              <sc-if value="{{ profileSaved }}" hint-placeholder-val="{{ false }}"><p style="margin:0;font:400 12px/1.4 'DM Sans',sans-serif;color:#3a6b3a">{{ t.acctSaved }}</p></sc-if>
+              <button type="button" onClick="{{ saveProfileFn }}" disabled="{{ profileSaving }}" style="margin-top:4px;min-height:46px;border-radius:14px;border:none;background:#4c260f;color:#f6ece2;font:500 12.5px/1 'DM Sans',sans-serif;letter-spacing:.1em;text-transform:uppercase;cursor:pointer">{{ t.acctSaveBtn }}</button>
+            </div>
+            <div style="height:1px;background:rgba(76,38,15,.12);margin:24px 0;max-width:360px"></div>
+            <div style="display:flex;flex-direction:column;gap:10px;max-width:360px">
+              <p style="margin:0 0 4px;font:500 12.5px/1.2 'DM Sans',sans-serif;letter-spacing:.06em;text-transform:uppercase;color:rgba(34,28,24,.65)">{{ t.acctPasswordSectionTitle }}</p>
+              <input type="password" placeholder="{{ t.acctNewPasswordPh }}" value="{{ passwordForm.password }}" onChange="{{ onNewPasswordChange }}" style="{{ authInputStyle }}">
+              <input type="password" placeholder="{{ t.acctConfirmPasswordPh }}" value="{{ passwordForm.confirm }}" onChange="{{ onConfirmPasswordChange }}" style="{{ authInputStyle }}">
+              <sc-if value="{{ passwordErrorShown }}" hint-placeholder-val="{{ false }}"><p style="margin:0;font:500 12px/1.4 'DM Sans',sans-serif;color:#a5342f">{{ passwordError }}</p></sc-if>
+              <sc-if value="{{ passwordSaved }}" hint-placeholder-val="{{ false }}"><p style="margin:0;font:400 12px/1.4 'DM Sans',sans-serif;color:#3a6b3a">{{ t.acctPasswordSaved }}</p></sc-if>
+              <button type="button" onClick="{{ savePasswordFn }}" disabled="{{ passwordSaving }}" style="min-height:46px;border-radius:14px;border:1px solid rgba(76,38,15,.4);background:none;color:#4c260f;font:500 12.5px/1 'DM Sans',sans-serif;letter-spacing:.1em;text-transform:uppercase;cursor:pointer">{{ t.acctPasswordSaveBtn }}</button>
+            </div>
+          </sc-if>
+        </sc-if>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const SUPABASE_URL = 'https://dytyehxybhzlmwxarbpc.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_oMWdZv_LTS3-3KbnzElAeg_tXBpy-cO';
+
+function getAuthRedirectUrl() {
+  try {
+    const dir = window.location.pathname.replace(/[^/]*$/, '');
+    return window.location.origin + dir + 'Hesabim.dc.html';
+  } catch (e) { return undefined; }
+}
+function sbAuthFetch(path, body) {
+  const withRedirect = (path === '/signup' && typeof window !== 'undefined')
+    ? Object.assign({}, body, { options: { emailRedirectTo: getAuthRedirectUrl() } })
+    : body;
+  return fetch(SUPABASE_URL + '/auth/v1' + path, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', apikey: SUPABASE_ANON_KEY },
+    body: JSON.stringify(withRedirect)
+  }).then((r) => r.json().then((j) => ({ ok: r.ok, data: j })));
+}
+function sbRest(path, opts, accessToken) {
+  return fetch(SUPABASE_URL + '/rest/v1' + path, Object.assign({
+    headers: Object.assign({
+      'Content-Type': 'application/json',
+      apikey: SUPABASE_ANON_KEY,
+      Authorization: 'Bearer ' + (accessToken || SUPABASE_ANON_KEY)
+    }, (opts && opts.headers) || {})
+  }, opts || {})).then((r) => r.text().then((t) => {
+    let data = null; try { data = t ? JSON.parse(t) : null; } catch (e) {}
+    return { ok: r.ok, status: r.status, data };
+  }));
+}
+
+const T = {
+  en: {
+    myAccount: 'My Account', signIn: 'Sign In', signOut: 'Sign Out', createAccount: 'Create Account',
+    backToSite: 'Back to site', loginIntro: 'Sign in to manage your samples, requests and company details.',
+    fullNamePh: 'Full name', companyPh: 'Company name', emailPh: 'Email', passwordPh: 'Password',
+    menuOverview: 'Overview', menuSampleList: 'My Sample List', menuSampleRequests: 'My Sample Requests', menuCompany: 'Company Details',
+    acctOverviewIntro: 'An overview of your samples and requests with Asiatic Halı.',
+    acctStatSamples: 'Saved samples', acctStatRequests: 'Sample requests',
+    acctLoading: 'Loading…', acctPhonePh: 'Phone', acctAddressPh: 'Address',
+    acctSaveBtn: 'Save changes', acctSaved: 'Saved.',
+    acctPasswordSectionTitle: 'Change password', acctNewPasswordPh: 'New password', acctConfirmPasswordPh: 'Confirm new password',
+    acctPasswordSaveBtn: 'Update password', acctPasswordSaved: 'Password updated.',
+    samplesRemove: 'Remove', samplesSendAll: 'Request these samples', samplesEmpty: 'Your sample list is empty.',
+    sampleReqSentMsg: 'Request sent — we will contact you shortly.',
+    sampleReqPanelEmpty: 'No sample requests yet.', sampleReqPanelCourier: 'Courier ref',
+    sampleStatusRequested: 'Requested', sampleStatusShipped: 'Shipped', sampleStatusDelivered: 'Delivered', sampleStatusCancelled: 'Cancelled',
+    verifyTitle: 'Verify your email', verifySignupMsg: 'Your account has been created. We sent a verification link to {{email}}.',
+    verifyLoginMsg: 'We sent a verification link to {{email}}. Verify your email to continue.',
+    verifyStatusPending: 'Verification pending', loginUnverifiedMsg: 'This account has not been verified yet.',
+    verifyOpenMail: 'Verify email', verifyResend: 'Resend verification email', verifyCheck: 'I verified — check again', verifyBackToLogin: 'Back to sign in',
+    verifyResentNotice: 'Verification email sent again.', verifyStillUnverified: 'Not verified yet. Please check your inbox.',
+    verifyCallbackFail: 'The verification link opened but could not return to the app. Please open the app and sign in again.'
+  },
+  tr: {
+    myAccount: 'Hesabım', signIn: 'Giriş Yap', signOut: 'Çıkış Yap', createAccount: 'Hesap Oluştur',
+    backToSite: 'Siteye dön', loginIntro: 'Numunelerinizi, taleplerinizi ve firma bilgilerinizi yönetmek için giriş yapın.',
+    fullNamePh: 'Ad Soyad', companyPh: 'Firma adı', emailPh: 'E-posta', passwordPh: 'Şifre',
+    menuOverview: 'Genel Bakış', menuSampleList: 'Numune Listem', menuSampleRequests: 'Numune Taleplerim', menuCompany: 'Firma Bilgileri',
+    acctOverviewIntro: 'Asiatic Halı ile numune listeniz ve taleplerinize genel bakış.',
+    acctStatSamples: 'Kayıtlı numuneler', acctStatRequests: 'Numune talepleri',
+    acctLoading: 'Yükleniyor…', acctPhonePh: 'Telefon', acctAddressPh: 'Adres',
+    acctSaveBtn: 'Değişiklikleri kaydet', acctSaved: 'Kaydedildi.',
+    acctPasswordSectionTitle: 'Şifre değiştir', acctNewPasswordPh: 'Yeni şifre', acctConfirmPasswordPh: 'Yeni şifreyi onayla',
+    acctPasswordSaveBtn: 'Şifreyi güncelle', acctPasswordSaved: 'Şifre güncellendi.',
+    samplesRemove: 'Kaldır', samplesSendAll: 'Bu numuneleri talep et', samplesEmpty: 'Numune listeniz boş.',
+    sampleReqSentMsg: 'Talebiniz gönderildi — en kısa sürede sizinle iletişime geçeceğiz.',
+    sampleReqPanelEmpty: 'Henüz numune talebi yok.', sampleReqPanelCourier: 'Kargo takip no',
+    sampleStatusRequested: 'Talep edildi', sampleStatusShipped: 'Kargoya verildi', sampleStatusDelivered: 'Teslim edildi', sampleStatusCancelled: 'İptal edildi',
+    verifyTitle: 'E-postanızı doğrulayın', verifySignupMsg: 'Hesabınız oluşturuldu. {{email}} adresine doğrulama bağlantısı gönderdik.',
+    verifyLoginMsg: '{{email}} adresine bir doğrulama bağlantısı gönderdik. Hesabınızı kullanmaya devam etmek için e-postanızı doğrulayın.',
+    verifyStatusPending: 'Doğrulama bekleniyor', loginUnverifiedMsg: 'Bu hesap henüz doğrulanmamış.',
+    verifyOpenMail: 'Maili doğrula', verifyResend: 'Doğrulama mailini tekrar gönder', verifyCheck: 'Doğrulamayı kontrol et', verifyBackToLogin: 'Girişe dön',
+    verifyResentNotice: 'Doğrulama e-postası tekrar gönderildi.', verifyStillUnverified: 'E-posta doğrulandı, yönlendiriliyorsunuz... (henüz değil, lütfen gelen kutunuzu kontrol edin)',
+    verifyCallbackFail: 'Doğrulama bağlantısı açıldı ancak uygulamaya dönülemedi. Uygulamayı açıp tekrar giriş yapın.'
+  }
+};
+
+class Component extends DCLogic {
+  state = {
+    lang: 'tr', authUser: null, authMode: 'login', authBusy: false, authError: '',
+    authForm: { email: '', password: '', fullName: '', companyName: '' },
+    authFlowState: 'idle', pendingEmail: '', verifyBusy: false, verifyNotice: '',
+    accountTab: 'overview',
+    samples: [], sampleReqBusy: false, sampleReqSent: false, sampleReqError: '',
+    mySampleRequests: [], mySampleRequestsLoading: false, mySampleRequestsError: '', requestsLoaded: false,
+    profileLoading: false, profileLoaded: false, profileError: '', profileSaving: false, profileSaved: false,
+    profileForm: { fullName: '', companyName: '', phone: '', address: '' },
+    passwordForm: { password: '', confirm: '' }, passwordSaving: false, passwordError: '', passwordSaved: false
+  };
+
+  componentDidMount() {
+    try {
+      const sess = JSON.parse(localStorage.getItem('ah_auth') || 'null');
+      if (sess && sess.user) {
+        if (!sess.user.email_confirmed_at) {
+          this.setState({ authFlowState: 'login_unverified', pendingEmail: sess.user.email });
+        } else {
+          this.setState({ authUser: sess.user });
+        }
+      }
+    } catch (e) {}
+    try {
+      const saved = JSON.parse(localStorage.getItem('ah_samples') || '[]');
+      if (Array.isArray(saved)) this.setState({ samples: saved.filter((x) => x && x.id != null) });
+    } catch (e) {}
+  }
+
+  _authSession() { try { return JSON.parse(localStorage.getItem('ah_auth') || 'null'); } catch (e) { return null; } }
+  setAuthMode(mode) { this.setState({ authMode: mode, authError: '' }); }
+  updateAuthField(key, val) { this.setState((p) => ({ authForm: Object.assign({}, p.authForm, { [key]: val }) })); }
+  submitAuthForm() {
+    const f = this.state.authForm;
+    const isTr = this.state.lang === 'tr';
+    if (!f.email || !f.password) { this.setState({ authError: isTr ? 'E-posta ve şifre gerekli.' : 'Email and password required.' }); return; }
+    this.setState({ authBusy: true, authError: '' });
+    const isRegister = this.state.authMode === 'register';
+    const call = isRegister
+      ? sbAuthFetch('/signup', { email: f.email, password: f.password, data: { full_name: f.fullName, company_name: f.companyName } })
+      : sbAuthFetch('/token?grant_type=password', { email: f.email, password: f.password });
+    call.then((res) => {
+      if (isRegister && res.ok && res.data && res.data.user && !res.data.access_token) {
+        this.setState({ authBusy: false, authFlowState: 'signup_success_pending_verification', pendingEmail: f.email });
+        return;
+      }
+      if (!res.ok || !res.data || !res.data.access_token) {
+        const msg = (res.data && (res.data.error_description || res.data.msg || res.data.error)) || '';
+        if (!isRegister && /email.*not.*confirm/i.test(msg)) {
+          this.setState({ authBusy: false, authFlowState: 'login_unverified', pendingEmail: f.email });
+          return;
+        }
+        this.setState({ authBusy: false, authError: msg || (isTr ? 'Giriş başarısız. Bilgileri kontrol edin.' : 'Sign in failed. Check your details.') });
+        return;
+      }
+      const sess = { access_token: res.data.access_token, refresh_token: res.data.refresh_token, user: res.data.user };
+      if (sess.user && !sess.user.email_confirmed_at) {
+        try { localStorage.setItem('ah_auth', JSON.stringify(sess)); } catch (e) {}
+        this.setState({ authBusy: false, authFlowState: 'login_unverified', pendingEmail: sess.user.email });
+        return;
+      }
+      try { localStorage.setItem('ah_auth', JSON.stringify(sess)); } catch (e) {}
+      this.setState({ authUser: sess.user, authBusy: false, authError: '' });
+      if (isRegister) {
+        sbRest('/profiles', {
+          method: 'POST', headers: { Prefer: 'resolution=merge-duplicates,return=minimal' },
+          body: JSON.stringify({ id: sess.user.id, full_name: f.fullName || null, company_name: f.companyName || null })
+        }, sess.access_token);
+      }
+    });
+  }
+  resendVerification() {
+    const email = this.state.pendingEmail;
+    if (!email) return;
+    this.setState({ verifyBusy: true, verifyNotice: '' });
+    sbAuthFetch('/resend', { type: 'signup', email, options: { emailRedirectTo: getAuthRedirectUrl() } }).then(() => {
+      this.setState({ verifyBusy: false, verifyNotice: this.state.lang === 'tr' ? 'Doğrulama e-postası tekrar gönderildi.' : 'Verification email sent again.' });
+    }).catch(() => this.setState({ verifyBusy: false }));
+  }
+  checkVerified() {
+    const sess = this._authSession();
+    this.setState({ verifyBusy: true, verifyNotice: '' });
+    if (!sess || !sess.access_token) { this.setState({ verifyBusy: false }); return; }
+    fetch(SUPABASE_URL + '/auth/v1/user', { headers: { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + sess.access_token } })
+      .then((r) => r.json())
+      .then((user) => {
+        if (user && user.email_confirmed_at) {
+          const nextSess = Object.assign({}, sess, { user });
+          try { localStorage.setItem('ah_auth', JSON.stringify(nextSess)); } catch (e) {}
+          this.setState({ verifyBusy: false, authFlowState: 'idle', authUser: user, pendingEmail: '' });
+        } else {
+          this.setState({ verifyBusy: false, verifyNotice: this.state.lang === 'tr' ? 'Henüz doğrulanmadı. Lütfen gelen kutunuzu kontrol edin.' : 'Not verified yet. Please check your inbox.' });
+        }
+      })
+      .catch(() => this.setState({ verifyBusy: false }));
+  }
+  backToLoginFromVerify() {
+    try { localStorage.removeItem('ah_auth'); } catch (e) {}
+    this.setState({ authFlowState: 'idle', pendingEmail: '', authUser: null, authForm: { email: '', password: '', fullName: '', companyName: '' } });
+  }
+  logout() {
+    try { localStorage.removeItem('ah_auth'); } catch (e) {}
+    this.setState({ authUser: null });
+  }
+  setAccountTab(tab) {
+    this.setState({ accountTab: tab, profileSaved: false, passwordSaved: false, passwordError: '' });
+    if (tab === 'requests' && !this.state.requestsLoaded && !this.state.mySampleRequestsLoading) this.loadMySampleRequests();
+    if (tab === 'company' && !this.state.profileLoaded) this.loadMyProfile();
+  }
+  loadMySampleRequests() {
+    this.setState({ mySampleRequestsLoading: true, mySampleRequestsError: '' });
+    const sess = this._authSession();
+    if (!sess || !sess.access_token) { this.setState({ mySampleRequestsLoading: false, mySampleRequestsError: 'Oturum bulunamadı.' }); return; }
+    sbRest('/sample_requests?select=id,status,created_at,shipped_at,courier_ref,sample_request_items(product_name)&order=created_at.desc', {}, sess.access_token)
+      .then((res) => {
+        if (!res.ok) { this.setState({ mySampleRequestsLoading: false, mySampleRequestsError: 'Talepler yüklenemedi.' }); return; }
+        this.setState({ mySampleRequestsLoading: false, mySampleRequests: res.data || [], requestsLoaded: true });
+      })
+      .catch(() => this.setState({ mySampleRequestsLoading: false, mySampleRequestsError: 'Talepler yüklenemedi.' }));
+  }
+  loadMyProfile() {
+    const sess = this._authSession();
+    if (!sess || !sess.access_token) return;
+    this.setState({ profileLoading: true });
+    sbRest('/profiles?select=full_name,company_name,phone,address&id=eq.' + sess.user.id, {}, sess.access_token)
+      .then((res) => {
+        const row = (res.ok && res.data && res.data[0]) || {};
+        this.setState({
+          profileLoading: false, profileLoaded: true,
+          profileForm: { fullName: row.full_name || '', companyName: row.company_name || '', phone: row.phone || '', address: row.address || '' }
+        });
+      })
+      .catch(() => this.setState({ profileLoading: false, profileLoaded: true }));
+  }
+  updateProfileField(key, val) { this.setState((p) => ({ profileForm: Object.assign({}, p.profileForm, { [key]: val }), profileSaved: false })); }
+  saveProfile() {
+    const sess = this._authSession();
+    if (!sess || !sess.access_token) return;
+    const f = this.state.profileForm;
+    this.setState({ profileSaving: true, profileError: '' });
+    sbRest('/profiles', {
+      method: 'POST', headers: { Prefer: 'resolution=merge-duplicates,return=minimal' },
+      body: JSON.stringify({ id: sess.user.id, full_name: f.fullName || null, company_name: f.companyName || null, phone: f.phone || null, address: f.address || null })
+    }, sess.access_token)
+      .then((res) => {
+        if (!res.ok) { this.setState({ profileSaving: false, profileError: 'Kaydedilemedi. Tekrar deneyin.' }); return; }
+        this.setState({ profileSaving: false, profileSaved: true });
+      })
+      .catch(() => this.setState({ profileSaving: false, profileError: 'Kaydedilemedi. Tekrar deneyin.' }));
+  }
+  updatePasswordField(key, val) { this.setState((p) => ({ passwordForm: Object.assign({}, p.passwordForm, { [key]: val }), passwordSaved: false, passwordError: '' })); }
+  savePassword() {
+    const f = this.state.passwordForm;
+    if (f.password.length < 6) { this.setState({ passwordError: this.state.lang === 'tr' ? 'Şifre en az 6 karakter olmalı.' : 'Password must be at least 6 characters.' }); return; }
+    if (f.password !== f.confirm) { this.setState({ passwordError: this.state.lang === 'tr' ? 'Şifreler eşleşmiyor.' : 'Passwords do not match.' }); return; }
+    const sess = this._authSession();
+    if (!sess || !sess.access_token) return;
+    this.setState({ passwordSaving: true, passwordError: '' });
+    fetch(SUPABASE_URL + '/auth/v1/user', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + sess.access_token },
+      body: JSON.stringify({ password: f.password })
+    }).then((r) => r.json().then((j) => ({ ok: r.ok, data: j })))
+      .then((res) => {
+        if (!res.ok) { this.setState({ passwordSaving: false, passwordError: (res.data && res.data.msg) || 'Şifre güncellenemedi.' }); return; }
+        this.setState({ passwordSaving: false, passwordSaved: true, passwordForm: { password: '', confirm: '' } });
+      })
+      .catch(() => this.setState({ passwordSaving: false, passwordError: 'Şifre güncellenemedi.' }));
+  }
+  removeSample(id) {
+    this.setState((prev) => {
+      const next = (prev.samples || []).filter((x) => x.id !== id);
+      try { localStorage.setItem('ah_samples', JSON.stringify(next)); } catch (e) {}
+      return { samples: next };
+    });
+  }
+  mergeGuestSamplesToAccount(sess) {
+    const items = (this.state.samples || []).map((p) => ({ product_id: String(p.id != null ? p.id : ''), product_name: p.name }));
+    return sbRest('/sample_lists', { method: 'POST', headers: { Prefer: 'return=representation' }, body: JSON.stringify({ user_id: sess.user.id }) }, sess.access_token)
+      .then((res) => {
+        const list = res.data && res.data[0];
+        if (!list || !items.length) return;
+        return sbRest('/sample_list_items', {
+          method: 'POST', headers: { Prefer: 'return=minimal' },
+          body: JSON.stringify(items.map((it) => Object.assign({ sample_list_id: list.id }, it)))
+        }, sess.access_token);
+      });
+  }
+  requestAllSamples() {
+    const sess = this._authSession();
+    if (!sess || !sess.access_token) return;
+    const items = (this.state.samples || []).map((p) => ({ product_id: String(p.id != null ? p.id : ''), product_name: p.name }));
+    this.setState({ sampleReqBusy: true, sampleReqError: '' });
+    this.mergeGuestSamplesToAccount(sess).then(() => {
+      return sbRest('/sample_requests', { method: 'POST', headers: { Prefer: 'return=representation' }, body: JSON.stringify({ user_id: sess.user.id }) }, sess.access_token);
+    }).then((res) => {
+      const req = res.data && res.data[0];
+      if (!req || !items.length) { this.setState({ sampleReqBusy: false, sampleReqSent: true, samples: [], requestsLoaded: false }); try { localStorage.removeItem('ah_samples'); } catch (e) {} return; }
+      return sbRest('/sample_request_items', {
+        method: 'POST', headers: { Prefer: 'return=minimal' },
+        body: JSON.stringify(items.map((it) => Object.assign({ sample_request_id: req.id }, it)))
+      }, sess.access_token).then(() => {
+        this.setState({ sampleReqBusy: false, sampleReqSent: true, samples: [], requestsLoaded: false });
+        try { localStorage.removeItem('ah_samples'); } catch (e) {}
+      });
+    }).catch(() => this.setState({ sampleReqBusy: false, sampleReqError: this.state.lang === 'tr' ? 'Gönderilemedi. Tekrar deneyin.' : 'Could not send. Try again.' }));
+  }
+
+  renderVals() {
+    const s = this.state;
+    const t = T[s.lang];
+    const isDesktop = true;
+    return {
+      t, isTr: s.lang === 'tr', isEn: s.lang === 'en',
+      setTr: () => this.setState({ lang: 'tr' }), setEn: () => this.setState({ lang: 'en' }),
+      trStyle: { border: 'none', background: 'none', cursor: 'pointer', font: '500 11px/1 "DM Sans", sans-serif', letterSpacing: '.1em', color: s.lang === 'tr' ? '#4c260f' : 'rgba(34,28,24,.4)' },
+      enStyle: { border: 'none', background: 'none', cursor: 'pointer', font: '500 11px/1 "DM Sans", sans-serif', letterSpacing: '.1em', color: s.lang === 'en' ? '#4c260f' : 'rgba(34,28,24,.4)' },
+      isAuthed: !!s.authUser, isNotAuthed: !s.authUser && s.authFlowState === 'idle',
+      showVerificationScreen: s.authFlowState === 'signup_success_pending_verification' || s.authFlowState === 'login_unverified',
+      loginUnverifiedShown: s.authFlowState === 'login_unverified',
+      verifyMessage: (s.authFlowState === 'signup_success_pending_verification' ? t.verifySignupMsg : t.verifyLoginMsg).replace('{{email}}', s.pendingEmail),
+      verifyStatusLabel: t.verifyStatusPending,
+      verifyBusy: s.verifyBusy,
+      verifyErrorShown: false, verifyError: '',
+      verifyNotice: s.verifyNotice, verifyNoticeShown: !!s.verifyNotice,
+      resendVerificationFn: () => this.resendVerification(),
+      checkVerifiedFn: () => this.checkVerified(),
+      backToLoginFn: () => this.backToLoginFromVerify(),
+      authUserEmail: s.authUser ? s.authUser.email : '',
+      accountDisplayName: (s.authUser && s.authUser.user_metadata && s.authUser.user_metadata.full_name) || t.myAccount,
+      authForm: s.authForm, authBusy: s.authBusy, authError: s.authError, authErrorShown: !!s.authError,
+      isRegisterMode: s.authMode === 'register',
+      authSubmitLabel: s.authBusy ? '…' : (s.authMode === 'register' ? t.createAccount : t.signIn),
+      setLoginModeFn: () => this.setAuthMode('login'), setRegisterModeFn: () => this.setAuthMode('register'),
+      loginTabStyle: { flex: 1, padding: '0 0 10px', border: 'none', background: 'none', cursor: 'pointer', font: '500 12px/1 "DM Sans", sans-serif', letterSpacing: '.08em', textTransform: 'uppercase', color: s.authMode === 'login' ? '#4c260f' : 'rgba(34,28,24,.45)', borderBottom: s.authMode === 'login' ? '2px solid #a55a34' : '2px solid transparent' },
+      registerTabStyle: { flex: 1, padding: '0 0 10px', border: 'none', background: 'none', cursor: 'pointer', font: '500 12px/1 "DM Sans", sans-serif', letterSpacing: '.08em', textTransform: 'uppercase', color: s.authMode === 'register' ? '#4c260f' : 'rgba(34,28,24,.45)', borderBottom: s.authMode === 'register' ? '2px solid #a55a34' : '2px solid transparent' },
+      authInputStyle: { minHeight: '48px', padding: '0 14px', borderRadius: '12px', border: '1px solid rgba(76,38,15,.24)', background: '#fff', font: '400 13px/1 "DM Sans", sans-serif', color: '#102a3a' },
+      onFullNameChange: (e) => this.updateAuthField('fullName', e.target.value),
+      onCompanyChange: (e) => this.updateAuthField('companyName', e.target.value),
+      onEmailChange: (e) => this.updateAuthField('email', e.target.value),
+      onPasswordChange: (e) => this.updateAuthField('password', e.target.value),
+      submitAuthFn: () => this.submitAuthForm(),
+      logoutFn: () => this.logout(),
+      layoutCols: '220px minmax(0,1fr)',
+      tabsDir: 'column', tabsBorderSide: 'left',
+      accountTabs: ['overview', 'samples', 'requests', 'company'].map((tab) => ({
+        id: tab, active: s.accountTab === tab, onClick: () => this.setAccountTab(tab),
+        label: tab === 'overview' ? t.menuOverview : tab === 'samples' ? t.menuSampleList : tab === 'requests' ? t.menuSampleRequests : t.menuCompany,
+        style: {
+          textAlign: 'left', minHeight: '40px', padding: '0 0 0 14px', border: 'none', background: 'none', cursor: 'pointer',
+          font: '500 12.5px/1 "DM Sans", sans-serif', letterSpacing: '.06em', textTransform: 'uppercase', whiteSpace: 'nowrap',
+          color: s.accountTab === tab ? '#4c260f' : 'rgba(34,28,24,.5)',
+          borderLeft: s.accountTab === tab ? '2px solid #4c260f' : '2px solid transparent', marginLeft: '-2px'
+        }
+      })),
+      acctTabIsOverview: s.accountTab === 'overview', acctTabIsSamples: s.accountTab === 'samples',
+      acctTabIsRequests: s.accountTab === 'requests', acctTabIsCompany: s.accountTab === 'company',
+      goSamplesTab: () => this.setAccountTab('samples'), goRequestsTab: () => this.setAccountTab('requests'), goCompanyTab: () => this.setAccountTab('company'),
+      samplesCount: (s.samples || []).length, requestsCount: (s.mySampleRequests || []).length,
+      samplesPanelRows: (s.samples || []).map((p) => ({ id: p.id, name: p.name, onRemove: () => this.removeSample(p.id) })),
+      samplesHasItems: (s.samples || []).length > 0, samplesIsEmpty: (s.samples || []).length === 0,
+      sampleReqBusy: s.sampleReqBusy, sampleReqSent: s.sampleReqSent, sampleReqError: s.sampleReqError, sampleReqErrorShown: !!s.sampleReqError,
+      requestSamplesHandler: () => this.requestAllSamples(),
+      mySampleRequestsLoading: s.mySampleRequestsLoading, mySampleRequestsError: s.mySampleRequestsError,
+      mySampleRequestsEmpty: !s.mySampleRequestsLoading && !s.mySampleRequestsError && (s.mySampleRequests || []).length === 0,
+      mySampleRequestRows: (s.mySampleRequests || []).map((r) => ({
+        id: r.id,
+        dateLabel: r.created_at ? new Date(r.created_at).toLocaleDateString(s.lang === 'tr' ? 'tr-TR' : 'en-GB') : '',
+        statusLabel: r.status === 'shipped' ? t.sampleStatusShipped : r.status === 'delivered' ? t.sampleStatusDelivered : r.status === 'cancelled' ? t.sampleStatusCancelled : t.sampleStatusRequested,
+        statusColor: r.status === 'delivered' ? '#2f6e4f' : r.status === 'shipped' ? '#1c5c8a' : r.status === 'cancelled' ? '#8a3a2a' : '#8a6a2a',
+        courierRef: r.courier_ref || '',
+        productNames: ((r.sample_request_items || []).map((it) => it.product_name).filter(Boolean).join(', ')) || '—'
+      })),
+      profileLoading: s.profileLoading, profileReady: !s.profileLoading, profileForm: s.profileForm,
+      profileError: s.profileError, profileErrorShown: !!s.profileError, profileSaved: s.profileSaved, profileSaving: s.profileSaving,
+      saveProfileFn: () => this.saveProfile(),
+      onProfileFullNameChange: (e) => this.updateProfileField('fullName', e.target.value),
+      onProfileCompanyChange: (e) => this.updateProfileField('companyName', e.target.value),
+      onProfilePhoneChange: (e) => this.updateProfileField('phone', e.target.value),
+      onProfileAddressChange: (e) => this.updateProfileField('address', e.target.value),
+      passwordForm: s.passwordForm, passwordError: s.passwordError, passwordErrorShown: !!s.passwordError,
+      passwordSaved: s.passwordSaved, passwordSaving: s.passwordSaving,
+      savePasswordFn: () => this.savePassword(),
+      onNewPasswordChange: (e) => this.updatePasswordField('password', e.target.value),
+      onConfirmPasswordChange: (e) => this.updatePasswordField('confirm', e.target.value)
+    };
+  }
+}
+</script>
+</body>
+</html>

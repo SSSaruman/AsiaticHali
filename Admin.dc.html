@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;padding:0;background:#f2e7dd;color:#221c18;font-family:"DM Sans",system-ui,sans-serif}
+a{color:#4c260f}a:hover{color:#a55a34}
+@media (max-width:860px){#admin-grid{grid-template-columns:1fr!important}}
+</style>
+</helmet>
+
+<div style="min-height:100vh;background:#f2e7dd">
+  <header style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px clamp(20px,3vw,48px);border-bottom:1px solid rgba(76,38,15,.14)">
+    <span style="font:500 15px/1 'DM Sans',sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#102a3a">Asiatic Halı — Yönetim Paneli</span>
+    <sc-if value="{{ isAuthed }}" hint-placeholder-val="{{ false }}">
+      <button type="button" onClick="{{ logoutFn }}" style="border:none;background:none;font:500 12px/1 'DM Sans',sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#a5342f;cursor:pointer;min-height:36px">Çıkış Yap</button>
+    </sc-if>
+  </header>
+
+  <sc-if value="{{ showLogin }}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;justify-content:center;padding:clamp(60px,10vh,110px) 20px">
+      <div style="width:min(360px,100%);background:#fbf5ee;border-radius:20px;box-shadow:0 30px 60px -30px rgba(34,28,24,.35);padding:30px">
+        <h1 style="margin:0;font:400 20px/1.2 'DM Sans',sans-serif;color:#102a3a">Personel Girişi</h1>
+        <p style="margin:10px 0 0;font:300 13px/1.5 'DM Sans',sans-serif;color:rgba(34,28,24,.6)">Bu panel yalnızca yetkili Asiatic Halı hesapları içindir.</p>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:20px">
+          <input type="email" placeholder="E-posta" value="{{ authForm.email }}" onChange="{{ onEmailChange }}" style="{{ inputStyle }}">
+          <input type="password" placeholder="Şifre" value="{{ authForm.password }}" onChange="{{ onPasswordChange }}" style="{{ inputStyle }}">
+          <sc-if value="{{ authErrorShown }}" hint-placeholder-val="{{ false }}"><p role="alert" style="margin:0;font:500 12px/1.4 'DM Sans',sans-serif;color:#a5342f">{{ authError }}</p></sc-if>
+          <button type="button" onClick="{{ submitLoginFn }}" disabled="{{ authBusy }}" style="margin-top:6px;min-height:50px;border-radius:14px;border:none;background:#4c260f;color:#f6ece2;font:500 12.5px/1 'DM Sans',sans-serif;letter-spacing:.1em;text-transform:uppercase;cursor:pointer">{{ loginBtnLabel }}</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ showUnauthorized }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;justify-content:center;padding:clamp(60px,10vh,110px) 20px">
+      <div style="width:min(400px,100%);text-align:center">
+        <p style="margin:0;font:400 17px/1.3 'DM Sans',sans-serif;color:#a5342f">Bu hesabın yönetim paneline erişimi yok.</p>
+        <button type="button" onClick="{{ logoutFn }}" style="margin-top:16px;min-height:44px;padding:0 22px;border-radius:12px;border:1px solid rgba(76,38,15,.3);background:none;color:#4c260f;font:500 12px/1 'DM Sans',sans-serif;letter-spacing:.1em;text-transform:uppercase;cursor:pointer">Çıkış Yap</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ showPanel }}" hint-placeholder-val="{{ false }}">
+    <div style="max-width:1240px;margin:0 auto;padding:clamp(24px,4vh,40px) clamp(20px,3vw,48px)">
+      <div role="tablist" style="display:flex;gap:2px;border-bottom:1px solid rgba(76,38,15,.16);margin-bottom:24px">
+        <sc-for list="{{ mainTabs }}" as="tb" hint-placeholder-count="2">
+          <button type="button" onClick="{{ tb.onClick }}" style="{{ tb.style }}">{{ tb.label }}</button>
+        </sc-for>
+      </div>
+
+      <sc-if value="{{ tabIsCompanies }}" hint-placeholder-val="{{ true }}">
+        <div id="admin-grid" style="display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1.4fr);gap:24px;align-items:start">
+          <div style="background:#fbf5ee;border-radius:18px;box-shadow:0 20px 46px -28px rgba(34,28,24,.3);overflow:hidden">
+            <div style="padding:16px 18px;border-bottom:1px solid rgba(76,38,15,.12);display:flex;align-items:center;justify-content:space-between">
+              <h2 style="margin:0;font:500 15px/1.2 'DM Sans',sans-serif;color:#102a3a">Firmalar ({{ companiesCount }})</h2>
+              <sc-if value="{{ companiesLoading }}" hint-placeholder-val="{{ false }}"><span style="font:400 12px/1 'DM Sans',sans-serif;color:rgba(34,28,24,.5)">Yükleniyor…</span></sc-if>
+            </div>
+            <sc-if value="{{ companiesEmpty }}" hint-placeholder-val="{{ false }}">
+              <p style="margin:0;padding:20px 18px;font:300 13px/1.5 'DM Sans',sans-serif;color:rgba(34,28,24,.6)">Henüz kayıtlı firma yok. (Bu listenin dolması için profiles tablosunda admin\u2019e tüm satırları gösteren bir RLS policy gerekir.)</p>
+            </sc-if>
+            <div style="max-height:560px;overflow-y:auto">
+              <sc-for list="{{ companyRows }}" as="c" hint-placeholder-count="4">
+                <button type="button" onClick="{{ c.onSelect }}" style="{{ c.style }}">
+                  <span style="display:block;font:500 14px/1.25 'DM Sans',sans-serif;color:#102a3a">{{ c.companyName }}</span>
+                  <span style="display:block;margin-top:3px;font:400 12px/1.3 'DM Sans',sans-serif;color:rgba(34,28,24,.55)">{{ c.contactLine }}</span>
+                </button>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="background:#fbf5ee;border-radius:18px;box-shadow:0 20px 46px -28px rgba(34,28,24,.3);padding:20px clamp(18px,2.4vw,28px);min-height:200px">
+            <sc-if value="{{ noCompanySelected }}" hint-placeholder-val="{{ true }}">
+              <p style="margin:0;font:300 13.5px/1.5 'DM Sans',sans-serif;color:rgba(34,28,24,.55)">Detayları görmek için soldan bir firma seçin.</p>
+            </sc-if>
+            <sc-if value="{{ hasSelectedCompany }}" hint-placeholder-val="{{ false }}">
+              <h3 style="margin:0;font:500 18px/1.2 'DM Sans',sans-serif;color:#102a3a">{{ selCompanyName }}</h3>
+              <p style="margin:6px 0 0;font:400 13px/1.4 'DM Sans',sans-serif;color:rgba(34,28,24,.6)">{{ selContactLine }}</p>
+              <p style="margin:2px 0 0;font:400 12.5px/1.4 'DM Sans',sans-serif;color:rgba(34,28,24,.5)">{{ selAddressLine }}</p>
+
+              <h4 style="margin:22px 0 10px;font:500 12.5px/1.2 'DM Sans',sans-serif;letter-spacing:.06em;text-transform:uppercase;color:rgba(34,28,24,.65)">Numune Talepleri</h4>
+              <sc-if value="{{ selRequestsLoading }}" hint-placeholder-val="{{ false }}"><p style="margin:0;font:400 13px/1.4 'DM Sans',sans-serif;color:rgba(34,28,24,.55)">Yükleniyor…</p></sc-if>
+              <sc-if value="{{ selRequestsEmpty }}" hint-placeholder-val="{{ false }}"><p style="margin:0;font:400 13px/1.4 'DM Sans',sans-serif;color:rgba(34,28,24,.55)">Bu firmadan henüz numune talebi yok.</p></sc-if>
+              <sc-for list="{{ selRequestRows }}" as="r" hint-placeholder-count="0">
+                <div style="padding:12px 0;border-bottom:1px solid rgba(76,38,15,.10)">
+                  <p style="margin:0;font:500 13.5px/1.3 'DM Sans',sans-serif;color:#221c18">{{ r.productNames }}</p>
+                  <p style="margin:4px 0 0;font:400 11.5px/1.3 'DM Sans',sans-serif;color:rgba(34,28,24,.5)">{{ r.dateLabel }}</p>
+                  <div style="display:flex;align-items:center;gap:8px;margin-top:8px">
+                    <select value="{{ r.status }}" onChange="{{ r.onStatusChange }}" style="{{ selectStyle }}">
+                      <option value="requested">Talep edildi</option>
+                      <option value="shipped">Kargoya verildi</option>
+                      <option value="delivered">Teslim edildi</option>
+                      <option value="cancelled">İptal edildi</option>
+                    </select>
+                    <input type="text" placeholder="Kargo takip no" value="{{ r.courierRef }}" onChange="{{ r.onCourierChange }}" onBlur="{{ r.onSave }}" style="{{ smallInputStyle }}">
+                    <sc-if value="{{ r.saved }}" hint-placeholder-val="{{ false }}"><span style="font:400 11px/1 'DM Sans',sans-serif;color:#3a6b3a">Kaydedildi</span></sc-if>
+                  </div>
+                </div>
+              </sc-for>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ tabIsContact }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#fbf5ee;border-radius:18px;box-shadow:0 20px 46px -28px rgba(34,28,24,.3);overflow:hidden">
+          <div style="padding:16px 18px;border-bottom:1px solid rgba(76,38,15,.12);display:flex;align-items:center;justify-content:space-between">
+            <h2 style="margin:0;font:500 15px/1.2 'DM Sans',sans-serif;color:#102a3a">İletişim Talepleri ({{ contactCount }})</h2>
+            <sc-if value="{{ contactLoading }}" hint-placeholder-val="{{ false }}"><span style="font:400 12px/1 'DM Sans',sans-serif;color:rgba(34,28,24,.5)">Yükleniyor…</span></sc-if>
+          </div>
+          <sc-if value="{{ contactEmpty }}" hint-placeholder-val="{{ false }}">
+            <p style="margin:0;padding:20px 18px;font:300 13px/1.5 'DM Sans',sans-serif;color:rgba(34,28,24,.6)">Kayıt yok.</p>
+          </sc-if>
+          <div style="max-height:640px;overflow-y:auto">
+            <sc-for list="{{ contactRows }}" as="r" hint-placeholder-count="4">
+              <div style="padding:16px 18px;border-bottom:1px solid rgba(76,38,15,.10)">
+                <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px">
+                  <p style="margin:0;font:500 14px/1.3 'DM Sans',sans-serif;color:#102a3a">{{ r.name }} <sc-if value="{{ r.company }}" hint-placeholder-val="{{ false }}">— {{ r.company }}</sc-if></p>
+                  <span style="flex:none;font:400 11.5px/1 'DM Sans',sans-serif;color:rgba(34,28,24,.5)">{{ r.dateLabel }}</span>
+                </div>
+                <p style="margin:4px 0 0;font:400 12.5px/1.4 'DM Sans',sans-serif;color:rgba(34,28,24,.6)">{{ r.email }} <sc-if value="{{ r.phone }}" hint-placeholder-val="{{ false }}">· {{ r.phone }}</sc-if> <sc-if value="{{ r.country }}" hint-placeholder-val="{{ false }}">· {{ r.country }}</sc-if></p>
+                <sc-if value="{{ r.message }}" hint-placeholder-val="{{ false }}"><p style="margin:8px 0 0;font:300 13px/1.5 'DM Sans',sans-serif;color:#221c18">{{ r.message }}</p></sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const SUPABASE_URL = 'https://dytyehxybhzlmwxarbpc.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_oMWdZv_LTS3-3KbnzElAeg_tXBpy-cO';
+
+function sbAuthFetch(path, body) {
+  return fetch(SUPABASE_URL + '/auth/v1' + path, {
+    method: 'POST', headers: { 'Content-Type': 'application/json', apikey: SUPABASE_ANON_KEY }, body: JSON.stringify(body)
+  }).then((r) => r.json().then((j) => ({ ok: r.ok, data: j })));
+}
+function sbRest(path, opts, accessToken) {
+  return fetch(SUPABASE_URL + '/rest/v1' + path, Object.assign({
+    headers: Object.assign({ 'Content-Type': 'application/json', apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + (accessToken || SUPABASE_ANON_KEY) }, (opts && opts.headers) || {})
+  }, opts || {})).then((r) => r.text().then((t) => {
+    let data = null; try { data = t ? JSON.parse(t) : null; } catch (e) {}
+    return { ok: r.ok, status: r.status, data };
+  }));
+}
+
+class Component extends DCLogic {
+  state = {
+    authUser: null, adminChecked: false, isAdmin: false, authForm: { email: '', password: '' }, authBusy: false, authError: '',
+    mainTab: 'companies',
+    companies: [], companiesLoading: false, selectedCompanyId: null,
+    selRequests: [], selRequestsLoading: false,
+    contactRequests: [], contactLoading: false, contactLoaded: false
+  };
+
+  componentDidMount() {
+    try {
+      const sess = JSON.parse(localStorage.getItem('ah_auth') || 'null');
+      if (sess && sess.user) { this.setState({ authUser: sess.user }); this.checkAdmin(sess); }
+      else this.setState({ adminChecked: true });
+    } catch (e) { this.setState({ adminChecked: true }); }
+  }
+  _authSession() { try { return JSON.parse(localStorage.getItem('ah_auth') || 'null'); } catch (e) { return null; } }
+  checkAdmin(sess) {
+    sbRest('/profiles?select=is_admin&id=eq.' + sess.user.id, {}, sess.access_token).then((res) => {
+      const row = res.ok && res.data && res.data[0];
+      this.setState({ adminChecked: true, isAdmin: !!(row && row.is_admin) });
+      if (row && row.is_admin) this.loadCompanies(sess);
+    }).catch(() => this.setState({ adminChecked: true, isAdmin: false }));
+  }
+  updateAuthField(key, val) { this.setState((p) => ({ authForm: Object.assign({}, p.authForm, { [key]: val }) })); }
+  submitLogin() {
+    const f = this.state.authForm;
+    if (!f.email || !f.password) { this.setState({ authError: 'E-posta ve şifre gerekli.' }); return; }
+    this.setState({ authBusy: true, authError: '' });
+    sbAuthFetch('/token?grant_type=password', { email: f.email, password: f.password }).then((res) => {
+      if (!res.ok || !res.data || !res.data.access_token) { this.setState({ authBusy: false, authError: 'Giriş başarısız.' }); return; }
+      const sess = { access_token: res.data.access_token, refresh_token: res.data.refresh_token, user: res.data.user };
+      try { localStorage.setItem('ah_auth', JSON.stringify(sess)); } catch (e) {}
+      this.setState({ authUser: sess.user, authBusy: false });
+      this.checkAdmin(sess);
+    });
+  }
+  logout() {
+    try { localStorage.removeItem('ah_auth'); } catch (e) {}
+    this.setState({ authUser: null, isAdmin: false, companies: [], selectedCompanyId: null, selRequests: [] });
+  }
+  setMainTab(tab) {
+    this.setState({ mainTab: tab });
+    if (tab === 'contact' && !this.state.contactLoaded) this.loadContactRequests();
+  }
+  loadCompanies(sess) {
+    this.setState({ companiesLoading: true });
+    sbRest('/profiles?select=id,full_name,company_name,phone,address&order=full_name.asc', {}, sess.access_token).then((res) => {
+      this.setState({ companiesLoading: false, companies: (res.ok && res.data) || [] });
+    }).catch(() => this.setState({ companiesLoading: false }));
+  }
+  selectCompany(id) {
+    this.setState({ selectedCompanyId: id, selRequestsLoading: true, selRequests: [] });
+    const sess = this._authSession();
+    if (!sess) return;
+    sbRest('/sample_requests?select=id,status,created_at,courier_ref,sample_request_items(product_name)&user_id=eq.' + id + '&order=created_at.desc', {}, sess.access_token)
+      .then((res) => this.setState({ selRequestsLoading: false, selRequests: (res.ok && res.data) || [] }))
+      .catch(() => this.setState({ selRequestsLoading: false }));
+  }
+  updateReqLocal(id, key, val) {
+    this.setState((p) => ({ selRequests: p.selRequests.map((r) => r.id === id ? Object.assign({}, r, { [key]: val, _saved: false }) : r) }));
+  }
+  saveReqStatus(id) {
+    const sess = this._authSession();
+    if (!sess) return;
+    const row = this.state.selRequests.find((r) => r.id === id);
+    if (!row) return;
+    sbRest('/sample_requests?id=eq.' + id, {
+      method: 'PATCH', headers: { Prefer: 'return=minimal' },
+      body: JSON.stringify({ status: row.status, courier_ref: row.courier_ref || null })
+    }, sess.access_token).then((res) => {
+      if (res.ok) this.setState((p) => ({ selRequests: p.selRequests.map((r) => r.id === id ? Object.assign({}, r, { _saved: true }) : r) }));
+    });
+  }
+  loadContactRequests() {
+    this.setState({ contactLoading: true });
+    const sess = this._authSession();
+    sbRest('/contact_requests?select=id,name,company,email,phone,country,message,created_at&order=created_at.desc', {}, sess ? sess.access_token : null)
+      .then((res) => this.setState({ contactLoading: false, contactLoaded: true, contactRequests: (res.ok && res.data) || [] }))
+      .catch(() => this.setState({ contactLoading: false, contactLoaded: true }));
+  }
+
+  renderVals() {
+    const s = this.state;
+    const inputStyle = { minHeight: '48px', padding: '0 14px', borderRadius: '12px', border: '1px solid rgba(76,38,15,.24)', background: '#fff', font: '400 13px/1 "DM Sans", sans-serif', color: '#102a3a' };
+    const selCompany = s.companies.find((c) => c.id === s.selectedCompanyId);
+    return {
+      isAuthed: !!s.authUser,
+      showLogin: !s.authUser,
+      showUnauthorized: !!s.authUser && s.adminChecked && !s.isAdmin,
+      showPanel: !!s.authUser && s.adminChecked && s.isAdmin,
+      authForm: s.authForm, authBusy: s.authBusy, authError: s.authError, authErrorShown: !!s.authError,
+      loginBtnLabel: s.authBusy ? '…' : 'Giriş Yap',
+      inputStyle, selectStyle: Object.assign({}, inputStyle, { minHeight: '38px', padding: '0 8px', fontSize: '12px' }),
+      smallInputStyle: Object.assign({}, inputStyle, { minHeight: '38px', padding: '0 10px', fontSize: '12px', flex: 1, minWidth: 0 }),
+      onEmailChange: (e) => this.updateAuthField('email', e.target.value),
+      onPasswordChange: (e) => this.updateAuthField('password', e.target.value),
+      submitLoginFn: () => this.submitLogin(),
+      logoutFn: () => this.logout(),
+      mainTabs: [
+        { id: 'companies', label: 'Firmalar', onClick: () => this.setMainTab('companies') },
+        { id: 'contact', label: 'İletişim Talepleri', onClick: () => this.setMainTab('contact') }
+      ].map((tb) => ({
+        onClick: tb.onClick, label: tb.label,
+        style: { minHeight: '40px', padding: '0 4px 10px', border: 'none', background: 'none', cursor: 'pointer', font: '500 12.5px/1 "DM Sans", sans-serif', letterSpacing: '.08em', textTransform: 'uppercase', color: s.mainTab === tb.id ? '#4c260f' : 'rgba(34,28,24,.5)', borderBottom: s.mainTab === tb.id ? '2px solid #4c260f' : '2px solid transparent' }
+      })),
+      tabIsCompanies: s.mainTab === 'companies', tabIsContact: s.mainTab === 'contact',
+      companiesLoading: s.companiesLoading, companiesCount: s.companies.length, companiesEmpty: !s.companiesLoading && s.companies.length === 0,
+      companyRows: s.companies.map((c) => ({
+        id: c.id, companyName: c.company_name || c.full_name || '—',
+        contactLine: [c.full_name, c.phone].filter(Boolean).join(' · ') || '—',
+        onSelect: () => this.selectCompany(c.id),
+        style: { display: 'block', width: '100%', textAlign: 'left', padding: '13px 18px', border: 'none', background: s.selectedCompanyId === c.id ? 'rgba(76,38,15,.07)' : 'none', borderBottom: '1px solid rgba(76,38,15,.08)', cursor: 'pointer' }
+      })),
+      noCompanySelected: !s.selectedCompanyId, hasSelectedCompany: !!s.selectedCompanyId,
+      selCompanyName: selCompany ? (selCompany.company_name || selCompany.full_name || '—') : '',
+      selContactLine: selCompany ? [selCompany.full_name, selCompany.phone].filter(Boolean).join(' · ') : '',
+      selAddressLine: selCompany ? (selCompany.address || '') : '',
+      selRequestsLoading: s.selRequestsLoading, selRequestsEmpty: !s.selRequestsLoading && s.selRequests.length === 0,
+      selRequestRows: s.selRequests.map((r) => ({
+        id: r.id, status: r.status || 'requested', courierRef: r.courier_ref || '', saved: !!r._saved,
+        dateLabel: r.created_at ? new Date(r.created_at).toLocaleDateString('tr-TR') : '',
+        productNames: ((r.sample_request_items || []).map((it) => it.product_name).filter(Boolean).join(', ')) || '—',
+        onStatusChange: (e) => { this.updateReqLocal(r.id, 'status', e.target.value); this.saveReqStatus(r.id); },
+        onCourierChange: (e) => this.updateReqLocal(r.id, 'courier_ref', e.target.value),
+        onSave: () => this.saveReqStatus(r.id)
+      })),
+      contactLoading: s.contactLoading, contactCount: s.contactRequests.length, contactEmpty: !s.contactLoading && s.contactRequests.length === 0,
+      contactRows: s.contactRequests.map((r) => ({
+        id: r.id, name: r.name, company: r.company || '', email: r.email, phone: r.phone || '', country: r.country || '', message: r.message || '',
+        dateLabel: r.created_at ? new Date(r.created_at).toLocaleDateString('tr-TR') : ''
+      }))
+    };
+  }
+}
+</script>
+</body>
+</html>
