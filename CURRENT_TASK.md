@@ -25,9 +25,10 @@ Improve only `Hesabim.dc.html` so the current customer account flow is professio
 - Rebuilt authenticated layout with clearer identity/navigation and responsive behavior.
 - Overview now loads the existing request history so counts are real instead of remaining `0` until the request tab is opened.
 - Sample list now has explicit context, deliberate empty state and clearer request action.
-- Request history now displays request id/date, all real statuses and tracking number.
+- Request history displays request id/date, all real statuses and tracking number.
 - Company/profile form is labeled and split from account security.
-- Corrected pre-existing schema mismatches found in this same flow: `company_name` → `company`, `courier_ref` → `shipping_tracking_no`.
+- Corrected schema mismatches in this flow: `company_name` → `company`, `courier_ref` → `shipping_tracking_no`.
+- Browser test found one additional root-cause mismatch: the request query still selected non-existent `shipped_at`; removed it after confirming the actual `sample_requests` columns in Supabase.
 - No new backend tables, roles, integrations or speculative features were added.
 
 ### UI acceptance criteria
@@ -46,10 +47,10 @@ Improve only `Hesabim.dc.html` so the current customer account flow is professio
 BUILD → TEST → VERIFY → PASS → NEXT
 
 ### Status
-- BUILD: PASS — targeted code inspection confirms the rebuild is limited to the customer account flow and the real existing schema contract.
-- TEST: BLOCKED on deployed browser verification.
-- VERIFY: BLOCKED until browser test passes.
+- BUILD: PASS — targeted fix for the failed request query is deployed.
+- TEST: FAIL was reproduced in browser as `Talepler yüklenemedi.` and root cause was confirmed as the invalid `shipped_at` select field.
+- VERIFY: PENDING browser retest after deploy.
 - PASS: NO.
 
 ### Next exact action
-Refresh deployed `Hesabim.dc.html` with Ctrl+F5. Verify desktop overview, sample list, sample request history, company/profile edit, logout, login/register/verification, and one narrow/mobile viewport. If these pass without broken controls or overflow, mark Customer UI PASS and move to the next active task.
+Refresh deployed `Hesabim.dc.html` with Ctrl+F5 and open `Numune Taleplerim`. The error must be gone and the account must show either real request rows or the deliberate empty state. Then continue desktop/mobile verification before PASS.
