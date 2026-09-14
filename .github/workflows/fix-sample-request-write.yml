@@ -38,17 +38,14 @@ jobs:
             }));
           }"""
 
-          def replace_function(src, name, replacement, start_at=0):
-              marker = f"function {name}("
-              start = src.find(marker, start_at)
-              if start < 0:
-                  marker = f"  {name}("
-                  start = src.find(marker, start_at)
-                  if start < 0:
-                      raise RuntimeError(f'{name} not found')
-                  fn_start = start
-              else:
-                  fn_start = start
+          def replace_function(src, name, replacement):
+              candidates = [f"function {name}(", f"  {name}(", f" {name}(", f"{name}("]
+              starts = [src.find(m) for m in candidates]
+              starts = [s for s in starts if s >= 0]
+              if not starts:
+                  raise RuntimeError(f'{name} not found')
+              start = min(starts)
+              fn_start = start
               brace = src.find('{', start)
               if brace < 0:
                   raise RuntimeError(f'{name} opening brace not found')
@@ -77,45 +74,22 @@ jobs:
                   i += 1
               raise RuntimeError(f'{name} closing brace not found')
 
-          # Fix request transport in all three pages: opts.headers must not replace auth headers.
           for p in FILES:
               src = p.read_text(encoding='utf-8')
               src = replace_function(src, 'sbRest', NEW_SBREST)
               p.write_text(src, encoding='utf-8')
 
-          # Correct existing schema field names in the two customer submission paths.
           for p in [Path('index.html'), Path('Hesabim.dc.html')]:
               src = p.read_text(encoding='utf-8')
               src = src.replace('sample_list_id:', 'list_id:')
               src = src.replace('sample_request_id:', 'request_id:')
               p.write_text(src, encoding='utf-8')
 
-          # Main-site registration profile write used an old profile field name.
           p = Path('index.html')
           src = p.read_text(encoding='utf-8')
           src = src.replace("body: JSON.stringify({ id: sess.user.id, full_name: f.fullName || null, company_name: f.companyName || null })",
                             "body: JSON.stringify({ id: sess.user.id, full_name: f.fullName || null, company: f.companyName || null })")
-          p.write_text(src, encoding='utf-8')
-
-          # Never show a successful sample request unless both request + item writes actually succeeded.
-          p = Path('index.html')
-          src = p.read_text(encoding='utf-8')
-          old = """  doSubmitSampleRequest(items, sess) {
-            if (!sess || !sess.access_token) return;
-            this.setState({ sampleReqBusy: true, sampleReqError: '' });
-            this.mergeGuestSamplesToAccount(sess).then(() => {
-              return sbRest('/sample_requests', { method: 'POST', headers: { Prefer: 'return=representation' }, body: JSON.stringify({ user_id: sess.user.id }) }, sess.access_token);
-            }).then((res) => {
-              const req = res.data && res.data[0];
-              if (!req || !items || !items.length) { this.setState({ sampleReqBusy: false, sampleReqSent: true }); return; }
-              return sbRest('/sample_request_items', {
-                method: 'POST',
-                headers: { Prefer: 'return=minimal' },
-                body: JSON.stringify(items.map((it) => Object.assign({ request_id: req.id }, it)))
-              }, sess.access_token).then(() => this.setState({ sampleReqBusy: false, sampleReqSent: true }));
-            }).catch(() => this.setState({ sampleReqBusy: false, sampleReqError: 'Bir hata oluştu, tekrar deneyin.' }));
-          }"""
-          new = """  doSubmitSampleRequest(items, sess) {
+          replacement = """  doSubmitSampleRequest(items, sess) {
             if (!sess || !sess.access_token || !items || !items.length) {
               this.setState({ sampleReqBusy: false, sampleReqSent: false, sampleReqError: 'Numune talebi oluşturulamadı. Tekrar deneyin.' });
               return;
@@ -136,21 +110,15 @@ jobs:
               this.setState({ sampleReqBusy: false, sampleReqSent: true, sampleReqError: '' });
             }).catch(() => this.setState({ sampleReqBusy: false, sampleReqSent: false, sampleReqError: 'Bir hata oluştu, tekrar deneyin.' }));
           }"""
-          if old not in src:
-              raise RuntimeError('index doSubmitSampleRequest expected block not found')
-          src = src.replace(old, new, 1)
+          src = replace_function(src, 'doSubmitSampleRequest', replacement)
           p.write_text(src, encoding='utf-8')
 
           p = Path('Hesabim.dc.html')
           src = p.read_text(encoding='utf-8')
-          start = src.find(' requestAllSamples(){')
-          if start < 0:
-              raise RuntimeError('Hesabim requestAllSamples not found')
           replacement = """ requestAllSamples(){const sess=this._authSession();const items=(this.state.samples||[]).map((p)=>({product_id:String(p.id!=null?p.id:''),product_name:p.name}));if(!sess||!sess.access_token||!items.length){this.setState({sampleReqBusy:false,sampleReqSent:false,sampleReqError:this.state.lang==='tr'?'Numune talebi oluşturulamadı.':'Sample request could not be created.'});return;}this.setState({sampleReqBusy:true,sampleReqSent:false,sampleReqError:''});this.mergeGuestSamplesToAccount(sess).catch(()=>null).then(()=>sbRest('/sample_requests',{method:'POST',headers:{Prefer:'return=representation'},body:JSON.stringify({user_id:sess.user.id})},sess.access_token)).then((res)=>{const req=res.ok&&res.data&&res.data[0];if(!req)throw new Error('sample request insert failed');return sbRest('/sample_request_items',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify(items.map((it)=>Object.assign({request_id:req.id},it)))},sess.access_token);}).then((itemRes)=>{if(!itemRes||!itemRes.ok)throw new Error('sample request items insert failed');this.setState({sampleReqBusy:false,sampleReqSent:true,samples:[],requestsLoaded:false});try{localStorage.removeItem('ah_samples');}catch(e){}this.loadMySampleRequests();}).catch(()=>this.setState({sampleReqBusy:false,sampleReqSent:false,sampleReqError:this.state.lang==='tr'?'Gönderilemedi. Tekrar deneyin.':'Could not send. Try again.'}));}"""
           src = replace_function(src, 'requestAllSamples', replacement.strip())
           p.write_text(src, encoding='utf-8')
 
-          # Targeted assertions.
           for p in FILES:
               src = p.read_text(encoding='utf-8')
               assert "const fetchOpts = Object.assign({}, o, { headers });" in src, p
@@ -160,6 +128,8 @@ jobs:
               assert 'sample_list_id:' not in src, p
               assert 'request_id:' in src, p
               assert 'list_id:' in src, p
+          assert "const req = res.ok && res.data && res.data[0];" in Path('index.html').read_text(encoding='utf-8')
+          assert "const req=res.ok&&res.data&&res.data[0]" in Path('Hesabim.dc.html').read_text(encoding='utf-8')
           print('TARGETED_FIX_ASSERTIONS_PASS')
           PY
       - name: Commit targeted fix
