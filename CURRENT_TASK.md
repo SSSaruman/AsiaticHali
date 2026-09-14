@@ -15,7 +15,7 @@ Verified in browser:
 ### Active target
 Improve only the existing `Admin.dc.html` interface so the current working admin flow is professional, clear, and responsive. Do not add CRM, WhatsApp, AI bot, new backend tables, new roles, or unrelated features in this task.
 
-### Locked behavior to preserve
+### Locked behavior preserved
 - Existing admin auth and `ah_admin_auth` isolation.
 - Existing RLS/admin authorization.
 - Existing tabs and data functions: Firms/Customers, sample requests, contact requests.
@@ -34,14 +34,20 @@ Improve only the existing `Admin.dc.html` interface so the current working admin
 9. No backend/schema/auth changes.
 10. Deployed browser verification required before PASS.
 
+### Build completed
+- Reworked only `Admin.dc.html` presentation layer.
+- Added clearer header, page hierarchy, labeled form controls, stronger firm/detail separation, deliberate empty/loading/unauthorized states, and readable contact cards.
+- Added responsive single-column behavior for narrow screens and removed likely horizontal overflow points.
+- Kept auth/session keys, RLS calls, Supabase queries, status contract, save behavior, and existing tabs unchanged.
+
 ### Flow
 BUILD → TEST → VERIFY → PASS → NEXT
 
 ### Status
-- BUILD: PENDING.
-- TEST: BLOCKED until build.
-- VERIFY: BLOCKED until test.
+- BUILD: PASS — targeted code inspection confirms UI-only change and locked auth/data behavior remains intact.
+- TEST: BLOCKED on deployed browser verification.
+- VERIFY: BLOCKED until browser test passes.
 - PASS: NO.
 
 ### Next exact action
-Read only the relevant `Admin.dc.html` UI structure, make the minimum safe visual/UX changes needed to meet the acceptance criteria, deploy, then verify in the browser. Customer panel UI remains the next task after Admin UI PASS.
+Refresh deployed `Admin.dc.html` with Ctrl+F5 and verify desktop layout, firm selection/detail, contact requests tab, login/unauthorized states, and one narrow/mobile viewport. If these pass without horizontal overflow or broken controls, mark Admin UI PASS and move to Customer Panel UI as the next task.
