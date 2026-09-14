@@ -65,7 +65,7 @@ a{color:#4c260f}a:hover{color:#a55a34}
               <sc-if value="{{ companiesLoading }}" hint-placeholder-val="{{ false }}"><span style="font:400 12px/1 'DM Sans',sans-serif;color:rgba(34,28,24,.5)">Yükleniyor…</span></sc-if>
             </div>
             <sc-if value="{{ companiesEmpty }}" hint-placeholder-val="{{ false }}">
-              <p style="margin:0;padding:20px 18px;font:300 13px/1.5 'DM Sans',sans-serif;color:rgba(34,28,24,.6)">Henüz kayıtlı firma yok. (Bu listenin dolması için profiles tablosunda admin\u2019e tüm satırları gösteren bir RLS policy gerekir.)</p>
+              <p style="margin:0;padding:20px 18px;font:300 13px/1.5 'DM Sans',sans-serif;color:rgba(34,28,24,.6)">Henüz kayıtlı firma yok.</p>
             </sc-if>
             <div style="max-height:560px;overflow-y:auto">
               <sc-for list="{{ companyRows }}" as="c" hint-placeholder-count="4">
@@ -95,7 +95,9 @@ a{color:#4c260f}a:hover{color:#a55a34}
                   <p style="margin:4px 0 0;font:400 11.5px/1.3 'DM Sans',sans-serif;color:rgba(34,28,24,.5)">{{ r.dateLabel }}</p>
                   <div style="display:flex;align-items:center;gap:8px;margin-top:8px">
                     <select value="{{ r.status }}" onChange="{{ r.onStatusChange }}" style="{{ selectStyle }}">
-                      <option value="requested">Talep edildi</option>
+                      <option value="new">Yeni</option>
+                      <option value="approved">Onaylandı</option>
+                      <option value="preparing">Hazırlanıyor</option>
                       <option value="shipped">Kargoya verildi</option>
                       <option value="delivered">Teslim edildi</option>
                       <option value="cancelled">İptal edildi</option>
@@ -202,7 +204,7 @@ class Component extends DCLogic {
   }
   loadCompanies(sess) {
     this.setState({ companiesLoading: true });
-    sbRest('/profiles?select=id,full_name,company_name,phone,address&order=full_name.asc', {}, sess.access_token).then((res) => {
+    sbRest('/profiles?select=id,full_name,company,phone,address&order=full_name.asc', {}, sess.access_token).then((res) => {
       this.setState({ companiesLoading: false, companies: (res.ok && res.data) || [] });
     }).catch(() => this.setState({ companiesLoading: false }));
   }
@@ -210,21 +212,22 @@ class Component extends DCLogic {
     this.setState({ selectedCompanyId: id, selRequestsLoading: true, selRequests: [] });
     const sess = this._authSession();
     if (!sess) return;
-    sbRest('/sample_requests?select=id,status,created_at,courier_ref,sample_request_items(product_name)&user_id=eq.' + id + '&order=created_at.desc', {}, sess.access_token)
+    sbRest('/sample_requests?select=id,status,created_at,shipping_tracking_no,sample_request_items(product_name)&user_id=eq.' + id + '&order=created_at.desc', {}, sess.access_token)
       .then((res) => this.setState({ selRequestsLoading: false, selRequests: (res.ok && res.data) || [] }))
       .catch(() => this.setState({ selRequestsLoading: false }));
   }
   updateReqLocal(id, key, val) {
     this.setState((p) => ({ selRequests: p.selRequests.map((r) => r.id === id ? Object.assign({}, r, { [key]: val, _saved: false }) : r) }));
   }
-  saveReqStatus(id) {
+  saveReqStatus(id, override) {
     const sess = this._authSession();
     if (!sess) return;
     const row = this.state.selRequests.find((r) => r.id === id);
     if (!row) return;
+    const next = Object.assign({}, row, override || {});
     sbRest('/sample_requests?id=eq.' + id, {
       method: 'PATCH', headers: { Prefer: 'return=minimal' },
-      body: JSON.stringify({ status: row.status, courier_ref: row.courier_ref || null })
+      body: JSON.stringify({ status: next.status, shipping_tracking_no: next.shipping_tracking_no || null })
     }, sess.access_token).then((res) => {
       if (res.ok) this.setState((p) => ({ selRequests: p.selRequests.map((r) => r.id === id ? Object.assign({}, r, { _saved: true }) : r) }));
     });
@@ -264,22 +267,22 @@ class Component extends DCLogic {
       tabIsCompanies: s.mainTab === 'companies', tabIsContact: s.mainTab === 'contact',
       companiesLoading: s.companiesLoading, companiesCount: s.companies.length, companiesEmpty: !s.companiesLoading && s.companies.length === 0,
       companyRows: s.companies.map((c) => ({
-        id: c.id, companyName: c.company_name || c.full_name || '—',
+        id: c.id, companyName: c.company || c.full_name || '—',
         contactLine: [c.full_name, c.phone].filter(Boolean).join(' · ') || '—',
         onSelect: () => this.selectCompany(c.id),
         style: { display: 'block', width: '100%', textAlign: 'left', padding: '13px 18px', border: 'none', background: s.selectedCompanyId === c.id ? 'rgba(76,38,15,.07)' : 'none', borderBottom: '1px solid rgba(76,38,15,.08)', cursor: 'pointer' }
       })),
       noCompanySelected: !s.selectedCompanyId, hasSelectedCompany: !!s.selectedCompanyId,
-      selCompanyName: selCompany ? (selCompany.company_name || selCompany.full_name || '—') : '',
+      selCompanyName: selCompany ? (selCompany.company || selCompany.full_name || '—') : '',
       selContactLine: selCompany ? [selCompany.full_name, selCompany.phone].filter(Boolean).join(' · ') : '',
       selAddressLine: selCompany ? (selCompany.address || '') : '',
       selRequestsLoading: s.selRequestsLoading, selRequestsEmpty: !s.selRequestsLoading && s.selRequests.length === 0,
       selRequestRows: s.selRequests.map((r) => ({
-        id: r.id, status: r.status || 'requested', courierRef: r.courier_ref || '', saved: !!r._saved,
+        id: r.id, status: r.status || 'new', courierRef: r.shipping_tracking_no || '', saved: !!r._saved,
         dateLabel: r.created_at ? new Date(r.created_at).toLocaleDateString('tr-TR') : '',
         productNames: ((r.sample_request_items || []).map((it) => it.product_name).filter(Boolean).join(', ')) || '—',
-        onStatusChange: (e) => { this.updateReqLocal(r.id, 'status', e.target.value); this.saveReqStatus(r.id); },
-        onCourierChange: (e) => this.updateReqLocal(r.id, 'courier_ref', e.target.value),
+        onStatusChange: (e) => { const status = e.target.value; this.updateReqLocal(r.id, 'status', status); this.saveReqStatus(r.id, { status }); },
+        onCourierChange: (e) => this.updateReqLocal(r.id, 'shipping_tracking_no', e.target.value),
         onSave: () => this.saveReqStatus(r.id)
       })),
       contactLoading: s.contactLoading, contactCount: s.contactRequests.length, contactEmpty: !s.contactLoading && s.contactRequests.length === 0,
