@@ -11,6 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Repair auth method
+        run: python3 .github/scripts/repair_auth_method.py
       - name: Apply targeted fixes
         run: python3 .github/scripts/fix_customer_flow.py
       - name: Check embedded script syntax
@@ -33,9 +35,8 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git rm -f .github/workflows/fix-customer-flow-regressions.yml .github/workflows/audit-customer-flow.yml .github/scripts/fix_customer_flow.py
+          git rm -f .github/workflows/fix-customer-flow-regressions.yml .github/workflows/audit-customer-flow.yml .github/scripts/fix_customer_flow.py .github/scripts/repair_auth_method.py
           git add index.html Hesabim.dc.html Admin.dc.html
           git diff --cached --check
           git commit -m "fix: complete customer request and account flows [skip ci]"
           git push
-# rerun after repairing corrupted pending-action call
