@@ -14,15 +14,14 @@ Make `Admin.dc.html` authentication work reliably on the deployed GitHub Pages s
 ### Verified diagnosis
 - The previous "missing React/ReactDOM" diagnosis was incorrect: `support.js` contains its own React/ReactDOM CDN loader.
 - Supabase user state is valid: account exists, email is confirmed, not banned, and admin flag is true.
-- The known unresolved blocker is credential recovery: the test password `123456` was never actually set through Supabase Auth, so it must not be assumed valid.
-- `Admin.dc.html` currently has no password-recovery path and reduces all auth failures to the generic text `Giriş başarısız.`
+- The test password `123456` was never actually set through Supabase Auth, so it must not be assumed valid.
+- `Admin.dc.html` has no password-recovery path and reduces all auth failures to generic `Giriş başarısız.`
 
-### Minimum safe fix
-1. Add password recovery to the existing admin login only; do not redesign the panel.
-2. Recovery must use Supabase Auth and return to the deployed `Admin.dc.html` URL.
-3. Handle the recovery callback and allow setting a new password through the authenticated recovery session.
-4. Preserve existing admin authorization/RLS behavior.
-5. Expose the real auth error category/message sufficiently to distinguish invalid credentials, unconfirmed account, rate limit, and network failure during verification.
+### Minimum safe fix built
+- Added `AdminReset.html` as an isolated recovery page; existing admin panel was not redesigned or refactored.
+- Recovery request uses Supabase `/auth/v1/recover` and requests return to the deployed recovery page.
+- Recovery callback reads the Supabase recovery access token, validates the new password, updates it through `/auth/v1/user`, and returns to `Admin.dc.html` after success.
+- Existing admin authorization/RLS behavior remains untouched.
 
 ### Acceptance criteria
 1. Deployed `Admin.dc.html` renders through the DC runtime, not raw unresolved `{{ }}`/`sc-*` markup.
@@ -33,8 +32,11 @@ Make `Admin.dc.html` authentication work reliably on the deployed GitHub Pages s
 6. Logout clears the session and returns to login state.
 7. A real browser-level test on the deployed page passes before this task is marked PASS.
 
-### Flow
-BUILD → TEST → VERIFY → PASS → NEXT
+### Flow status
+- BUILD: PASS — minimal recovery page committed and statically verified.
+- TEST: BLOCKED — requires live GitHub Pages + recovery email interaction / Supabase redirect validation.
+- VERIFY: BLOCKED until TEST passes.
+- PASS: NO.
 
-### Status
-FAIL — root cause isolated to unresolved credentials/recovery path. Minimum safe fix pending; no feature work permitted.
+### Next exact action
+Open deployed `AdminReset.html`, send recovery mail to the locked admin email, set a known test password, then execute admin login / authorization / logout browser E2E. If redirect is rejected or returns to the wrong URL, fix only Supabase redirect configuration or the recovery redirect target, then rerun the same test.
