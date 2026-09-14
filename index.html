@@ -98,14 +98,10 @@ button::-moz-focus-inner{border:0;padding:0}
         <a href="mailto:export@asiatichali.com?subject=Trade%20access%20request" style="{{ ctaSmallStyle }}">{{ t.tradeCta }}</a>
       </div>
     </sc-if>
-    <sc-if value="{{ isAuthed }}" hint-placeholder-val="{{ false }}">
-      <div style="{{ authPillStyle }}">
-        <a href="Hesabim.dc.html" style="{{ signInLinkStyle }}">
+    <sc-if value="{{ isAuthed }}" hint-placeholder-val="{{ false }}"><div style="position:relative;display:flex;align-items:center"><button type="button" onClick="{{ toggleAccountFn }}" aria-expanded="{{ accountOpen }}" style="{{ signInLinkStyle }}">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
           {{ accountLabel }}
-        </a>
-      </div>
-    </sc-if>
+        </button><sc-if value="{{ accountOpen }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;right:0;top:calc(100% + 10px);z-index:90;width:210px;padding:8px;background:#fbf5ee;border:1px solid rgba(76,38,15,.14);border-radius:14px;box-shadow:0 24px 50px -28px rgba(34,28,24,.55);display:flex;flex-direction:column"><a href="Hesabim.dc.html" style="padding:11px 12px;color:#221c18;text-decoration:none;font:500 13px/1.2 'DM Sans',sans-serif">{{ t.myAccount }}</a><a href="Hesabim.dc.html#samples" style="padding:11px 12px;color:#221c18;text-decoration:none;font:500 13px/1.2 'DM Sans',sans-serif">{{ t.acctStatSamples }}</a><a href="Hesabim.dc.html#requests" style="padding:11px 12px;color:#221c18;text-decoration:none;font:500 13px/1.2 'DM Sans',sans-serif">{{ t.acctStatRequests }}</a><button type="button" onClick="{{ logoutFn }}" style="padding:11px 12px;border:0;border-top:1px solid rgba(76,38,15,.10);background:none;text-align:left;color:#a5342f;font:600 12px/1.2 'DM Sans',sans-serif;cursor:pointer">{{ t.signOut }}</button></div></sc-if></div></sc-if>
     <button type="button" onClick="{{ toggleMenu }}" aria-label="Menü" aria-expanded="{{ menu }}" style="{{ burgerStyle }}">
       <span style="display:block;width:20px;height:1.5px;background:#102a3a"></span>
       <span style="display:block;width:20px;height:1.5px;background:#102a3a;margin-top:5px"></span>
@@ -157,7 +153,7 @@ button::-moz-focus-inner{border:0;padding:0}
           </div>
         </sc-for>
       </div>
-      <button type="button" onClick="{{ requestSamplesHandler }}" disabled="{{ sampleReqBusy }}" style="display:inline-flex;align-items:center;gap:9px;margin-top:16px;min-height:46px;padding:0 22px;border-radius:14px;background:#4c260f;color:#f6ece2;font:500 12px/1 'DM Sans',sans-serif;letter-spacing:.12em;text-transform:uppercase;border:none;cursor:pointer">{{ t.samplesSendAll }} <span aria-hidden="true">→</span></button>
+      <button type="button" onClick="{{ requestSamplesHandler }}" disabled="{{ sampleReqSubmitDisabled }}" style="display:inline-flex;align-items:center;gap:9px;margin-top:16px;min-height:46px;padding:0 22px;border-radius:14px;background:#4c260f;color:#f6ece2;font:500 12px/1 'DM Sans',sans-serif;letter-spacing:.12em;text-transform:uppercase;border:none;cursor:pointer">{{ samplesSendAllLabel }} <span aria-hidden="true">→</span></button>
       <sc-if value="{{ sampleReqSent }}" hint-placeholder-val="{{ false }}"><p style="margin:10px 0 0;font:400 12px/1.3 'DM Sans',sans-serif;color:#3a6b3a">{{ t.sampleReqSentMsg }}</p></sc-if>
       <sc-if value="{{ sampleReqErrorShown }}" hint-placeholder-val="{{ false }}"><p style="margin:10px 0 0;font:400 12px/1.3 'DM Sans',sans-serif;color:#a5342f">{{ sampleReqError }}</p></sc-if>
     </sc-if>
@@ -916,7 +912,7 @@ button::-moz-focus-inner{border:0;padding:0}
         <button type="button" onClick="{{ rbGoBack }}" style="{{ rbBackStyle }}" style-hover="background:rgba(76,38,15,.06)"><span aria-hidden="true">←</span> {{ t.rbBack }}</button>
         <div style="display:flex;align-items:center;gap:10px">
           <button type="button" onClick="{{ rbAddToSample }}" style="{{ rbSampleBtnStyle }}" style-hover="background:rgba(76,38,15,.06)">{{ rbAddSampleLabel }} <sc-if value="{{ rbSampleAdded }}" hint-placeholder-val="{{ false }}"><span aria-hidden="true">✓</span></sc-if></button>
-          <button type="button" onClick="{{ requestRbHandler }}" disabled="{{ sampleReqBusy }}" style="{{ rbSendStyle }}" style-hover="transform:translateY(-2px);background:#5d3116">{{ t.rbSendRequest }} <span aria-hidden="true">→</span></button>
+          <button type="button" onClick="{{ requestRbHandler }}" disabled="{{ sampleReqSubmitDisabled }}" style="{{ rbSendStyle }}" style-hover="transform:translateY(-2px);background:#5d3116">{{ rbSendRequestLabel }} <span aria-hidden="true">→</span></button>
         </div>
       </div>
 
@@ -1208,7 +1204,7 @@ const T = {
     rugBody: 'Handpicked highlights from our collections. Each rug is crafted to elevate interiors and endure beautifully over time.',
     viewRug: 'View rug', requestSample: 'Request sample',
     addToSamples: 'Add to sample list', samplesAdded: 'Added',
-    samplesEmpty: 'No samples added yet.', samplesRemove: 'Remove', samplesSendAll: 'Email this list',
+    samplesEmpty: 'No samples added yet.', samplesRemove: 'Remove', samplesSendAll: 'Request selected samples',
     filterLabel: 'Filter by collection', prev: 'Previous', next: 'Next',
     rugCountOne: '1 rug matches this filter', rugCountMany: '{n} rugs match this filter',
     rugEmptyTitle: 'No rugs match this filter yet', rugEmptyBody: 'Try another collection group, or view all rugs.', rugEmptyCta: 'View all rugs',
@@ -1246,7 +1242,7 @@ const T = {
     rugBody: 'Koleksiyonlarımızdan özenle seçilmiş öne çıkanlar. Her halı mekânı yükseltmek ve zamana güzelce dayanmak için üretilir.',
     viewRug: 'Halıyı gör', requestSample: 'Numune talebi',
     addToSamples: 'Numune listesine ekle', samplesAdded: 'Eklendi',
-    samplesEmpty: 'Henüz numune eklenmedi.', samplesRemove: 'Kaldır', samplesSendAll: 'Bu listeyi e-postayla gönder',
+    samplesEmpty: 'Henüz numune eklenmedi.', samplesRemove: 'Kaldır', samplesSendAll: 'Seçili numuneleri talep et',
     filterLabel: 'Koleksiyona göre filtrele', prev: 'Önceki', next: 'Sonraki',
     rugCountOne: 'Bu filtreye uyan 1 halı var', rugCountMany: 'Bu filtreye uyan {n} halı var',
     rugEmptyTitle: 'Bu filtreye uyan halı yok', rugEmptyBody: 'Başka bir koleksiyon grubu deneyin ya da tüm halıları görün.', rugEmptyCta: 'Tüm halıları gör',
@@ -2029,12 +2025,7 @@ class Component extends DCLogic {
         return;
       }
       if (!res.ok || !res.data || !res.data.access_token) {
-        const msg = (res.data && (res.data.error_description || res.data.msg || res.data.error)) || '';
-        if (!isRegister && /email.*not.*confirm/i.test(msg)) {
-          this.setState({ authBusy: false, authFlowState: 'login_unverified', pendingEmail: f.email });
-          return;
-        }
-        this.setState({ authBusy: false, authError: msg || 'Giriş başarısız. Bilgileri kontrol edin.' });
+        this.setState({ authBusy: false, authError: 'Giriş başarısız. Bilgilerinizi kontrol edin.' });
         return;
       }
       if (res.data.user && !res.data.user.email_confirmed_at) {
@@ -2052,28 +2043,9 @@ class Component extends DCLogic {
         }, sess.access_token);
       }
       const pending = this.state.authPendingAction;
-      if (pending && pending.type === 'sampleRequest') this.  doSubmitSampleRequest(items, sess) {
-  if (!sess || !sess.access_token || !items || !items.length) {
-    this.setState({ sampleReqBusy: false, sampleReqSent: false, sampleReqError: 'Numune talebi oluşturulamadı. Tekrar deneyin.' });
-    return;
-  }
-  this.setState({ sampleReqBusy: true, sampleReqSent: false, sampleReqError: '' });
-  this.mergeGuestSamplesToAccount(sess).catch(() => null).then(() => {
-    return sbRest('/sample_requests', { method: 'POST', headers: { Prefer: 'return=representation' }, body: JSON.stringify({ user_id: sess.user.id }) }, sess.access_token);
-  }).then((res) => {
-    const req = res.ok && res.data && res.data[0];
-    if (!req) throw new Error('sample request insert failed');
-    return sbRest('/sample_request_items', {
-      method: 'POST',
-      headers: { Prefer: 'return=minimal' },
-      body: JSON.stringify(items.map((it) => Object.assign({ request_id: req.id }, it)))
-    }, sess.access_token);
-  }).then((itemRes) => {
-    if (!itemRes || !itemRes.ok) throw new Error('sample request items insert failed');
-    this.setState({ sampleReqBusy: false, sampleReqSent: true, sampleReqError: '' });
-  }).catch(() => this.setState({ sampleReqBusy: false, sampleReqSent: false, sampleReqError: 'Bir hata oluştu, tekrar deneyin.' }));
-});
-    });
+      if (pending && pending.type === 'sampleRequest') this.doSubmitSampleRequest(pending.items, sess);
+      this.setState({ authPendingAction: null });
+    }).catch(() => this.setState({ authBusy: false, authError: 'Bir hata oluştu. Tekrar deneyin.' }));
   }
   resendVerification() {
     const email = this.state.pendingEmail;
@@ -2126,19 +2098,25 @@ class Component extends DCLogic {
     this.doSubmitSampleRequest(items, this._authSession());
   }
   doSubmitSampleRequest(items, sess) {
-    if (!sess || !sess.access_token) return;
-    this.setState({ sampleReqBusy: true, sampleReqError: '' });
-    this.mergeGuestSamplesToAccount(sess).then(() => {
-      return sbRest('/sample_requests', { method: 'POST', headers: { Prefer: 'return=representation' }, body: JSON.stringify({ user_id: sess.user.id }) }, sess.access_token);
-    }).then((res) => {
-      const req = res.data && res.data[0];
-      if (!req || !items || !items.length) { this.setState({ sampleReqBusy: false, sampleReqSent: true }); return; }
-      return sbRest('/sample_request_items', {
-        method: 'POST',
-        headers: { Prefer: 'return=minimal' },
-        body: JSON.stringify(items.map((it) => Object.assign({ request_id: req.id }, it)))
-      }, sess.access_token).then(() => this.setState({ sampleReqBusy: false, sampleReqSent: true }));
-    }).catch(() => this.setState({ sampleReqBusy: false, sampleReqError: 'Bir hata oluştu, tekrar deneyin.' }));
+    if (!sess || !sess.access_token || !items || !items.length) {
+      this.setState({ sampleReqBusy: false, sampleReqSent: false, sampleReqError: 'Numune talebi oluşturulamadı. Tekrar deneyin.' });
+      return;
+    }
+    this.setState({ sampleReqBusy: true, sampleReqSent: false, sampleReqError: '' });
+    this.mergeGuestSamplesToAccount(sess).catch(() => null).then(() =>
+      sbRest('/sample_requests', { method: 'POST', headers: { Prefer: 'return=representation' }, body: JSON.stringify({ user_id: sess.user.id }) }, sess.access_token)
+    ).then((res) => {
+      const req = res.ok && res.data && res.data[0];
+      if (!req) throw new Error('sample request insert failed');
+      return sbRest('/sample_request_items', { method: 'POST', headers: { Prefer: 'return=minimal' }, body: JSON.stringify(items.map((it) => Object.assign({ request_id: req.id }, it))) }, sess.access_token);
+    }).then((itemRes) => {
+      if (!itemRes || !itemRes.ok) throw new Error('sample request items insert failed');
+      this.setState({ sampleReqBusy: false, sampleReqSent: true, sampleReqError: '' });
+      setTimeout(() => {
+        try { localStorage.removeItem('ah_samples'); } catch (e) {}
+        this.setState({ samples: [], samplesOpen: false, sampleReqSent: false, rbStep: 0, rb: { group: 'Textured', colour: 'Beige', size: '160x230', use: 'Retail floor' } });
+      }, 2200);
+    }).catch(() => this.setState({ sampleReqBusy: false, sampleReqSent: false, sampleReqError: 'Bir hata oluştu, tekrar deneyin.' }));
   }
 
   colStripDown(e) {
@@ -3087,13 +3065,14 @@ class Component extends DCLogic {
       samplesHasItems: samplesPanelRows.length > 0,
       samplesIsEmpty: samplesPanelRows.length === 0,
       samplesSendAll,
+      samplesSendAllLabel: t.samplesSendAll + ((s.samples || []).length ? ' (' + (s.samples || []).length + ')' : ''),
       requestSamplesHandler: () => this.requestSampleSubmission(sampleProducts.map((p) => ({ product_id: String(p.id != null ? p.id : ''), product_name: p.name }))),
       isAuthed: !!s.authUser,
       isNotAuthed: !s.authUser,
       authUserEmail: s.authUser ? s.authUser.email : '',
       accountLabel: (s.authUser && s.authUser.user_metadata && s.authUser.user_metadata.full_name
         ? s.authUser.user_metadata.full_name.split(' ')[0] : t.myAccount) + ' ▾',
-      openLoginFn: () => this.openAuthModal('login'),
+      accountOpen: s.accountOpen, toggleAccountFn: () => this.setState((p) => ({ accountOpen: !p.accountOpen })), closeAccountFn: () => this.setState({ accountOpen: false }), openLoginFn: () => this.openAuthModal('login'),
       logoutFn: () => this.logout(),
       authOpen: s.authOpen,
       showVerificationScreen: s.authFlowState === 'signup_success_pending_verification' || s.authFlowState === 'login_unverified',
@@ -3122,7 +3101,7 @@ class Component extends DCLogic {
       onEmailChange: (e) => this.updateAuthField('email', e.target.value),
       onPasswordChange: (e) => this.updateAuthField('password', e.target.value),
       submitAuthFn: () => this.submitAuthForm(),
-      sampleReqBusy: s.sampleReqBusy,
+      sampleReqBusy: s.sampleReqBusy, sampleReqSubmitDisabled: !!(s.sampleReqBusy || s.sampleReqSent),
       sampleReqSent: s.sampleReqSent,
       sampleReqError: s.sampleReqError,
       sampleReqErrorShown: !!s.sampleReqError,
@@ -3216,7 +3195,7 @@ class Component extends DCLogic {
       rbSizes: rbSizeChips,
       rbProgressNodes, rbProgressFillStyle, rbProgressFillActiveStyle,
       rbStepIsGroup, rbStepIsColour, rbStepIsSize, rbStepIsUse, rbStepIsResult,
-      rbShowBack, rbShowBackPlaceholder, rbShowContinue, rbCanContinue, rbDisabledContinue, rbContinueStyle,
+      rbShowBack, rbShowBackPlaceholder, rbShowContinue, rbCanContinue, rbSendRequestLabel: t.rbSendRequest + ((s.samples || []).length ? ' (' + (s.samples || []).length + ')' : ''), rbDisabledContinue, rbContinueStyle,
       rbBackDisabled, rbBackStyle, rbSampleBtnStyle, rbSendStyle,
       rbGoNext, rbGoBack, rbChangeSelectionFn,
       rbUses: rbUseChips,
