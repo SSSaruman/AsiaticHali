@@ -57,7 +57,7 @@ jobs:
           {
             const page=await ctx.newPage(); await fakeCustomer(page); await routeCustomer(page);
             await page.goto(BASE,{waitUntil:'networkidle'});
-            const profile=page.getByText(/Test|Hesabım|test/i).last();
+            const profile=page.locator('button[aria-expanded]:visible').filter({hasText:/Test/i}).first();
             await profile.click();
             await page.waitForTimeout(250);
             assert(page.url()===BASE || page.url()===BASE+'index.html','profile click redirected instead of opening menu');
