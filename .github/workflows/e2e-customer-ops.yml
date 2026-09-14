@@ -61,7 +61,7 @@ jobs:
             await profile.click();
             await page.waitForTimeout(250);
             assert(page.url()===BASE || page.url()===BASE+'index.html','profile click redirected instead of opening menu');
-            assert(await page.getByText(/Numune Taleplerim/i).count()>0,'account dropdown missing request link');
+            assert(await page.getByText(/Numune talepleri|Sample requests/i).count()>0,'account dropdown missing request link');
             await page.close();
           }
 
