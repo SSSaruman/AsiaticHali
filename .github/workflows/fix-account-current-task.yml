@@ -1,0 +1,61 @@
+name: Fix account current task
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/fix-account-current-task.yml']
+permissions:
+  contents: write
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply minimum account fixes
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          p=Path('Hesabim.dc.html')
+          s=p.read_text(encoding='utf-8')
+
+          old_requests=re.compile(r" loadMySampleRequests\(\)\{.*?\n loadMyProfile\(\)\{.*?\n updateProfileField",re.S)
+          new_requests=""" loadMySampleRequests(){this.setState({mySampleRequestsLoading:true,mySampleRequestsError:''});this._freshSession().then((sess)=>sbRest('/sample_requests?select=id,status,created_at,shipping_tracking_no,sample_request_items(product_name)&order=created_at.desc',{},sess.access_token)).then((res)=>{if(!res.ok)throw new Error('request history failed');this.setState({mySampleRequestsLoading:false,mySampleRequests:res.data||[],requestsLoaded:true,mySampleRequestsError:''});}).catch(()=>this.setState({mySampleRequestsLoading:false,mySampleRequestsError:this.state.lang==='tr'?'Talepler yüklenemedi. Lütfen tekrar giriş yapın.':'Requests could not be loaded. Please sign in again.'}));}
+ loadMyProfile(){this.setState({profileLoading:true,profileError:''});this._freshSession().then((sess)=>sbRest('/profiles?select=full_name,company,phone,address&id=eq.'+sess.user.id,{},sess.access_token)).then((res)=>{if(!res.ok)throw new Error('profile load failed');const row=(res.data&&res.data[0])||{};this.setState({profileLoading:false,profileLoaded:true,profileError:'',profileForm:{fullName:row.full_name||'',companyName:row.company||'',phone:row.phone||'',address:row.address||''}});}).catch(()=>this.setState({profileLoading:false,profileLoaded:true,profileError:this.state.lang==='tr'?'Firma bilgileri yüklenemedi. Lütfen tekrar giriş yapın.':'Company details could not be loaded. Please sign in again.'}));}
+ updateProfileField"""
+          s,n=old_requests.subn(new_requests,s,count=1)
+          if n!=1: raise SystemExit(f'account read methods replacement count={n}')
+
+          old_success="this.setState({sampleReqBusy:false,sampleReqSent:true,samples:[],requestsLoaded:false});try{localStorage.removeItem('ah_samples');}catch(e){}this.loadMySampleRequests();"
+          new_success="this.setState({sampleReqBusy:false,sampleReqSent:true,samples:[],requestsLoaded:false});try{localStorage.removeItem('ah_samples');}catch(e){}this.loadMySampleRequests();setTimeout(()=>this.setState({sampleReqSent:false}),2200);"
+          if old_success not in s: raise SystemExit('request success marker missing')
+          s=s.replace(old_success,new_success,1)
+
+          old_markup="</button><sc-if value=\"{{ sampleReqSent }}\" hint-placeholder-val=\"{{ false }}\"><p class=\"notice ok\" style=\"margin-top:14px\">{{ t.sampleReqSentMsg }}</p></sc-if><sc-if value=\"{{ sampleReqErrorShown }}\" hint-placeholder-val=\"{{ false }}\"><p class=\"notice error\" style=\"margin-top:14px\">{{ sampleReqError }}</p></sc-if></sc-if><sc-if value=\"{{ samplesIsEmpty }}\""
+          new_markup="</button></sc-if><sc-if value=\"{{ sampleReqSent }}\" hint-placeholder-val=\"{{ false }}\"><p class=\"notice ok\" style=\"margin-top:14px\">{{ t.sampleReqSentMsg }}</p></sc-if><sc-if value=\"{{ sampleReqErrorShown }}\" hint-placeholder-val=\"{{ false }}\"><p class=\"notice error\" style=\"margin-top:14px\">{{ sampleReqError }}</p></sc-if><sc-if value=\"{{ samplesIsEmpty }}\""
+          if old_markup not in s: raise SystemExit('sample feedback markup marker missing')
+          s=s.replace(old_markup,new_markup,1)
+
+          p.write_text(s,encoding='utf-8')
+          print('ACCOUNT_CURRENT_TASK_PATCH_APPLIED')
+          PY
+      - name: Syntax check embedded script
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          s=Path('Hesabim.dc.html').read_text(encoding='utf-8')
+          m=re.search(r'<script type="text/x-dc" data-dc-script>(.*?)</script>',s,re.S)
+          if not m: raise SystemExit('embedded script missing')
+          Path('/tmp/account.js').write_text(m.group(1),encoding='utf-8')
+          PY
+          node --check /tmp/account.js
+      - name: Commit product fix and remove workflow
+        run: |
+          rm .github/workflows/fix-account-current-task.yml
+          git config user.name "SSSaruman"
+          git config user.email "ufuk.karahann@gmail.com"
+          git add Hesabim.dc.html .github/workflows/fix-account-current-task.yml
+          git diff --cached --check
+          git commit -m "fix: stabilize customer account reads and feedback"
+          git push
