@@ -1,0 +1,128 @@
+name: Customer/Admin regression
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'Hesabim.dc.html'
+      - 'Admin.dc.html'
+      - 'support.js'
+      - '.github/workflows/e2e-customer-ops.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm init -y && npm i -D playwright
+      - run: npx playwright install --with-deps chromium
+      - name: Run live regression scenarios
+        run: |
+          cat > /tmp/e2e.mjs <<'EOF'
+          import { chromium } from 'playwright';
+          const BASE='https://sssaruman.github.io/AsiaticHali/';
+          const browser=await chromium.launch({headless:true});
+          const ctx=await browser.newContext({viewport:{width:1440,height:1000}});
+
+          async function fakeCustomer(page,{samples=[]}={}){
+            await page.addInitScript(({samples})=>{
+              localStorage.setItem('ah_auth',JSON.stringify({access_token:'test-token',refresh_token:'test-refresh',user:{id:'11111111-1111-1111-1111-111111111111',email:'test@example.com',email_confirmed_at:'2026-01-01T00:00:00Z',user_metadata:{full_name:'Test User'}}}));
+              localStorage.setItem('ah_samples',JSON.stringify(samples));
+            },{samples});
+          }
+          async function routeCustomer(page){
+            await page.route('https://dytyehxybhzlmwxarbpc.supabase.co/**',async route=>{
+              const u=route.request().url(); const method=route.request().method();
+              const json=(obj,status=200)=>route.fulfill({status,contentType:'application/json',body:JSON.stringify(obj)});
+              if(u.includes('/rest/v1/sample_lists')) return json([{id:'22222222-2222-2222-2222-222222222222',user_id:'11111111-1111-1111-1111-111111111111'}]);
+              if(u.includes('/rest/v1/sample_list_items')) return json([]);
+              if(u.includes('/rest/v1/sample_requests') && method==='POST') return json([{id:'33333333-3333-3333-3333-333333333333',user_id:'11111111-1111-1111-1111-111111111111',status:'new'}]);
+              if(u.includes('/rest/v1/sample_request_items') && method==='POST') return json([]);
+              if(u.includes('/rest/v1/sample_requests') && method==='GET') return json([{id:'33333333-3333-3333-3333-333333333333',status:'new',created_at:'2026-09-14T12:00:00Z',shipping_tracking_no:null,sample_request_items:[{product_name:'Lima Rust Rug'},{product_name:'Plush Silver Rug'}]}]);
+              if(u.includes('/rest/v1/profiles') && method==='GET') return json([{full_name:'Test User',company:'Bartss',phone:'05320000000',address:'Test Adres'}]);
+              if(u.includes('/rest/v1/profiles') && method==='PATCH') return json([{id:'11111111-1111-1111-1111-111111111111'}]);
+              if(u.includes('/auth/v1/user')) return json({id:'11111111-1111-1111-1111-111111111111',email:'test@example.com',email_confirmed_at:'2026-01-01T00:00:00Z'});
+              return json([]);
+            });
+          }
+          function assert(cond,msg){if(!cond) throw new Error(msg)}
+
+          // 1) Header account dropdown must open, not redirect immediately.
+          {
+            const page=await ctx.newPage(); await fakeCustomer(page); await routeCustomer(page);
+            await page.goto(BASE,{waitUntil:'networkidle'});
+            const profile=page.getByText(/Test|Hesabım|test/i).last();
+            await profile.click();
+            await page.waitForTimeout(250);
+            assert(page.url()===BASE || page.url()===BASE+'index.html','profile click redirected instead of opening menu');
+            assert(await page.getByText(/Numune Taleplerim/i).count()>0,'account dropdown missing request link');
+            await page.close();
+          }
+
+          // 2) Multi-sample list and in-system request; success must clear list/reset UI.
+          {
+            const page=await ctx.newPage();
+            await fakeCustomer(page,{samples:[{id:'101',name:'Lima Rust Rug'},{id:'102',name:'Plush Silver Rug'}]}); await routeCustomer(page);
+            await page.goto(BASE,{waitUntil:'networkidle'});
+            const samplesBtn=page.getByRole('button',{name:/Numuneler \(2\)/i}).first();
+            assert(await samplesBtn.count()>0,'multi sample count not shown');
+            await samplesBtn.click();
+            const requestBtn=page.getByRole('button',{name:/Seçili numuneleri talep et.*2|Bu numuneleri talep et/i}).first();
+            assert(await requestBtn.count()>0,'in-system multi sample request CTA missing');
+            await requestBtn.click();
+            await page.waitForTimeout(500);
+            assert(await page.getByText(/Talebiniz gönderildi/i).count()>0,'request success message missing');
+            assert((await page.evaluate(()=>JSON.parse(localStorage.getItem('ah_samples')||'[]').length))===0,'sample list not cleared after success');
+            await page.close();
+          }
+
+          // 3) Customer account profile save + request history render.
+          {
+            const page=await ctx.newPage(); await fakeCustomer(page); await routeCustomer(page);
+            await page.goto(BASE+'Hesabim.dc.html',{waitUntil:'networkidle'});
+            await page.getByRole('button',{name:/Firma Bilgileri/i}).click();
+            await page.getByLabel(/Telefon/i).fill('05321112233');
+            await page.getByRole('button',{name:/Değişiklikleri kaydet/i}).click();
+            await page.waitForTimeout(250);
+            assert(await page.getByText(/Kaydedildi|başarıyla/i).count()>0,'profile save success state missing');
+            await page.getByRole('button',{name:/Numune Taleplerim/i}).click();
+            await page.waitForTimeout(200);
+            assert(await page.getByText(/Lima Rust Rug/i).count()>0,'customer request history not rendered');
+            await page.close();
+          }
+
+          // 4) Admin must see customers, their sample requests and contact requests.
+          {
+            const page=await ctx.newPage();
+            await page.addInitScript(()=>localStorage.setItem('ah_admin_auth',JSON.stringify({access_token:'admin-token',refresh_token:'x',user:{id:'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',email:'admin@example.com'}})));
+            await page.route('https://dytyehxybhzlmwxarbpc.supabase.co/**',async route=>{
+              const u=route.request().url(); const method=route.request().method();
+              const json=(o)=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(o)});
+              if(u.includes('/rest/v1/profiles?select=is_admin')) return json([{is_admin:true}]);
+              if(u.includes('/rest/v1/profiles?select=id')) return json([{id:'11111111-1111-1111-1111-111111111111',email:'test@example.com',full_name:'Test User',company:'Bartss',phone:'05321112233',address:'Test Adres'}]);
+              if(u.includes('/rest/v1/sample_requests')) return json([{id:'33333333-3333-3333-3333-333333333333',status:'new',created_at:'2026-09-14T12:00:00Z',shipping_tracking_no:null,sample_request_items:[{product_name:'Lima Rust Rug'}]}]);
+              if(u.includes('/rest/v1/contact_requests')) return json([{id:'44444444-4444-4444-4444-444444444444',name:'Müşteri',company:'Firma',email:'musteri@example.com',phone:'05320000000',country:'TR',message:'Katalog istiyorum',created_at:'2026-09-14T12:00:00Z'}]);
+              if(method==='PATCH') return json([]);
+              return json([]);
+            });
+            await page.goto(BASE+'Admin.dc.html',{waitUntil:'networkidle'});
+            assert(await page.getByText(/Test User/i).count()>0,'admin customer list missing customer');
+            await page.getByText(/Test User/i).first().click();
+            await page.waitForTimeout(200);
+            assert(await page.getByText(/Lima Rust Rug/i).count()>0,'admin customer sample request missing');
+            await page.getByText(/İletişim Talepleri/i).first().click();
+            await page.waitForTimeout(200);
+            assert(await page.getByText(/Katalog istiyorum/i).count()>0,'admin contact request missing');
+            await page.close();
+          }
+
+          await browser.close();
+          console.log('CUSTOMER_ADMIN_E2E_PASS');
+          EOF
+          node /tmp/e2e.mjs
