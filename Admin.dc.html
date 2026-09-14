@@ -168,12 +168,12 @@ class Component extends DCLogic {
 
   componentDidMount() {
     try {
-      const sess = JSON.parse(localStorage.getItem('ah_auth') || 'null');
+      const sess = JSON.parse(localStorage.getItem('ah_admin_auth') || 'null');
       if (sess && sess.user) { this.setState({ authUser: sess.user }); this.checkAdmin(sess); }
       else this.setState({ adminChecked: true });
     } catch (e) { this.setState({ adminChecked: true }); }
   }
-  _authSession() { try { return JSON.parse(localStorage.getItem('ah_auth') || 'null'); } catch (e) { return null; } }
+  _authSession() { try { return JSON.parse(localStorage.getItem('ah_admin_auth') || 'null'); } catch (e) { return null; } }
   checkAdmin(sess) {
     sbRest('/profiles?select=is_admin&id=eq.' + sess.user.id, {}, sess.access_token).then((res) => {
       const row = res.ok && res.data && res.data[0];
@@ -189,13 +189,13 @@ class Component extends DCLogic {
     sbAuthFetch('/token?grant_type=password', { email: f.email, password: f.password }).then((res) => {
       if (!res.ok || !res.data || !res.data.access_token) { this.setState({ authBusy: false, authError: 'Giriş başarısız.' }); return; }
       const sess = { access_token: res.data.access_token, refresh_token: res.data.refresh_token, user: res.data.user };
-      try { localStorage.setItem('ah_auth', JSON.stringify(sess)); } catch (e) {}
+      try { localStorage.setItem('ah_admin_auth', JSON.stringify(sess)); } catch (e) {}
       this.setState({ authUser: sess.user, authBusy: false });
       this.checkAdmin(sess);
     });
   }
   logout() {
-    try { localStorage.removeItem('ah_auth'); } catch (e) {}
+    try { localStorage.removeItem('ah_admin_auth'); } catch (e) {}
     this.setState({ authUser: null, isAdmin: false, companies: [], selectedCompanyId: null, selRequests: [] });
   }
   setMainTab(tab) {
