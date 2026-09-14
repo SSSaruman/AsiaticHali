@@ -38,3 +38,4 @@ jobs:
           git diff --cached --check
           git commit -m "fix: complete customer request and account flows [skip ci]"
           git push
+# rerun after repairing corrupted pending-action call
