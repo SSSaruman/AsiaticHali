@@ -1,42 +1,38 @@
 # CURRENT TASK
 
-## P0 — Admin login must work on deployed site
+## P0 — Admin core data contract must match Supabase
+
+### Previous gate
+`Admin login` is PASS on the deployed GitHub Pages site.
+
+Verified in browser:
+- Recovery email redirects to deployed `AdminReset.html`.
+- Password reset form accepts the recovery session.
+- Admin credentials create a valid Supabase session.
+- `profiles.is_admin=true` is recognized and the admin panel becomes visible.
+- A non-admin site session is denied admin access.
+- Logout returns to the login flow.
 
 ### Active target
-Make `Admin.dc.html` authentication work reliably on the deployed GitHub Pages site for the existing admin account, without expanding CRM/UI scope.
+Fix only the existing `Admin.dc.html` ↔ Supabase schema mismatches that make core admin data appear empty or save invalid fields. Do not expand CRM/UI scope.
 
-### Locked facts
-- Admin email: `ufuk.karahann@gmail.com`
-- Supabase project: `dytyehxybhzlmwxarbpc`
-- Existing auth user is email-confirmed, not banned, and `profiles.is_admin = true`.
-- Current task is login only. CRM V2, WhatsApp, AI bot, inbox expansion, social login and broader UX improvements are blocked until this task passes.
-
-### Verified diagnosis
-- The previous "missing React/ReactDOM" diagnosis was incorrect: `support.js` contains its own React/ReactDOM CDN loader.
-- Supabase user state is valid: account exists, email is confirmed, not banned, and admin flag is true.
-- The test password `123456` was never actually set through Supabase Auth, so it must not be assumed valid.
-- `Admin.dc.html` has no password-recovery path and reduces all auth failures to generic `Giriş başarısız.`
-
-### Minimum safe fix built
-- Added `AdminReset.html` as an isolated recovery page; existing admin panel was not redesigned or refactored.
-- Recovery request uses Supabase `/auth/v1/recover` and requests return to the deployed recovery page.
-- Recovery callback reads the Supabase recovery access token, validates the new password, updates it through `/auth/v1/user`, and returns to `Admin.dc.html` after success.
-- Existing admin authorization/RLS behavior remains untouched.
+### Verified root causes
+- `profiles` table has column `company`, while `Admin.dc.html` requests/reads `company_name`.
+- `sample_requests` has `shipping_tracking_no`, while `Admin.dc.html` requests/updates `courier_ref`.
+- Valid request statuses are `new`, `approved`, `preparing`, `shipped`, `delivered`, `cancelled`; current admin UI still uses legacy `requested`.
+- RLS admin policies already exist; this is not an RLS absence issue.
+- Database currently contains one profile only: the admin profile. No real customer profile has been created yet.
 
 ### Acceptance criteria
-1. Deployed `Admin.dc.html` renders through the DC runtime, not raw unresolved `{{ }}`/`sc-*` markup.
-2. Admin can recover/reset the password using the existing confirmed admin email.
-3. Admin credentials accepted by Supabase create a valid session.
-4. Admin check returns `is_admin=true` and panel content becomes visible.
-5. Non-admin session cannot view admin data.
-6. Logout clears the session and returns to login state.
-7. A real browser-level test on the deployed page passes before this task is marked PASS.
+1. Company/customer list query uses real `profiles` columns and does not fail on nonexistent fields.
+2. Request detail query uses `shipping_tracking_no`.
+3. Status control uses exactly the DB status contract.
+4. Status/tracking save writes only valid DB columns/values.
+5. Existing login/auth/RLS behavior remains unchanged.
+6. Deployed browser test shows no false `Firmalar (0)` caused by query failure; with only the admin profile present, data behavior is explained correctly and no fake customer is created.
 
-### Flow status
-- BUILD: PASS — minimal recovery page committed and statically verified.
-- TEST: BLOCKED — requires live GitHub Pages + recovery email interaction / Supabase redirect validation.
-- VERIFY: BLOCKED until TEST passes.
-- PASS: NO.
+### Flow
+BUILD → TEST → VERIFY → PASS → NEXT
 
-### Next exact action
-Open deployed `AdminReset.html`, send recovery mail to the locked admin email, set a known test password, then execute admin login / authorization / logout browser E2E. If redirect is rejected or returns to the wrong URL, fix only Supabase redirect configuration or the recovery redirect target, then rerun the same test.
+### Status
+FAIL — root cause verified; minimum frontend fix pending.
