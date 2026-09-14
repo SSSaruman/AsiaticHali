@@ -21,6 +21,13 @@ def replace_method(src,name,replacement):
     raise RuntimeError(name+' closing brace not found')
 
 p=Path('index.html'); src=p.read_text(encoding='utf-8')
+# Repair corruption introduced by the earlier bad matcher: restore the pending action call block first.
+start=src.find('      const pending = this.state.authPendingAction;')
+end=src.find('      this.setState({ authPendingAction: null });', start)
+if start >= 0 and end >= 0:
+    end += len('      this.setState({ authPendingAction: null });')
+    src = src[:start] + "      const pending = this.state.authPendingAction;\n      if (pending && pending.type === 'sampleRequest') this.doSubmitSampleRequest(pending.items, sess);\n      this.setState({ authPendingAction: null });" + src[end:]
+
 new_submit="""  doSubmitSampleRequest(items, sess) {
     if (!sess || !sess.access_token || !items || !items.length) {
       this.setState({ sampleReqBusy: false, sampleReqSent: false, sampleReqError: 'Numune talebi oluşturulamadı. Tekrar deneyin.' });
@@ -81,6 +88,7 @@ src=src.replace('<sc-if value="{{ r.country }}" hint-placeholder-val="{{ false }
 p.write_text(src,encoding='utf-8')
 
 idx=Path('index.html').read_text(encoding='utf-8'); acc=Path('Hesabim.dc.html').read_text(encoding='utf-8'); adm=Path('Admin.dc.html').read_text(encoding='utf-8')
+assert "if (pending && pending.type === 'sampleRequest') this.doSubmitSampleRequest(pending.items, sess);" in idx
 assert "request_id: req.id" in idx and "list_id: list.id" in idx
 assert "res.ok && res.data && res.data[0]" in idx
 assert "localStorage.removeItem('ah_samples')" in idx
