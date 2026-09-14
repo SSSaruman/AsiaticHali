@@ -1,0 +1,91 @@
+name: P0 real auth fix
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/p0-real-auth-fix.yml']
+permissions:
+  contents: write
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply minimum auth refresh fix
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          def replace_once(text, pattern, repl, label):
+              out, n = re.subn(pattern, repl, text, count=1, flags=re.S)
+              if n != 1:
+                  raise SystemExit(f'{label}: expected 1 replacement, got {n}')
+              return out
+
+          # index.html — refresh the stored Supabase session immediately before a protected write.
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          auth_marker = "  _authSession() {\n    try { return JSON.parse(localStorage.getItem('ah_auth') || 'null'); } catch (e) { return null; }\n  }"
+          if auth_marker not in s:
+              raise SystemExit('index auth marker missing')
+          fresh_method = auth_marker + "\n  _freshSession() {\n    const sess = this._authSession();\n    if (!sess || !sess.refresh_token) return Promise.reject(new Error('missing refresh token'));\n    return sbAuthFetch('/token?grant_type=refresh_token', { refresh_token: sess.refresh_token }).then((res) => {\n      if (!res.ok || !res.data || !res.data.access_token || !res.data.user) throw new Error('session refresh failed');\n      const next = { access_token: res.data.access_token, refresh_token: res.data.refresh_token || sess.refresh_token, user: res.data.user };\n      this._persistAuth(next);\n      return next;\n    });\n  }"
+          s = s.replace(auth_marker, fresh_method, 1)
+          s = replace_once(
+              s,
+              r"  requestSampleSubmission\(items\) \{.*?\n  doSubmitSampleRequest\(items, sess\) \{",
+              "  requestSampleSubmission(items) {\n    if (!this.state.authUser) { this.openAuthModal('login', { type: 'sampleRequest', items }); return; }\n    this.setState({ sampleReqBusy: true, sampleReqSent: false, sampleReqError: '' });\n    this._freshSession().then((sess) => this.doSubmitSampleRequest(items, sess)).catch(() => {\n      try { localStorage.removeItem('ah_auth'); } catch (e) {}\n      this.setState({ authUser: null, authOpen: true, authMode: 'login', sampleReqBusy: false, sampleReqSent: false, sampleReqError: 'Oturumunuz yenilenemedi. Lütfen tekrar giriş yapın.' });\n    });\n  }\n  doSubmitSampleRequest(items, sess) {",
+              'index requestSampleSubmission'
+          )
+          p.write_text(s, encoding='utf-8')
+
+          # Hesabim.dc.html — same refresh gate for profile/request reads and writes.
+          p = Path('Hesabim.dc.html')
+          s = p.read_text(encoding='utf-8')
+          auth_line = " _authSession(){try{return JSON.parse(localStorage.getItem('ah_auth')||'null');}catch(e){return null;}}"
+          if auth_line not in s:
+              raise SystemExit('account auth marker missing')
+          fresh_line = auth_line + "\n _persistFreshSession(sess){try{localStorage.setItem('ah_auth',JSON.stringify(sess));}catch(e){}this.setState({authUser:sess.user});return sess;}\n _freshSession(){const sess=this._authSession();if(!sess||!sess.refresh_token)return Promise.reject(new Error('missing refresh token'));return sbAuthFetch('/token?grant_type=refresh_token',{refresh_token:sess.refresh_token}).then((res)=>{if(!res.ok||!res.data||!res.data.access_token||!res.data.user)throw new Error('session refresh failed');return this._persistFreshSession({access_token:res.data.access_token,refresh_token:res.data.refresh_token||sess.refresh_token,user:res.data.user});});}"
+          s = s.replace(auth_line, fresh_line, 1)
+
+          s = replace_once(
+              s,
+              r" loadMyProfile\(\)\{.*?\n updateProfileField",
+              " loadMyProfile(){this.setState({profileLoading:true,profileError:''});this._freshSession().then((sess)=>sbRest('/profiles?select=full_name,company,phone,address&id=eq.'+sess.user.id,{},sess.access_token)).then((res)=>{const row=(res.ok&&res.data&&res.data[0])||{};this.setState({profileLoading:false,profileLoaded:true,profileForm:{fullName:row.full_name||'',companyName:row.company||'',phone:row.phone||'',address:row.address||''}});}).catch(()=>this.setState({profileLoading:false,profileLoaded:true,profileError:this.state.lang==='tr'?'Oturum yenilenemedi. Tekrar giriş yapın.':'Session expired. Sign in again.'}));}\n updateProfileField",
+              'account loadMyProfile'
+          )
+          s = replace_once(
+              s,
+              r" loadMySampleRequests\(\)\{.*?\n setAccountTab",
+              " loadMySampleRequests(){this.setState({mySampleRequestsLoading:true,mySampleRequestsError:''});this._freshSession().then((sess)=>sbRest('/sample_requests?select=id,status,created_at,shipping_tracking_no,sample_request_items(product_name)&order=created_at.desc',{},sess.access_token)).then((res)=>{if(!res.ok)throw new Error('request history failed');this.setState({mySampleRequestsLoading:false,mySampleRequests:res.data||[],requestsLoaded:true,mySampleRequestsError:''});}).catch(()=>this.setState({mySampleRequestsLoading:false,mySampleRequestsError:this.state.lang==='tr'?'Talepler yüklenemedi. Lütfen tekrar giriş yapın.':'Requests could not be loaded. Please sign in again.'}));}\n setAccountTab",
+              'account loadMySampleRequests'
+          )
+          s = replace_once(
+              s,
+              r" saveProfile\(\)\{.*?\n updatePasswordField",
+              " saveProfile(){const f=this.state.profileForm;this.setState({profileSaving:true,profileError:'',profileSaved:false});this._freshSession().then((sess)=>sbRest('/profiles?id=eq.'+sess.user.id,{method:'PATCH',headers:{Prefer:'return=representation'},body:JSON.stringify({full_name:f.fullName||null,company:f.companyName||null,phone:f.phone||null,address:f.address||null})},sess.access_token)).then((res)=>{const row=res.ok&&res.data&&res.data[0];if(!row)throw new Error('profile save failed');this.setState({profileSaving:false,profileSaved:true,profileError:''});}).catch(()=>this.setState({profileSaving:false,profileSaved:false,profileError:this.state.lang==='tr'?'Kaydedilemedi. Lütfen tekrar giriş yapıp deneyin.':'Could not save. Please sign in again and retry.'}));}\n updatePasswordField",
+              'account saveProfile'
+          )
+          s = replace_once(
+              s,
+              r"\nrequestAllSamples\(\)\{.*?\n renderVals\(\)",
+              "\nrequestAllSamples(){const items=(this.state.samples||[]).map((p)=>({product_id:String(p.id!=null?p.id:''),product_name:p.name}));if(!items.length){this.setState({sampleReqBusy:false,sampleReqSent:false,sampleReqError:this.state.lang==='tr'?'Numune talebi oluşturulamadı.':'Sample request could not be created.'});return;}this.setState({sampleReqBusy:true,sampleReqSent:false,sampleReqError:''});this._freshSession().then((sess)=>this.mergeGuestSamplesToAccount(sess).catch(()=>null).then(()=>sbRest('/sample_requests',{method:'POST',headers:{Prefer:'return=representation'},body:JSON.stringify({user_id:sess.user.id})},sess.access_token)).then((res)=>{const req=res.ok&&res.data&&res.data[0];if(!req)throw new Error('sample request insert failed');return sbRest('/sample_request_items',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify(items.map((it)=>Object.assign({request_id:req.id},it)))},sess.access_token);})).then((itemRes)=>{if(!itemRes||!itemRes.ok)throw new Error('sample request items insert failed');this.setState({sampleReqBusy:false,sampleReqSent:true,samples:[],requestsLoaded:false});try{localStorage.removeItem('ah_samples');}catch(e){}this.loadMySampleRequests();}).catch(()=>this.setState({sampleReqBusy:false,sampleReqSent:false,sampleReqError:this.state.lang==='tr'?'Gönderilemedi. Lütfen tekrar giriş yapıp deneyin.':'Could not send. Please sign in again and retry.'}));}\n renderVals()",
+              'account requestAllSamples'
+          )
+          p.write_text(s, encoding='utf-8')
+
+          # Static assertions: no claim of live PASS; only verify the intended code landed.
+          a = Path('index.html').read_text(encoding='utf-8')
+          h = Path('Hesabim.dc.html').read_text(encoding='utf-8')
+          assert "_freshSession()" in a and "requestSampleSubmission(items)" in a
+          assert "_freshSession()" in h and "saveProfile()" in h and "requestAllSamples()" in h
+          print('P0_AUTH_REFRESH_PATCH_ASSERTIONS_PASS')
+          PY
+      - name: Commit product fix and remove temporary workflow
+        run: |
+          rm .github/workflows/p0-real-auth-fix.yml
+          git config user.name "SSSaruman"
+          git config user.email "ufuk.karahann@gmail.com"
+          git add index.html Hesabim.dc.html .github/workflows/p0-real-auth-fix.yml
+          git diff --cached --check
+          git commit -m "fix: refresh customer auth before protected writes"
+          git push
