@@ -47,7 +47,20 @@ button,input,select{font:inherit}button{transition:border-color .15s ease,backgr
 const SUPABASE_URL = 'https://dytyehxybhzlmwxarbpc.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_oMWdZv_LTS3-3KbnzElAeg_tXBpy-cO';
 function sbAuthFetch(path, body) { return fetch(SUPABASE_URL + '/auth/v1' + path, { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: SUPABASE_ANON_KEY }, body: JSON.stringify(body) }).then((r) => r.json().then((j) => ({ ok: r.ok, data: j }))); }
-function sbRest(path, opts, accessToken) { return fetch(SUPABASE_URL + '/rest/v1' + path, Object.assign({ headers: Object.assign({ 'Content-Type': 'application/json', apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + (accessToken || SUPABASE_ANON_KEY) }, (opts && opts.headers) || {}) }, opts || {})).then((r) => r.text().then((t) => { let data = null; try { data = t ? JSON.parse(t) : null; } catch (e) {} return { ok: r.ok, status: r.status, data }; })); }
+function sbRest(path, opts, accessToken) {
+  const o = opts || {};
+  const headers = Object.assign({
+    'Content-Type': 'application/json',
+    apikey: SUPABASE_ANON_KEY,
+    Authorization: 'Bearer ' + (accessToken || SUPABASE_ANON_KEY)
+  }, o.headers || {});
+  const fetchOpts = Object.assign({}, o, { headers });
+  return fetch(SUPABASE_URL + '/rest/v1' + path, fetchOpts).then((r) => r.text().then((t) => {
+    let data = null;
+    try { data = t ? JSON.parse(t) : null; } catch (e) {}
+    return { ok: r.ok, status: r.status, data };
+  }));
+}
 class Component extends DCLogic {
 state = { authUser: null, adminChecked: false, isAdmin: false, authForm: { email: '', password: '' }, authBusy: false, authError: '', mainTab: 'companies', companies: [], companiesLoading: false, selectedCompanyId: null, selRequests: [], selRequestsLoading: false, contactRequests: [], contactLoading: false, contactLoaded: false };
 componentDidMount() { try { const sess = JSON.parse(localStorage.getItem('ah_admin_auth') || 'null'); if (sess && sess.user) { this.setState({ authUser: sess.user }); this.checkAdmin(sess); } else this.setState({ adminChecked: true }); } catch (e) { this.setState({ adminChecked: true }); } }

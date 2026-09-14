@@ -1602,16 +1602,17 @@ function sbAuthFetch(path, body) {
   }).then((r) => r.json().then((j) => ({ ok: r.ok, data: j })));
 }
 function sbRest(path, opts, accessToken) {
-  return fetch(SUPABASE_URL + '/rest/v1' + path, Object.assign({
-    headers: Object.assign({
-      'Content-Type': 'application/json',
-      apikey: SUPABASE_ANON_KEY,
-      Authorization: 'Bearer ' + (accessToken || SUPABASE_ANON_KEY)
-    }, (opts && opts.headers) || {})
-  }, opts || {})).then((r) => r.text().then((t) => {
+  const o = opts || {};
+  const headers = Object.assign({
+    'Content-Type': 'application/json',
+    apikey: SUPABASE_ANON_KEY,
+    Authorization: 'Bearer ' + (accessToken || SUPABASE_ANON_KEY)
+  }, o.headers || {});
+  const fetchOpts = Object.assign({}, o, { headers });
+  return fetch(SUPABASE_URL + '/rest/v1' + path, fetchOpts).then((r) => r.text().then((t) => {
     let data = null;
     try { data = t ? JSON.parse(t) : null; } catch (e) {}
-    return { ok: r.ok, data };
+    return { ok: r.ok, status: r.status, data };
   }));
 }
 
@@ -2047,12 +2048,31 @@ class Component extends DCLogic {
         sbRest('/profiles', {
           method: 'POST',
           headers: { Prefer: 'resolution=merge-duplicates,return=minimal' },
-          body: JSON.stringify({ id: sess.user.id, full_name: f.fullName || null, company_name: f.companyName || null })
+          body: JSON.stringify({ id: sess.user.id, full_name: f.fullName || null, company: f.companyName || null })
         }, sess.access_token);
       }
       const pending = this.state.authPendingAction;
-      if (pending && pending.type === 'sampleRequest') this.doSubmitSampleRequest(pending.items, sess);
-      this.setState({ authPendingAction: null });
+      if (pending && pending.type === 'sampleRequest') this.  doSubmitSampleRequest(items, sess) {
+  if (!sess || !sess.access_token || !items || !items.length) {
+    this.setState({ sampleReqBusy: false, sampleReqSent: false, sampleReqError: 'Numune talebi oluşturulamadı. Tekrar deneyin.' });
+    return;
+  }
+  this.setState({ sampleReqBusy: true, sampleReqSent: false, sampleReqError: '' });
+  this.mergeGuestSamplesToAccount(sess).catch(() => null).then(() => {
+    return sbRest('/sample_requests', { method: 'POST', headers: { Prefer: 'return=representation' }, body: JSON.stringify({ user_id: sess.user.id }) }, sess.access_token);
+  }).then((res) => {
+    const req = res.ok && res.data && res.data[0];
+    if (!req) throw new Error('sample request insert failed');
+    return sbRest('/sample_request_items', {
+      method: 'POST',
+      headers: { Prefer: 'return=minimal' },
+      body: JSON.stringify(items.map((it) => Object.assign({ request_id: req.id }, it)))
+    }, sess.access_token);
+  }).then((itemRes) => {
+    if (!itemRes || !itemRes.ok) throw new Error('sample request items insert failed');
+    this.setState({ sampleReqBusy: false, sampleReqSent: true, sampleReqError: '' });
+  }).catch(() => this.setState({ sampleReqBusy: false, sampleReqSent: false, sampleReqError: 'Bir hata oluştu, tekrar deneyin.' }));
+});
     });
   }
   resendVerification() {
@@ -2097,7 +2117,7 @@ class Component extends DCLogic {
         return sbRest('/sample_list_items', {
           method: 'POST',
           headers: { Prefer: 'return=minimal' },
-          body: JSON.stringify(items.map((it) => Object.assign({ sample_list_id: list.id }, it)))
+          body: JSON.stringify(items.map((it) => Object.assign({ list_id: list.id }, it)))
         }, sess.access_token);
       });
   }
@@ -2116,7 +2136,7 @@ class Component extends DCLogic {
       return sbRest('/sample_request_items', {
         method: 'POST',
         headers: { Prefer: 'return=minimal' },
-        body: JSON.stringify(items.map((it) => Object.assign({ sample_request_id: req.id }, it)))
+        body: JSON.stringify(items.map((it) => Object.assign({ request_id: req.id }, it)))
       }, sess.access_token).then(() => this.setState({ sampleReqBusy: false, sampleReqSent: true }));
     }).catch(() => this.setState({ sampleReqBusy: false, sampleReqError: 'Bir hata oluştu, tekrar deneyin.' }));
   }
