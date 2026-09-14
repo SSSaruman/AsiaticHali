@@ -1995,6 +1995,16 @@ class Component extends DCLogic {
   _authSession() {
     try { return JSON.parse(localStorage.getItem('ah_auth') || 'null'); } catch (e) { return null; }
   }
+  _freshSession() {
+    const sess = this._authSession();
+    if (!sess || !sess.refresh_token) return Promise.reject(new Error('missing refresh token'));
+    return sbAuthFetch('/token?grant_type=refresh_token', { refresh_token: sess.refresh_token }).then((res) => {
+      if (!res.ok || !res.data || !res.data.access_token || !res.data.user) throw new Error('session refresh failed');
+      const next = { access_token: res.data.access_token, refresh_token: res.data.refresh_token || sess.refresh_token, user: res.data.user };
+      this._persistAuth(next);
+      return next;
+    });
+  }
   _persistAuth(sess) {
     try { localStorage.setItem('ah_auth', JSON.stringify(sess)); } catch (e) {}
     this.setState({ authUser: sess.user, authOpen: false, authBusy: false, authError: '' });
@@ -2095,7 +2105,11 @@ class Component extends DCLogic {
   }
   requestSampleSubmission(items) {
     if (!this.state.authUser) { this.openAuthModal('login', { type: 'sampleRequest', items }); return; }
-    this.doSubmitSampleRequest(items, this._authSession());
+    this.setState({ sampleReqBusy: true, sampleReqSent: false, sampleReqError: '' });
+    this._freshSession().then((sess) => this.doSubmitSampleRequest(items, sess)).catch(() => {
+      try { localStorage.removeItem('ah_auth'); } catch (e) {}
+      this.setState({ authUser: null, authOpen: true, authMode: 'login', sampleReqBusy: false, sampleReqSent: false, sampleReqError: 'Oturumunuz yenilenemedi. Lütfen tekrar giriş yapın.' });
+    });
   }
   doSubmitSampleRequest(items, sess) {
     if (!sess || !sess.access_token || !items || !items.length) {
