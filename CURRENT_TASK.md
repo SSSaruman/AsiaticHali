@@ -16,10 +16,15 @@ Verified in browser and code:
 Prevent the admin panel from reusing the public/customer session stored under `ah_auth`. Admin auth must have its own storage key so a logged-in customer cannot be mistaken for the active admin session.
 
 ### Verified root cause
-`index.html`, `Hesabim.dc.html`, and `Admin.dc.html` all use the same localStorage key `ah_auth`. This caused the admin page to read the current site/customer user and show unauthorized until that session was manually cleared.
+`index.html`, `Hesabim.dc.html`, and the previous `Admin.dc.html` all used the same localStorage key `ah_auth`. This caused the admin page to read the current site/customer user and show unauthorized until that session was manually cleared.
 
-### Minimum safe change
-Change only `Admin.dc.html` session persistence from `ah_auth` to `ah_admin_auth`. Do not modify public/customer auth behavior and do not expand UI/CRM scope.
+### Minimum safe change built
+Only `Admin.dc.html` was changed:
+- restore session: `ah_admin_auth`
+- active-session reads: `ah_admin_auth`
+- login persistence: `ah_admin_auth`
+- logout removal: `ah_admin_auth`
+Public/customer `ah_auth` was not changed.
 
 ### Acceptance criteria
 1. Admin login stores session only in `ah_admin_auth`.
@@ -33,4 +38,10 @@ Change only `Admin.dc.html` session persistence from `ah_auth` to `ah_admin_auth
 BUILD → TEST → VERIFY → PASS → NEXT
 
 ### Status
-BUILD pending.
+- BUILD: PASS — targeted code verification confirms all Admin session reads/writes/removal use `ah_admin_auth`.
+- TEST: BLOCKED on deployed browser verification.
+- VERIFY: BLOCKED until browser test passes.
+- PASS: NO.
+
+### Next exact action
+Refresh deployed `Admin.dc.html`. Because the storage key changed, log in to admin once. Keep the normal Asiatic site/customer session logged in in another tab. Refresh both pages and confirm both sessions remain independent. Then test Admin logout and confirm the normal site/customer session remains logged in.
