@@ -1,56 +1,37 @@
 # CURRENT TASK
 
-## P1 — Professionalize Customer / Hesabım UI without expanding scope
+## P0 — Customer → Account → Admin end-to-end regression
 
-### Previous gates
-`Admin login`: PASS.
-`Admin core data contract`: PASS.
-`Admin/customer session isolation`: PASS.
-`Admin UI`: PASS by user acceptance after deployed UI rebuild.
+### Why this replaced the previous task
+The previous `Hesabim.dc.html` UI task was too narrow and did not cover the user-reported cross-site failures. Those flows are now the single active target. No CRM/WhatsApp/AI work until this gate passes.
 
-### Active target
-Improve only `Hesabim.dc.html` so the current customer account flow is professional, clear, readable, useful, and responsive. Do not add CRM, WhatsApp, AI bot, new backend tables, new roles, or unrelated features in this task.
+### Locked reported failures / acceptance criteria
+1. Website contact form submissions must appear in Admin → İletişim Talepleri with all submitted fields.
+2. `Hesabım → Firma Bilgileri` save must persist and show an explicit success state; failures must show an explicit error.
+3. Website sample request must create real backend records; success may only appear after DB success.
+4. Header profile control must open an account menu first, not redirect immediately. Menu includes Hesabım / Kayıtlı Numuneler / Numune Talepleri / Çıkış.
+5. Sample flow is system-based; no misleading “E-postayla gönder” path for logged-in sample requests.
+6. Multiple samples must be selectable and submitted in one request; UI must show the selected count.
+7. After a successful sample request, success feedback must be visible and the submitted selection/request UI must reset deliberately.
+8. The request must then be visible in both Customer → Numune Taleplerim and the corresponding Admin customer record.
+9. Admin must display request status and tracking using the real schema/status contract.
+10. Empty/loading/error states must be deliberate; no silent success, stale screen or false PASS.
+11. Desktop + mobile browser regression is required for the touched flows.
 
-### Locked behavior preserved
-- Customer/site auth remains `ah_auth`.
-- Verification, login/register, logout, sample list, sample request, company profile and password/account flows remain in place.
-- Supabase/RLS architecture is unchanged.
-- TR/EN remains available.
-- Request status contract remains `new`, `approved`, `preparing`, `shipped`, `delivered`, `cancelled`.
-
-### Build completed
-- Reworked only `Hesabim.dc.html` presentation plus existing read/write field names needed for the real schema.
-- Increased typography/control sizes and strengthened account information hierarchy.
-- Rebuilt login/register and verification states with labeled fields and deliberate notices.
-- Rebuilt authenticated layout with clearer identity/navigation and responsive behavior.
-- Overview now loads the existing request history so counts are real instead of remaining `0` until the request tab is opened.
-- Sample list now has explicit context, deliberate empty state and clearer request action.
-- Request history displays request id/date, all real statuses and tracking number.
-- Company/profile form is labeled and split from account security.
-- Corrected schema mismatches in this flow: `company_name` → `company`, `courier_ref` → `shipping_tracking_no`.
-- Browser test found one additional root-cause mismatch: the request query still selected non-existent `shipped_at`; removed it after confirming the actual `sample_requests` columns in Supabase.
-- No new backend tables, roles, integrations or speculative features were added.
-
-### UI acceptance criteria
-1. Login/register/verification screens are clear and readable.
-2. Authenticated account screen gives the customer useful context, not only sparse counters.
-3. Sample list actions are obvious and usable.
-4. Sample request history clearly communicates status and tracking.
-5. Company/profile editing is understandable and safe.
-6. Typography is comfortably readable at normal desktop scale.
-7. Desktop and mobile layouts work without horizontal overflow.
-8. Empty/loading/error states are deliberate.
-9. No backend/schema/auth expansion and no speculative features.
-10. Deployed browser verification required before PASS.
+### Locked schema/auth
+- Customer/site auth: `ah_auth`.
+- Admin auth: `ah_admin_auth`.
+- Request statuses: `new`, `approved`, `preparing`, `shipped`, `delivered`, `cancelled`.
+- Existing Supabase/RLS architecture is preserved unless a reproduced backend defect requires a minimum safe change.
 
 ### Flow
 BUILD → TEST → VERIFY → PASS → NEXT
 
-### Status
-- BUILD: PASS — targeted fix for the failed request query is deployed.
-- TEST: FAIL was reproduced in browser as `Talepler yüklenemedi.` and root cause was confirmed as the invalid `shipped_at` select field.
-- VERIFY: PENDING browser retest after deploy.
+### Current status
+- Previous individual fixes are NOT accepted as a complete PASS.
+- Automated browser regression infrastructure exists but is currently FAILING before full scenario coverage.
+- Latest E2E infrastructure failure: account-control locator selected a hidden duplicate element. Test must target the visible control, then continue until it exposes real product defects.
 - PASS: NO.
 
 ### Next exact action
-Refresh deployed `Hesabim.dc.html` with Ctrl+F5 and open `Numune Taleplerim`. The error must be gone and the account must show either real request rows or the deliberate empty state. Then continue desktop/mobile verification before PASS.
+Fix only the E2E locator failure, rerun the regression, then fix the first real failing product scenario. Repeat targeted test until all 11 acceptance criteria pass. Do not start another feature.
