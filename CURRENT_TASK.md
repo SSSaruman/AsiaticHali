@@ -17,11 +17,23 @@ Verified in browser:
 Fix only the existing `Admin.dc.html` ↔ Supabase schema mismatches that make core admin data appear empty or save invalid fields. Do not expand CRM/UI scope.
 
 ### Verified root causes
-- `profiles` table has column `company`, while `Admin.dc.html` requests/reads `company_name`.
-- `sample_requests` has `shipping_tracking_no`, while `Admin.dc.html` requests/updates `courier_ref`.
-- Valid request statuses are `new`, `approved`, `preparing`, `shipped`, `delivered`, `cancelled`; current admin UI still uses legacy `requested`.
+- `profiles` table has column `company`, while old `Admin.dc.html` requested/read `company_name`.
+- `sample_requests` has `shipping_tracking_no`, while old `Admin.dc.html` requested/updated `courier_ref`.
+- Valid request statuses are `new`, `approved`, `preparing`, `shipped`, `delivered`, `cancelled`; old admin UI used legacy `requested`.
 - RLS admin policies already exist; this is not an RLS absence issue.
-- Database currently contains one profile only: the admin profile. No real customer profile has been created yet.
+- Database currently contains one profile only: the admin profile. No fake customer profile will be created for this gate.
+
+### Minimum safe change built
+- Company query/render now uses `profiles.company`.
+- Request query/render/save now uses `sample_requests.shipping_tracking_no`.
+- Status select now contains exactly: `new`, `approved`, `preparing`, `shipped`, `delivered`, `cancelled`.
+- Status change save passes the selected value directly, avoiding stale state on immediate save.
+- Removed the false UI hint claiming an admin RLS policy was missing.
+- Login/auth/RLS logic was not refactored.
+
+### Targeted static verification
+- Current `main` source was re-fetched after commit and contains the corrected profile query, request query, tracking save field and status mapping.
+- Supabase schema was checked directly and matches these field/status names.
 
 ### Acceptance criteria
 1. Company/customer list query uses real `profiles` columns and does not fail on nonexistent fields.
@@ -35,4 +47,10 @@ Fix only the existing `Admin.dc.html` ↔ Supabase schema mismatches that make c
 BUILD → TEST → VERIFY → PASS → NEXT
 
 ### Status
-FAIL — root cause verified; minimum frontend fix pending.
+- BUILD: PASS
+- TEST: pending deployed browser refresh
+- VERIFY: pending browser result
+- PASS: NO
+
+### Next exact action
+Refresh deployed `Admin.dc.html` after GitHub Pages picks up commit `6f6185cf3015ffefb7ad0f586eed1d12a0172999`. The list should no longer be falsely empty because of a nonexistent `company_name` column. With the current database state, the single admin profile may appear as the only profile. Do not create fake customer data for this gate.
