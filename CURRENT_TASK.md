@@ -27,15 +27,16 @@
 BUILD → TEST → VERIFY → USER_VISIBLE_SUCCESS → PASS → NEXT
 
 ### Current status
+- Google/Apple social login is removed from the active auth implementation; e-mail/password + password recovery remains.
+- Both real Supabase Auth accounts are confirmed and have successful sign-in history.
 - Account read/write session refresh fix is deployed.
-- Customer password recovery page exists.
-- Admin and customer accounts are confirmed and e-mail/password auth is the only required sign-in method.
-- Google/Apple OAuth work is cancelled by user decision and must be removed from visible login/register UI.
-- Production DB currently has no real sample request yet; sample request E2E remains open.
+- Production DB currently has 2 profiles and 5 contact requests.
+- Production DB currently has 0 `sample_requests` and 0 `sample_request_items`.
+- Therefore the customer sample-request chain has not yet produced a real final output.
 - FINAL PASS: NO.
 
 ### FIRST_BLOCKER
-Remove Google/Apple social-login UI from site, customer account and admin login surfaces, then continue the real customer sample-request E2E using e-mail/password auth.
+Create one real multi-item sample request from the deployed customer UI while authenticated. Until a real request exists in `sample_requests` + `sample_request_items`, downstream customer-history and Admin verification cannot be truthfully passed.
 
 ### NEXT_ACTION
-Keep auth simple: e-mail/password + password recovery only. Then run the same real customer → sample request → customer history → admin request/status/tracking chain.
+From the deployed site with a real customer session, select at least two samples and submit one request. Immediately verify the resulting rows in production, then verify the same request in Customer → Numune Taleplerim and Admin → customer record before testing status/tracking propagation.
