@@ -15,32 +15,16 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
           import re
-
-          # Hesabim.dc.html compact method
           p=Path('Hesabim.dc.html'); s=p.read_text(encoding='utf-8')
           old="_freshSession(){const sess=this._authSession();if(!sess||!sess.refresh_token)return Promise.reject(new Error('missing refresh token'));return sbAuthFetch('/token?grant_type=refresh_token',{refresh_token:sess.refresh_token}).then((res)=>{if(!res.ok||!res.data||!res.data.access_token||!res.data.user)throw new Error('session refresh failed');return this._persistFreshSession({access_token:res.data.access_token,refresh_token:res.data.refresh_token||sess.refresh_token,user:res.data.user});});}"
           new="_freshSession(){const sess=this._authSession();if(!sess||!sess.access_token)return Promise.reject(new Error('missing session'));const validate=()=>fetch(SUPABASE_URL+'/auth/v1/user',{headers:{apikey:SUPABASE_ANON_KEY,Authorization:'Bearer '+sess.access_token}}).then((r)=>r.json().then((j)=>({ok:r.ok,data:j}))).then((res)=>{if(!res.ok||!res.data||!res.data.id)throw new Error('session invalid');return this._persistFreshSession({access_token:sess.access_token,refresh_token:sess.refresh_token||'',user:res.data});});if(!sess.refresh_token)return validate();return sbAuthFetch('/token?grant_type=refresh_token',{refresh_token:sess.refresh_token}).then((res)=>{if(res.ok&&res.data&&res.data.access_token&&res.data.user)return this._persistFreshSession({access_token:res.data.access_token,refresh_token:res.data.refresh_token||sess.refresh_token,user:res.data.user});return validate();});}"
-          if old not in s: raise SystemExit('Hesabim _freshSession marker missing')
+          if old not in s: raise SystemExit('Hesabim marker missing')
           p.write_text(s.replace(old,new,1),encoding='utf-8')
-
-          # index.html formatted method
           p=Path('index.html'); s=p.read_text(encoding='utf-8')
           pat=re.compile(r"  _freshSession\(\) \{\n    const sess = this\._authSession\(\);\n    if \(!sess \|\| !sess\.refresh_token\) return Promise\.reject\(new Error\('missing refresh token'\)\);\n    return sbAuthFetch\('/token\?grant_type=refresh_token', \{ refresh_token: sess\.refresh_token \}\)\.then\(\(res\) => \{\n      if \(!res\.ok \|\| !res\.data \|\| !res\.data\.access_token \|\| !res\.data\.user\) throw new Error\('session refresh failed'\);\n      const next = \{ access_token: res\.data\.access_token, refresh_token: res\.data\.refresh_token \|\| sess\.refresh_token, user: res\.data\.user \};\n      try \{ localStorage\.setItem\('ah_auth', JSON\.stringify\(next\)\); \} catch \(e\) \{\}\n      this\.setState\(\{ authUser: next\.user \}\);\n      return next;\n    \}\);\n  \}")
-          repl="""  _freshSession() {
-    const sess = this._authSession();
-    if (!sess || !sess.access_token) return Promise.reject(new Error('missing session'));
-    const persist = (next) => { try { localStorage.setItem('ah_auth', JSON.stringify(next)); } catch (e) {} this.setState({ authUser: next.user }); return next; };
-    const validate = () => fetch(SUPABASE_URL + '/auth/v1/user', { headers: { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + sess.access_token } })
-      .then((r) => r.json().then((j) => ({ ok: r.ok, data: j })))
-      .then((res) => { if (!res.ok || !res.data || !res.data.id) throw new Error('session invalid'); return persist({ access_token: sess.access_token, refresh_token: sess.refresh_token || '', user: res.data }); });
-    if (!sess.refresh_token) return validate();
-    return sbAuthFetch('/token?grant_type=refresh_token', { refresh_token: sess.refresh_token }).then((res) => {
-      if (res.ok && res.data && res.data.access_token && res.data.user) return persist({ access_token: res.data.access_token, refresh_token: res.data.refresh_token || sess.refresh_token, user: res.data.user });
-      return validate();
-    });
-  }"""
+          repl="  _freshSession() {\n    const sess = this._authSession();\n    if (!sess || !sess.access_token) return Promise.reject(new Error('missing session'));\n    const persist = (next) => { try { localStorage.setItem('ah_auth', JSON.stringify(next)); } catch (e) {} this.setState({ authUser: next.user }); return next; };\n    const validate = () => fetch(SUPABASE_URL + '/auth/v1/user', { headers: { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + sess.access_token } }).then((r) => r.json().then((j) => ({ ok: r.ok, data: j }))).then((res) => { if (!res.ok || !res.data || !res.data.id) throw new Error('session invalid'); return persist({ access_token: sess.access_token, refresh_token: sess.refresh_token || '', user: res.data }); });\n    if (!sess.refresh_token) return validate();\n    return sbAuthFetch('/token?grant_type=refresh_token', { refresh_token: sess.refresh_token }).then((res) => {\n      if (res.ok && res.data && res.data.access_token && res.data.user) return persist({ access_token: res.data.access_token, refresh_token: res.data.refresh_token || sess.refresh_token, user: res.data.user });\n      return validate();\n    });\n  }"
           s,n=pat.subn(repl,s,count=1)
-          if n!=1: raise SystemExit('index _freshSession replacement count='+str(n))
+          if n!=1: raise SystemExit('index replacement count='+str(n))
           p.write_text(s,encoding='utf-8')
           PY
       - name: Check embedded scripts
