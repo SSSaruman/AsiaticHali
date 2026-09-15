@@ -1,0 +1,47 @@
+name: Fix live session
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/fix-live-session.yml']
+permissions:
+  contents: write
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch session fallback
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          files=['index.html','Hesabim.dc.html']
+          old="_freshSession(){const sess=this._authSession();if(!sess||!sess.refresh_token)return Promise.reject(new Error('missing refresh token'));return sbAuthFetch('/token?grant_type=refresh_token',{refresh_token:sess.refresh_token}).then((res)=>{if(!res.ok||!res.data||!res.data.access_token||!res.data.user)throw new Error('session refresh failed');return this._persistFreshSession({access_token:res.data.access_token,refresh_token:res.data.refresh_token||sess.refresh_token,user:res.data.user});});}"
+          new="_freshSession(){const sess=this._authSession();if(!sess||!sess.access_token)return Promise.reject(new Error('missing session'));const validate=()=>fetch(SUPABASE_URL+'/auth/v1/user',{headers:{apikey:SUPABASE_ANON_KEY,Authorization:'Bearer '+sess.access_token}}).then((r)=>r.json().then((j)=>({ok:r.ok,data:j}))).then((res)=>{if(!res.ok||!res.data||!res.data.id)throw new Error('session invalid');return this._persistFreshSession({access_token:sess.access_token,refresh_token:sess.refresh_token||'',user:res.data});});if(!sess.refresh_token)return validate();return sbAuthFetch('/token?grant_type=refresh_token',{refresh_token:sess.refresh_token}).then((res)=>{if(res.ok&&res.data&&res.data.access_token&&res.data.user)return this._persistFreshSession({access_token:res.data.access_token,refresh_token:res.data.refresh_token||sess.refresh_token,user:res.data.user});return validate();});}"
+          for fn in files:
+            p=Path(fn); s=p.read_text(encoding='utf-8')
+            if old not in s: raise SystemExit(fn+' _freshSession marker missing')
+            p.write_text(s.replace(old,new,1),encoding='utf-8')
+          PY
+      - name: Check embedded scripts
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          for f in ['index.html','Hesabim.dc.html']:
+            s=Path(f).read_text(encoding='utf-8')
+            m=re.search(r'<script type="text/x-dc" data-dc-script>(.*?)</script>',s,re.S)
+            if not m: raise SystemExit(f+' embedded script missing')
+            Path('/tmp/'+f+'.js').write_text(m.group(1),encoding='utf-8')
+          PY
+          node --check /tmp/index.html.js
+          node --check /tmp/Hesabim.dc.html.js
+      - name: Commit product fix
+        run: |
+          rm .github/workflows/fix-live-session.yml
+          git config user.name "SSSaruman"
+          git config user.email "ufuk.karahann@gmail.com"
+          git add index.html Hesabim.dc.html .github/workflows/fix-live-session.yml
+          git diff --cached --check
+          git commit -m "fix: keep valid customer sessions usable"
+          git push
