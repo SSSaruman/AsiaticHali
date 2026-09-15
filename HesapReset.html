@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Asiatic Halı — Şifre Sıfırla</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:"DM Sans",system-ui,sans-serif;background:#f2e7dd;color:#221c18}body{display:grid;place-items:center;padding:24px}.card{width:min(420px,100%);background:#fbf5ee;border-radius:20px;padding:30px;box-shadow:0 30px 60px -30px rgba(34,28,24,.35)}h1{margin:0;color:#102a3a;font-size:22px;font-weight:500}p{font-size:13px;line-height:1.55;color:rgba(34,28,24,.65)}label{display:block;margin:18px 0 7px;font-size:12px;font-weight:600}input{width:100%;min-height:48px;padding:0 14px;border:1px solid rgba(76,38,15,.24);border-radius:12px;background:#fff;color:#102a3a;font:400 14px/1 system-ui}button{width:100%;min-height:50px;margin-top:12px;border:0;border-radius:14px;background:#4c260f;color:#f6ece2;font-weight:600;cursor:pointer}button.secondary{background:transparent;color:#4c260f;border:1px solid rgba(76,38,15,.24)}button:disabled{opacity:.55;cursor:not-allowed}.msg{margin-top:14px;font-size:12px}.error{color:#a5342f}.ok{color:#2f6a3d}.hidden{display:none}
+</style>
+</head>
+<body>
+<main class="card">
+<h1>Şifremi unuttum</h1>
+<p id="intro">Hesabınıza kayıtlı e-posta adresine güvenli şifre yenileme bağlantısı gönderilir.</p>
+<section id="requestView">
+<label for="email">E-posta</label>
+<input id="email" type="email" autocomplete="email">
+<button id="sendBtn" type="button">Şifre yenileme bağlantısı gönder</button>
+</section>
+<section id="resetView" class="hidden">
+<label for="password">Yeni şifre</label>
+<input id="password" type="password" autocomplete="new-password" minlength="6" placeholder="En az 6 karakter">
+<label for="password2">Yeni şifre tekrar</label>
+<input id="password2" type="password" autocomplete="new-password" minlength="6">
+<button id="saveBtn" type="button">Yeni şifreyi kaydet</button>
+</section>
+<p id="msg" class="msg" aria-live="polite"></p>
+<button class="secondary" type="button" onclick="location.href='./Hesabim.dc.html'">Girişe dön</button>
+</main>
+<script>
+const SUPABASE_URL='https://dytyehxybhzlmwxarbpc.supabase.co';
+const SUPABASE_ANON_KEY='sb_publishable_oMWdZv_LTS3-3KbnzElAeg_tXBpy-cO';
+const msg=document.getElementById('msg');
+const requestView=document.getElementById('requestView');
+const resetView=document.getElementById('resetView');
+const sendBtn=document.getElementById('sendBtn');
+const saveBtn=document.getElementById('saveBtn');
+function show(text,ok=false){msg.textContent=text;msg.className='msg '+(ok?'ok':'error')}
+function recoveryToken(){const h=new URLSearchParams(location.hash.replace(/^#/,''));return {token:h.get('access_token'),type:h.get('type')};}
+const recovery=recoveryToken();
+if(recovery.token&&recovery.type==='recovery'){requestView.classList.add('hidden');resetView.classList.remove('hidden');document.getElementById('intro').textContent='Yeni şifrenizi belirleyin.';}
+sendBtn.addEventListener('click',async()=>{const email=document.getElementById('email').value.trim();if(!email){show('E-posta gerekli.');return;}sendBtn.disabled=true;show('');try{const redirect=location.origin+location.pathname;const r=await fetch(SUPABASE_URL+'/auth/v1/recover?redirect_to='+encodeURIComponent(redirect),{method:'POST',headers:{'Content-Type':'application/json',apikey:SUPABASE_ANON_KEY},body:JSON.stringify({email})});const data=await r.json().catch(()=>({}));if(!r.ok)throw new Error(data.msg||data.message||data.error_description||('HTTP '+r.status));show('Şifre yenileme bağlantısı gönderildi. E-postanızı kontrol edin.',true);}catch(e){show('Gönderim başarısız: '+e.message)}finally{sendBtn.disabled=false;}});
+saveBtn.addEventListener('click',async()=>{const p=document.getElementById('password').value;const p2=document.getElementById('password2').value;if(p.length<6){show('Şifre en az 6 karakter olmalı.');return;}if(p!==p2){show('Şifreler eşleşmiyor.');return;}const token=recoveryToken().token;if(!token){show('Geçerli recovery oturumu bulunamadı. Yeni bağlantı isteyin.');return;}saveBtn.disabled=true;show('');try{const r=await fetch(SUPABASE_URL+'/auth/v1/user',{method:'PUT',headers:{'Content-Type':'application/json',apikey:SUPABASE_ANON_KEY,Authorization:'Bearer '+token},body:JSON.stringify({password:p})});const data=await r.json().catch(()=>({}));if(!r.ok)throw new Error(data.msg||data.message||data.error_description||('HTTP '+r.status));show('Şifre güncellendi. Giriş ekranına yönlendiriliyorsunuz.',true);setTimeout(()=>location.href='./Hesabim.dc.html',1200);}catch(e){show('Şifre güncellenemedi: '+e.message)}finally{saveBtn.disabled=false;}});
+</script>
+</body>
+</html>
