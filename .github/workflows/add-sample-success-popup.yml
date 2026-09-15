@@ -1,0 +1,40 @@
+name: Add sample request success popup
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/add-sample-success-popup.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch success popup
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          old="""    }).then((itemRes) => {\n      if (!itemRes || !itemRes.ok) throw new Error('sample request items insert failed');\n      this.setState({ sampleReqBusy: false, sampleReqSent: true, sampleReqError: '' });\n      setTimeout(() => {\n        try { localStorage.removeItem('ah_samples'); } catch (e) {}\n        this.setState({ samples: [], samplesOpen: false, sampleReqSent: false, rbStep: 0, rb: { group: 'Textured', colour: 'Beige', size: '160x230', use: 'Retail floor' } });\n      }, 2200);\n    }).catch(() => this.setState({ sampleReqBusy: false, sampleReqSent: false, sampleReqError: 'Bir hata oluştu, tekrar deneyin.' }));\n"""
+          new="""    }).then((itemRes) => {\n      if (!itemRes || !itemRes.ok) throw new Error('sample request items insert failed');\n      try { localStorage.removeItem('ah_samples'); } catch (e) {}\n      this.setState({ sampleReqBusy: false, sampleReqSent: true, sampleReqError: '', samples: [], samplesOpen: false, rbStep: 0, rb: { group: 'Textured', colour: 'Beige', size: '160x230', use: 'Retail floor' } });\n    }).catch(() => this.setState({ sampleReqBusy: false, sampleReqSent: false, sampleReqError: 'Bir hata oluştu, tekrar deneyin.' }));\n"""
+          if old not in s: raise SystemExit('success block not found')
+          s=s.replace(old,new,1)
+          anchor='''<sc-if value="{{ authOpen }}" hint-placeholder-val="{{ false }}">'''
+          popup='''<sc-if value="{{ sampleReqSent }}" hint-placeholder-val="{{ false }}">\n  <div style="position:fixed;inset:0;z-index:95;background:rgba(34,28,24,.38);backdrop-filter:blur(2px)"></div>\n  <div role="dialog" aria-modal="true" aria-label="Talep alındı" style="position:fixed;z-index:96;top:50%;left:50%;transform:translate(-50%,-50%);width:min(380px,90vw);background:#fbf5ee;border:1px solid rgba(76,38,15,.10);border-radius:20px;box-shadow:0 44px 80px -30px rgba(34,28,24,.6);padding:30px;text-align:center">\n    <div aria-hidden="true" style="width:48px;height:48px;margin:0 auto 16px;border-radius:50%;display:grid;place-items:center;background:rgba(58,107,58,.10);color:#3a6b3a;font:500 26px/1 'DM Sans',sans-serif">✓</div>\n    <h3 style="margin:0;font:500 24px/1.2 'DM Sans',sans-serif;color:#102a3a">Talep alındı</h3>\n    <p style="margin:10px 0 0;font:400 14px/1.55 'DM Sans',sans-serif;color:rgba(34,28,24,.65)">Numune talebiniz başarıyla oluşturuldu. Durumunu Hesabım → Numune Taleplerim bölümünden takip edebilirsiniz.</p>\n    <button type="button" onClick="{{ closeSampleSuccessFn }}" style="width:100%;min-height:48px;margin-top:22px;border-radius:14px;background:#4c260f;color:#f6ece2;font:600 12px/1 'DM Sans',sans-serif;letter-spacing:.08em;text-transform:uppercase;cursor:pointer">Tamam</button>\n  </div>\n</sc-if>\n\n'''
+          if anchor not in s: raise SystemExit('auth modal anchor not found')
+          s=s.replace(anchor,popup+anchor,1)
+          oldvals="""      sampleReqSent: s.sampleReqSent,\n      sampleReqError: s.sampleReqError,"""
+          newvals="""      sampleReqSent: s.sampleReqSent,\n      closeSampleSuccessFn: () => this.setState({ sampleReqSent: false }),\n      sampleReqError: s.sampleReqError,"""
+          if oldvals not in s: raise SystemExit('render values anchor not found')
+          s=s.replace(oldvals,newvals,1)
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit patch
+        run: |
+          git config user.name "SSSaruman"
+          git config user.email "ufuk.karahann@gmail.com"
+          git add index.html
+          git commit -m "fix: show real sample request success popup" || exit 0
+          git push
