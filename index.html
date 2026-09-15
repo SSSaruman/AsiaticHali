@@ -1997,12 +1997,23 @@ class Component extends DCLogic {
   }
   _freshSession() {
     const sess = this._authSession();
-    if (!sess || !sess.refresh_token) return Promise.reject(new Error('missing refresh token'));
+    if (!sess || !sess.access_token) return Promise.reject(new Error('missing session'));
+    const validate = () => fetch(SUPABASE_URL + '/auth/v1/user', { headers: { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + sess.access_token } })
+      .then((r) => r.json().then((j) => ({ ok: r.ok, data: j })))
+      .then((res) => {
+        if (!res.ok || !res.data || !res.data.id) throw new Error('session invalid');
+        const next = { access_token: sess.access_token, refresh_token: sess.refresh_token || '', user: res.data };
+        this._persistAuth(next);
+        return next;
+      });
+    if (!sess.refresh_token) return validate();
     return sbAuthFetch('/token?grant_type=refresh_token', { refresh_token: sess.refresh_token }).then((res) => {
-      if (!res.ok || !res.data || !res.data.access_token || !res.data.user) throw new Error('session refresh failed');
-      const next = { access_token: res.data.access_token, refresh_token: res.data.refresh_token || sess.refresh_token, user: res.data.user };
-      this._persistAuth(next);
-      return next;
+      if (res.ok && res.data && res.data.access_token && res.data.user) {
+        const next = { access_token: res.data.access_token, refresh_token: res.data.refresh_token || sess.refresh_token, user: res.data.user };
+        this._persistAuth(next);
+        return next;
+      }
+      return validate();
     });
   }
   _persistAuth(sess) {
