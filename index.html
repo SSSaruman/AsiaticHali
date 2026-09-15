@@ -163,6 +163,16 @@ button::-moz-focus-inner{border:0;padding:0}
   </div>
 </sc-if>
 
+<sc-if value="{{ sampleReqSent }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;inset:0;z-index:95;background:rgba(34,28,24,.38);backdrop-filter:blur(2px)"></div>
+  <div role="dialog" aria-modal="true" aria-label="Talep alındı" style="position:fixed;z-index:96;top:50%;left:50%;transform:translate(-50%,-50%);width:min(380px,90vw);background:#fbf5ee;border:1px solid rgba(76,38,15,.10);border-radius:20px;box-shadow:0 44px 80px -30px rgba(34,28,24,.6);padding:30px;text-align:center">
+    <div aria-hidden="true" style="width:48px;height:48px;margin:0 auto 16px;border-radius:50%;display:grid;place-items:center;background:rgba(58,107,58,.10);color:#3a6b3a;font:500 26px/1 'DM Sans',sans-serif">✓</div>
+    <h3 style="margin:0;font:500 24px/1.2 'DM Sans',sans-serif;color:#102a3a">Talep alındı</h3>
+    <p style="margin:10px 0 0;font:400 14px/1.55 'DM Sans',sans-serif;color:rgba(34,28,24,.65)">Numune talebiniz başarıyla oluşturuldu. Durumunu Hesabım → Numune Taleplerim bölümünden takip edebilirsiniz.</p>
+    <button type="button" onClick="{{ closeSampleSuccessFn }}" style="width:100%;min-height:48px;margin-top:22px;border-radius:14px;background:#4c260f;color:#f6ece2;font:600 12px/1 'DM Sans',sans-serif;letter-spacing:.08em;text-transform:uppercase;cursor:pointer">Tamam</button>
+  </div>
+</sc-if>
+
 <sc-if value="{{ authOpen }}" hint-placeholder-val="{{ false }}">
   <div onClick="{{ closeAuthModalFn }}" style="position:fixed;inset:0;z-index:70;background:rgba(34,28,24,.4)"></div>
   <div role="dialog" aria-label="{{ t.signIn }}" style="position:fixed;z-index:71;top:50%;left:50%;transform:translate(-50%,-50%);width:min(380px,92vw);background:#fbf5ee;border-radius:20px;box-shadow:0 44px 80px -30px rgba(34,28,24,.6);padding:26px">
@@ -2136,11 +2146,8 @@ class Component extends DCLogic {
       return sbRest('/sample_request_items', { method: 'POST', headers: { Prefer: 'return=minimal' }, body: JSON.stringify(items.map((it) => Object.assign({ request_id: req.id }, it))) }, sess.access_token);
     }).then((itemRes) => {
       if (!itemRes || !itemRes.ok) throw new Error('sample request items insert failed');
-      this.setState({ sampleReqBusy: false, sampleReqSent: true, sampleReqError: '' });
-      setTimeout(() => {
-        try { localStorage.removeItem('ah_samples'); } catch (e) {}
-        this.setState({ samples: [], samplesOpen: false, sampleReqSent: false, rbStep: 0, rb: { group: 'Textured', colour: 'Beige', size: '160x230', use: 'Retail floor' } });
-      }, 2200);
+      try { localStorage.removeItem('ah_samples'); } catch (e) {}
+      this.setState({ sampleReqBusy: false, sampleReqSent: true, sampleReqError: '', samples: [], samplesOpen: false, rbStep: 0, rb: { group: 'Textured', colour: 'Beige', size: '160x230', use: 'Retail floor' } });
     }).catch(() => this.setState({ sampleReqBusy: false, sampleReqSent: false, sampleReqError: 'Bir hata oluştu, tekrar deneyin.' }));
   }
 
@@ -3128,6 +3135,7 @@ class Component extends DCLogic {
       submitAuthFn: () => this.submitAuthForm(),
       sampleReqBusy: s.sampleReqBusy, sampleReqSubmitDisabled: !!(s.sampleReqBusy || s.sampleReqSent),
       sampleReqSent: s.sampleReqSent,
+      closeSampleSuccessFn: () => this.setState({ sampleReqSent: false }),
       sampleReqError: s.sampleReqError,
       sampleReqErrorShown: !!s.sampleReqError,
       colGridCols: s.desktop ? '0.86fr 1.35fr' : '1fr',
