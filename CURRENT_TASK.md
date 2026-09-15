@@ -14,8 +14,8 @@
 9. Admin status/tracking uses exact real schema/status contract.
 10. Empty/loading/error states are deliberate.
 11. Desktop + mobile touched flows are browser-verified.
-12. Admin and customer login screens include Şifremi unuttum plus Google and Apple entry points with visible provider icons. OAuth callback must persist the correct isolated session (`ah_admin_auth` / `ah_auth`). Admin OAuth users still require real `is_admin=true` authorization.
-13. Password recovery must use Supabase recovery flow and return to the correct login surface.
+12. Admin and customer auth use e-mail + password only. Google/Apple OAuth is removed from scope and must not appear in login/register UI.
+13. Admin and customer login screens include Şifremi unuttum. Password recovery uses the Supabase recovery flow and returns to the correct login surface.
 
 ### Locked auth/schema
 - Customer/site auth: `ah_auth`.
@@ -29,15 +29,13 @@ BUILD → TEST → VERIFY → USER_VISIBLE_SUCCESS → PASS → NEXT
 ### Current status
 - Account read/write session refresh fix is deployed.
 - Customer password recovery page exists.
-- Admin + customer login UI contains forgot-password, Google, and Apple entry points with callback session handling.
-- Google and Apple SVG provider icons were added in commit `893dfc43e2b0c18b0f8155ee412a8dbfdc1c03f7`; Pages deployment is still being verified.
-- Direct runtime probe against the real Supabase Auth `/authorize` endpoint returned HTTP 400 for both providers with `Unsupported provider: provider is not enabled`.
-- Therefore the button code is not the current OAuth blocker; both providers are disabled in the Supabase Auth provider configuration.
-- Direct mutation of the existing admin password through the available database tool was blocked by the tool security layer; therefore no new password has been claimed/set.
+- Admin and customer accounts are confirmed and e-mail/password auth is the only required sign-in method.
+- Google/Apple OAuth work is cancelled by user decision and must be removed from visible login/register UI.
+- Production DB currently has no real sample request yet; sample request E2E remains open.
 - FINAL PASS: NO.
 
 ### FIRST_BLOCKER
-Enable/configure Google and Apple in the real Supabase Auth provider settings. Until provider-side credentials/configuration exist, both OAuth buttons necessarily fail before callback handling.
+Remove Google/Apple social-login UI from site, customer account and admin login surfaces, then continue the real customer sample-request E2E using e-mail/password auth.
 
 ### NEXT_ACTION
-Configure the real Google OAuth client and Apple Sign in with Apple credentials in Supabase Auth, ensure the GitHub Pages callback URLs are allowlisted, then rerun the same real `/authorize` probe. Only after each provider returns an OAuth redirect instead of HTTP 400 continue to browser login verification.
+Keep auth simple: e-mail/password + password recovery only. Then run the same real customer → sample request → customer history → admin request/status/tracking chain.
