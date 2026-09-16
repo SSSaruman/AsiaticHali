@@ -716,6 +716,7 @@ button::-moz-focus-inner{border:0;padding:0}
 </section>
 
 <!-- 08 — RANGE BUILDER -->
+<sc-if value="{{ isAuthed }}" hint-placeholder-val="{{ false }}">
 <section id="s08" data-screen-label="08 Range Builder" style="{{ rbSectionStyle }}">
   <div aria-hidden="true" style="position:absolute;inset:0;background-image:url(assets/bg/range_builder.webp);background-size:cover;background-position:center;pointer-events:none"></div>
   <div aria-hidden="true" style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(242,231,221,.84) 0%,rgba(244,236,228,.70) 44%,rgba(239,227,215,.88) 100%);pointer-events:none"></div>
@@ -930,6 +931,7 @@ button::-moz-focus-inner{border:0;padding:0}
     </sc-if>
     </div>
 </section>
+</sc-if>
 
 <!-- 09 — TRADE TOOLKIT -->
 <section id="s09" data-screen-label="09 Trade Toolkit" style="position:relative;min-height:{{ sectionMinH }};scroll-snap-align:start;overflow:hidden;background:linear-gradient(180deg,#efe3d7 0%,#f2e7dd 100%);display:flex;align-items:center">
@@ -1936,6 +1938,11 @@ class Component extends DCLogic {
   go(id) {
     return (e) => {
       e.preventDefault();
+      if (id === 's08' && !this.state.authUser) {
+        this.setState({ menu: false });
+        this.openAuthModal('login', { type: 'rangeBuilder' });
+        return;
+      }
       const el = document.getElementById(id);
       if (el && this.scroller) this.scroller.scrollTo({ top: el.offsetTop, behavior: 'smooth' });
       this.setState({ menu: false });
@@ -2075,6 +2082,12 @@ class Component extends DCLogic {
       }
       const pending = this.state.authPendingAction;
       if (pending && pending.type === 'sampleRequest') this.doSubmitSampleRequest(pending.items, sess);
+      if (pending && pending.type === 'rangeBuilder') {
+        setTimeout(() => {
+          const el = document.getElementById('s08');
+          if (el && this.scroller) this.scroller.scrollTo({ top: el.offsetTop, behavior: 'smooth' });
+        }, 0);
+      }
       this.setState({ authPendingAction: null });
     }).catch(() => this.setState({ authBusy: false, authError: 'Bir hata oluştu. Tekrar deneyin.' }));
   }
