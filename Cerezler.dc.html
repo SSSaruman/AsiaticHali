@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<dc-import name="LegalShell" eyebrow="Yasal" title="Çerez Politikası" updated="Son güncelleme: Eylül 2026" sections="{{ sections }}" hint-size="100%,auto"></dc-import>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    return { sections: [
+      { h: '1. Çerez nedir', p: ['Çerezler, ziyaret ettiğiniz internet sitesi tarafından tarayıcınıza kaydedilen küçük metin dosyalarıdır.'] },
+      { h: '2. Kullanılan çerez türleri', p: ['Zorunlu çerezler: sitenin temel işlevlerinin (dil tercihi, gezinme) çalışması için gereklidir.', 'Performans çerezleri: sayfa kullanımını anonim olarak ölçmek için kullanılabilir.'] },
+      { h: '3. Çerez yönetimi', p: ['Tarayıcı ayarlarınızdan çerezleri silebilir veya engelleyebilirsiniz; bu durumda sitenin bazı bölümleri beklendiği gibi çalışmayabilir.'] },
+      { h: '4. İletişim', p: ['Çerez politikasıyla ilgili sorularınız için export@asiatichali.com adresine yazabilirsiniz.'] }
+    ] };
+  }
+}
+</script>
+</body>
+</html>

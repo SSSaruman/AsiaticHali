@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<dc-import name="LegalShell" eyebrow="Yasal" title="Gizlilik Politikası" updated="Son güncelleme: Eylül 2026" sections="{{ sections }}" hint-size="100%,auto"></dc-import>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    return { sections: [
+      { h: '1. Veri sorumlusu', p: ['Asiatic Halı Türkiye (İncilipınar Mahallesi, Nail Bilen Caddesi, Uğur Plaza, Kat: 13, Ofis 1301, 27090 Şehitkamil / Gaziantep) bu internet sitesi üzerinden elde edilen kişisel verilerin veri sorumlusudur.'] },
+      { h: '2. Toplanan veriler', p: ['Ticari hesap başvurusu, numune talebi veya iletişim formu doldurulması sırasında ad, şirket unvanı, e-posta adresi, telefon numarası, ülke ve mesaj içeriği gibi veriler toplanır.', 'Site kullanım verileri (sayfa görüntüleme, cihaz ve tarayıcı bilgisi) çerezler aracılığıyla toplanabilir.'] },
+      { h: '3. Kullanım amacı', p: ['Toplanan veriler; ticari hesap ve numune taleplerinin yanıtlanması, iletişimin sürdürülmesi ve site performansının izlenmesi amacıyla kullanılır.'] },
+      { h: '4. Paylaşım', p: ['Kişisel veriler, yasal zorunluluklar dışında üçüncü taraflarla paylaşılmaz. Sipariş ve lojistik süreçlerinde Asiatic Carpets Ltd (Londra, İngiltere) ile sınırlı ölçüde paylaşım yapılabilir.'] },
+      { h: '5. Saklama süresi', p: ['Veriler, ilgili mevzuatta belirtilen süreler ve ticari ilişkinin gerektirdiği süre boyunca saklanır, süre sonunda silinir veya anonim hale getirilir.'] },
+      { h: '6. İletişim', p: ['Gizlilik ile ilgili talepleriniz için export@asiatichali.com adresinden bize ulaşabilirsiniz.'] }
+    ] };
+  }
+}
+</script>
+</body>
+</html>
