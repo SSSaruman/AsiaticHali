@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<dc-import name="LegalShell" eyebrow="Yasal" title="KVKK Aydınlatma Metni" updated="Son güncelleme: Eylül 2026" sections="{{ sections }}" hint-size="100%,auto"></dc-import>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    return { sections: [
+      { h: '1. Veri sorumlusu', p: ['6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") kapsamında veri sorumlusu, Gaziantep merkezli Asiatic Halı Türkiye\'dir.'] },
+      { h: '2. İşlenen kişisel veriler', p: ['Kimlik bilgileri (ad soyad), iletişim bilgileri (e-posta, telefon), şirket bilgileri ve talep/mesaj içerikleri, ticari hesap ve numune başvuru formları aracılığıyla işlenmektedir.'] },
+      { h: '3. İşleme amacı ve hukuki sebep', p: ['Veriler; sözleşme kurulması ve ifası, ticari faaliyetlerin yürütülmesi ve meşru menfaat hukuki sebeplerine dayanarak işlenmektedir (KVKK m.5/2).'] },
+      { h: '4. Aktarım', p: ['Kişisel veriler, siparişin yerine getirilmesi amacıyla Asiatic Carpets Ltd (Birleşik Krallık) ile sınırlı ölçüde paylaşılabilir; bu aktarım KVKK\'nın yurt dışına veri aktarımına ilişkin hükümlerine uygun şekilde yapılır.'] },
+      { h: '5. Haklarınız', p: ['KVKK\'nın 11. maddesi uyarınca; verilerinizin işlenip işlenmediğini öğrenme, işlenmişse bilgi talep etme, düzeltilmesini veya silinmesini isteme haklarına sahipsiniz.', 'Bu haklarınızı kullanmak için export@asiatichali.com adresine yazılı talepte bulunabilirsiniz.'] }
+    ] };
+  }
+}
+</script>
+</body>
+</html>
