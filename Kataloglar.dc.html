@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..700;1,400&family=DM+Sans:opsz,wght@9..40,300..700&display=swap">
+<style>
+html,body{margin:0;padding:0;background:#f2e7dd;color:#221c18;font-family:"DM Sans",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box;scrollbar-width:none;-ms-overflow-style:none}
+*::-webkit-scrollbar{display:none;width:0;height:0}
+a{color:#4c260f;text-decoration:none}
+a:hover{color:#a55a34}
+@keyframes ahShimmer{to{background-position:-200% 0}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+<link rel="preload" as="image" href="assets/collections/atlas.webp" type="image/webp" fetchpriority="high">
+<link rel="preload" as="image" href="assets/collections/como.webp" type="image/webp">
+<link rel="preload" as="image" href="assets/collections/aurora.webp" type="image/webp">
+</helmet>
+<div style="min-height:100vh;display:flex;flex-direction:column">
+  <header style="position:sticky;top:0;z-index:10;background:rgba(242,231,221,.92);backdrop-filter:blur(16px);border-bottom:1px solid rgba(76,38,15,.1)">
+    <div style="max-width:1280px;margin:0 auto;padding:18px clamp(20px,4vw,40px);display:flex;align-items:center;justify-content:space-between;gap:16px">
+      <a href="Asiatic Hali.dc.html" style="display:inline-flex;align-items:center;min-height:44px;font:400 22px/1 'Playfair Display',serif;color:#102a3a">Asiatic Halı</a>
+      <div style="display:flex;align-items:center;gap:clamp(14px,3vw,32px)">
+        <a href="TicariHesap.dc.html" style="display:inline-flex;align-items:center;min-height:44px;font:500 12px/1 'DM Sans',sans-serif;letter-spacing:.1em;text-transform:uppercase">Ticari hesap</a>
+        <a href="Asiatic Hali.dc.html" style="display:inline-flex;align-items:center;min-height:44px;font:500 12px/1 'DM Sans',sans-serif;letter-spacing:.1em;text-transform:uppercase">← Ana sayfa</a>
+      </div>
+    </div>
+  </header>
+  <main style="flex:1;max-width:1280px;width:100%;margin:0 auto;padding:clamp(40px,7vh,72px) clamp(20px,4vw,40px) clamp(64px,10vh,110px)">
+    <p style="margin:0;font:500 11px/1 'DM Sans',sans-serif;letter-spacing:.2em;text-transform:uppercase;color:#a55a34">Kataloglar</p>
+    <h1 style="margin:14px 0 0;font:400 clamp(32px,4.4vw,58px)/1.05 'Playfair Display',serif;color:#102a3a;letter-spacing:-.01em;text-wrap:balance">Koleksiyonlarımız</h1>
+    <p style="margin:18px 0 0;max-width:62ch;font:300 16px/1.65 'DM Sans',sans-serif;color:rgba(34,28,24,.76);text-wrap:pretty">Asiatic ve The Rug Edit koleksiyonlarının tamamı. Fiyat listesi, ölçü tablosu ve numune için ticari hesapla birlikte bize ulaşın.</p>
+    <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:24px">
+      <a href="TicariHesap.dc.html" style="display:inline-flex;align-items:center;min-height:48px;padding:0 24px;border-radius:14px;background:#4c260f;color:#f6ece2;font:500 12px/1 'DM Sans',sans-serif;letter-spacing:.13em;text-transform:uppercase" style-hover="background:#5d3116;color:#f6ece2">Ticari hesap başvurusu</a>
+      <a href="Asiatic Hali.dc.html#s10" style="display:inline-flex;align-items:center;min-height:48px;padding:0 24px;border-radius:14px;border:1px solid rgba(76,38,15,.34);font:500 12px/1 'DM Sans',sans-serif;letter-spacing:.13em;text-transform:uppercase">Katalog talep et</a>
+    </div>
+    <sc-for list="{{ groups }}" as="g" hint-placeholder-count="2">
+      <section style="margin-top:clamp(40px,7vh,72px)">
+        <h2 style="margin:0 0 6px;font:400 clamp(22px,2.2vw,30px)/1.2 'Playfair Display',serif;color:#102a3a">{{ g.title }}</h2>
+        <p style="margin:0 0 24px;font:300 14px/1.5 'DM Sans',sans-serif;color:rgba(34,28,24,.62)">{{ g.count }}</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));gap:clamp(18px,2vw,28px)">
+          <sc-for list="{{ g.items }}" as="c" hint-placeholder-count="6">
+            <article id="{{ c.id }}" style="{{ c.style }}">
+              <div style="aspect-ratio:4/3;overflow:hidden;border-radius:16px;background:linear-gradient(100deg,#ece0d3 30%,#f6ece2 50%,#ece0d3 70%);background-size:200% 100%;animation:ahShimmer 1.4s linear infinite">
+                <img src="{{ c.img }}" alt="{{ c.name }}" width="800" height="600" loading="{{ c.loading }}" fetchpriority="{{ c.prio }}" decoding="async" onLoad="{{ c.onLoad }}" style="{{ c.imgStyle }}">
+              </div>
+              <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-top:14px">
+                <h3 style="margin:0;font:400 20px/1.2 'Playfair Display',serif;color:#102a3a">{{ c.name }}</h3>
+                <span style="font:500 10px/1 'DM Sans',sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#a55a34">{{ c.tag }}</span>
+              </div>
+              <p style="margin:6px 0 0;font:300 13.5px/1.5 'DM Sans',sans-serif;color:rgba(34,28,24,.66)">{{ c.line }}</p>
+              <a href="{{ c.href }}" style="display:inline-flex;align-items:center;gap:8px;margin-top:14px;min-height:44px;font:500 11.5px/1 'DM Sans',sans-serif;letter-spacing:.13em;text-transform:uppercase">{{ c.cta }} <span aria-hidden="true">→</span></a>
+            </article>
+          </sc-for>
+        </div>
+      </section>
+    </sc-for>
+  </main>
+  <footer style="background:#221812;padding:28px clamp(20px,4vw,40px);text-align:center">
+    <p style="margin:0;font:300 12.5px/1.5 'DM Sans',sans-serif;color:rgba(246,236,226,.56)">© 2026 Asiatic Halı Türkiye. Tüm hakları saklıdır.</p>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const ASIATIC = [['atlas','Atlas','Yeni'],['como','Como'],['aurora','Aurora'],['quantum','Quantum'],['zola','Zola'],['colores-cloud','Colores Cloud'],['kaya','Kaya'],['flores','Flores'],['stellar','Stellar'],['mirage','Mirage'],['seville','Seville'],['nova','Nova'],['muse','Muse'],['jasper','Jasper'],['anders','Anders'],['laurent','Laurent'],['heriz','Heriz'],['kuza','Kuza'],['sovereign','Sovereign']];
+const EDIT = [['raja','Raja','Çok yakında'],['axel','Axel'],['ritz','Ritz'],['oslo','Oslo','Yeni'],['miro','Miro','Yeni']];
+class Component extends DCLogic {
+  state = { active: '', loaded: {} };
+  markLoaded = (id) => { if (!this.state.loaded[id]) this.setState((s) => ({ loaded: { ...s.loaded, [id]: 1 } })); };
+  componentDidMount() {
+    const h = decodeURIComponent((location.hash || '').slice(1));
+    if (!h) return;
+    this.setState({ active: h });
+    setTimeout(() => {
+      const el = document.getElementById(h);
+      if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 110, behavior: 'smooth' });
+    }, 350);
+  }
+  renderVals() {
+    const a = this.state.active;
+    const L = this.state.loaded;
+    const mk = (arr, line, first) => arr.map((r, i) => ({
+      loading: first && i < 8 ? 'eager' : 'lazy', prio: first && i < 4 ? 'high' : 'auto', onLoad: () => this.markLoaded(r[0]),
+      imgStyle: { display: 'block', width: '100%', height: '100%', objectFit: 'cover', opacity: L[r[0]] ? 1 : 0, transition: 'opacity .35s ease' },
+      id: r[0], name: r[1], tag: r[2] || '', line, href: r[0] === 'atlas' ? 'AtlasKatalog.dc.html' : 'Asiatic Hali.dc.html#s10', cta: r[0] === 'atlas' ? 'Kataloğu aç' : 'Numune talep et',
+      img: 'assets/collections/' + r[0] + '.webp',
+      style: { padding: '12px 12px 6px', borderRadius: '22px', background: '#fbf5ee', border: '1px solid ' + (a === r[0] ? '#a55a34' : 'rgba(76,38,15,.1)'), boxShadow: a === r[0] ? '0 10px 26px -14px rgba(165,90,52,.55)' : '0 8px 20px -14px rgba(34,28,24,.3)', scrollMarginTop: '110px' }
+    }));
+    return { groups: [
+      { title: 'Asiatic', count: ASIATIC.length + ' koleksiyon', items: mk(ASIATIC, 'Asiatic koleksiyonu', true) },
+      { title: 'The Rug Edit', count: EDIT.length + ' koleksiyon', items: mk(EDIT, 'Halı Düzeni') }
+    ] };
+  }
+}
+</script>
+</body>
+</html>

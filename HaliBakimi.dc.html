@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<dc-import name="LegalShell" eyebrow="Halı bakımı" title="Halı bakım rehberi" updated="Müşterilerinize aktarabileceğiniz genel bakım önerileri" sections="{{ sections }}" hint-size="100%,auto"></dc-import>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    return { sections: [
+      { h: 'Yeni halı', p: ['Yeni halılarda ilk haftalarda tüylenme görülebilir. Bu normaldir ve zamanla azalır. Tüyleri çekmeyin, makasla kesin.', 'Halıyı doğrudan güneş ışığından koruyun ve renk eşitliği için düzenli aralıklarla yönünü değiştirin.'] },
+      { h: 'Günlük bakım', p: ['Haftada bir ya da iki kez elektrikli süpürge ile temizleyin. Püskülleri süpürgeye sokmayın.', 'Havlu ve tüylü dokulu halılarda fırçasız (emiş) başlık kullanın.'] },
+      { h: 'Leke ve dökülmeler', p: ['Dökülen sıvıyı hemen temiz, kuru, beyaz bir bezle bastırarak alın. Ovalamayın.', 'Zor lekelerde güçlü kimyasal kullanmayın. Profesyonel halı temizleme hizmeti alın.'] },
+      { h: 'Derin temizlik', p: ['Doğal liflerde (yün, pamuk) ve ipek karışımlarında yılda bir kez profesyonel temizlik önerilir.', 'Islak temizlik sonrası halıyı tamamen kurumadan kullanıma açmayın.'] },
+      { h: 'Altlık', p: ['Kaymayı önlemek ve halının ömrünü uzatmak için uygun bir halı altlığı kullanın.'] },
+      { h: 'İletişim', p: ['Ürüne özel bakım sorularınız için export@asiatichali.com adresine yazabilirsiniz.'] }
+    ] };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /Admin
+Disallow: /Hesabim
+
+Sitemap: https://www.asiatichali.com/sitemap.xml
