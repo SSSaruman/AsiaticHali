@@ -89,7 +89,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://www.asiatichali.com/#org","name":"Asiatic Halı Türkiye","url":"https://www.asiatichali.com/","email":"export@asiatichali.com","telephone":"+90-532-626-24-68","parentOrganization":{"@type":"Organization","name":"Asiatic Carpets Ltd","url":"https://www.asiatic.co.uk/"},"address":{"@type":"PostalAddress","streetAddress":"İncilipınar Mah. Nail Bilen Cad., Uğur Plaza Kat 13 Ofis 1301","addressLocality":"Şehitkamil","addressRegion":"Gaziantep","postalCode":"27090","addressCountry":"TR"}},{"@type":"WebSite","@id":"https://www.asiatichali.com/#website","url":"https://www.asiatichali.com/","name":"Asiatic Halı Türkiye","inLanguage":["en","tr"],"publisher":{"@id":"https://www.asiatichali.com/#org"}},{"@type":"FAQPage","@id":"https://www.asiatichali.com/#faq","mainEntity":[{"@type":"Question","name":"Do you supply the full Asiatic range from Türkiye?","acceptedAnswer":{"@type":"Answer","text":"Collections are supplied from the Gaziantep hub, drawn from the official Asiatic Carpets range."}},{"@type":"Question","name":"How do I open a trade account?","acceptedAnswer":{"@type":"Answer","text":"Send an enquiry to export@asiatichali.com and our team replies within one working day."}}]}]}</script>
 <style>
-html,body{margin:0;padding:0;background:#f2e7dd;color:#221c18;font-family:"DM Sans",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+html,body{user-select:none;-webkit-user-select:none;margin:0;padding:0;background:#f2e7dd;color:#221c18;font-family:"DM Sans",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
 @keyframes ahMobileTicker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 *{box-sizing:border-box;scrollbar-width:none;-ms-overflow-style:none}
 *::-webkit-scrollbar{display:none;width:0;height:0}
@@ -126,6 +126,7 @@ button:focus,a:focus,[role=tab]:focus{outline:none}
 button::-moz-focus-inner{border:0;padding:0}
 [role="group"]::-webkit-scrollbar{display:none;height:0}
 :focus-visible{outline:2px solid #102a3a;outline-offset:3px}
+input,textarea,select{user-select:text;-webkit-user-select:text}
 </style>
 </helmet>
 <div role="dialog" aria-label="{{ cookieTitle }}" style="display:{{ cookieDisplay }};position:fixed;left:16px;right:16px;bottom:16px;z-index:9999;max-width:560px;flex-direction:column;gap:12px;padding:18px 20px;border-radius:18px;background:#fbf5ee;border:1px solid rgba(76,38,15,.18);box-shadow:0 18px 44px -18px rgba(34,28,24,.45);font-family:'DM Sans',sans-serif;color:#221c18">
@@ -262,7 +263,6 @@ button::-moz-focus-inner{border:0;padding:0}
       </sc-for>
     </nav>
     <div style="flex:1"></div>
-    <button type="button" onClick="{{ toggleSamplesPanel }}" aria-expanded="{{ samplesOpen }}" style="{{ samplesUtilityStyle }}" style-hover="background:rgba(76,38,15,.06)">{{ samplesCta }}</button>
     <div style="{{ langWrapStyle }}">
       <button type="button" onClick="{{ setEn }}" aria-pressed="{{ isEn }}" style="{{ enStyle }}">EN</button>
       <span aria-hidden="true" style="width:1px;height:14px;background:rgba(34,28,24,.25)"></span>
@@ -270,7 +270,7 @@ button::-moz-focus-inner{border:0;padding:0}
     </div>
     <sc-if value="{{ isNotAuthed }}" hint-placeholder-val="{{ true }}">
       <div style="{{ authPillStyle }}">
-        <a href="TicariHesap.dc.html" style="{{ ctaSmallStyle }}">{{ t.tradeCta }}</a>
+        <a href="https://shopify.com/authentication/7672149/login?analytics_trace_id=0edefd09-eb37-44f8-803e-45ab7b49fe57&amp;client_id=88fd3db5-cb94-4cfd-9780-a5be09b93e63&amp;locale=en-GB&amp;redirect_uri=%2Fauthentication%2F7672149%2Foauth%2Fauthorize%3Fanalytics_trace_id%3D0edefd09-eb37-44f8-803e-45ab7b49fe57%26buyer_flags%3DeyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJhc2lhdGljLm15c2hvcGlmeS5jb20iLCJmbGFncyI6W10sImV4cCI6MTc5NDgzMzU1OCwibmJmIjoxNzk0MjI4NzU4fQ.fX_TmjAtykpAmGyAAgDhbj7kzyEm0dvnM-FLP8GDn8M%26client_id%3D88fd3db5-cb94-4cfd-9780-a5be09b93e63%26locale%3Den-GB%26nonce%3D9577b094-cb48-4894-b313-d266cdca7230%26redirect_uri%3Dhttps%253A%252F%252Fshopify.com%252F7672149%252Faccount%252Fcallback%26region_country%3DGB%26response_type%3Dcode%26scope%3Dopenid%2Bemail%2Bcustomer-account-api%253Afull%26state%3DhWNIwqx6M0bw9t2pYnP07vDK&amp;region_country=GB" target="_blank" rel="noopener noreferrer" style="{{ ctaSmallStyle }}">{{ t.tradeCta }}</a>
       </div>
     </sc-if>
     <button type="button" onClick="{{ toggleMenu }}" aria-label="Menü" aria-expanded="{{ menu }}" style="{{ burgerStyle }}">
@@ -285,9 +285,8 @@ button::-moz-focus-inner{border:0;padding:0}
   <sc-for list="{{ navItems }}" as="item" hint-placeholder-count="2">
     <a href="{{ item.href }}" onClick="{{ item.onClick }}" style="font:500 22px/1.2 'DM Sans',sans-serif;color:#102a3a;padding:14px 0;min-height:44px;display:flex;align-items:center">{{ item.label }}</a>
   </sc-for>
-  <button type="button" onClick="{{ toggleSamplesPanel }}" aria-expanded="{{ samplesOpen }}" style="margin-top:4px;padding:0;border:none;background:none;font:500 13px/1 'DM Sans',sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#4c260f;min-height:44px;display:flex;align-items:center;cursor:pointer">{{ samplesCta }}</button>
   <sc-if value="{{ isNotAuthed }}" hint-placeholder-val="{{ true }}">
-    <a href="TicariHesap.dc.html" style="margin-top:8px;font:500 13px/1 'DM Sans',sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#4c260f;min-height:44px;display:flex;align-items:center">{{ t.tradeCta }}</a>
+    <a href="https://shopify.com/authentication/7672149/login?analytics_trace_id=0edefd09-eb37-44f8-803e-45ab7b49fe57&amp;client_id=88fd3db5-cb94-4cfd-9780-a5be09b93e63&amp;locale=en-GB&amp;redirect_uri=%2Fauthentication%2F7672149%2Foauth%2Fauthorize%3Fanalytics_trace_id%3D0edefd09-eb37-44f8-803e-45ab7b49fe57%26buyer_flags%3DeyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJhc2lhdGljLm15c2hvcGlmeS5jb20iLCJmbGFncyI6W10sImV4cCI6MTc5NDgzMzU1OCwibmJmIjoxNzk0MjI4NzU4fQ.fX_TmjAtykpAmGyAAgDhbj7kzyEm0dvnM-FLP8GDn8M%26client_id%3D88fd3db5-cb94-4cfd-9780-a5be09b93e63%26locale%3Den-GB%26nonce%3D9577b094-cb48-4894-b313-d266cdca7230%26redirect_uri%3Dhttps%253A%252F%252Fshopify.com%252F7672149%252Faccount%252Fcallback%26region_country%3DGB%26response_type%3Dcode%26scope%3Dopenid%2Bemail%2Bcustomer-account-api%253Afull%26state%3DhWNIwqx6M0bw9t2pYnP07vDK&amp;region_country=GB" target="_blank" rel="noopener noreferrer" style="margin-top:8px;font:500 13px/1 'DM Sans',sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#4c260f;min-height:44px;display:flex;align-items:center">{{ t.tradeCta }}</a>
   </sc-if>
   <div style="display:flex;align-items:center;gap:18px;margin-top:16px">
     <a href="https://www.instagram.com/asiatic.london/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" style="display:flex;color:#102a3a" style-hover="color:#a55a34">
@@ -317,11 +316,10 @@ button::-moz-focus-inner{border:0;padding:0}
   <div style="position:relative;z-index:6;flex:1;display:flex;flex-direction:column;justify-content:flex-start;padding:{{ heroContentPad }}">
     <div style="width:100%;max-width:1560px;margin:0 auto;display:flex;flex-direction:column;align-items:flex-start;text-align:left">
     <span style="display:inline-flex;align-items:center;gap:10px;min-height:30px;padding:0 18px;border-radius:999px;background:rgba(248,240,231,.85);font:500 11.5px/1.4 'DM Sans',sans-serif;letter-spacing:.22em;text-transform:uppercase;color:#7a3d1f;box-shadow:0 6px 18px -10px rgba(76,38,15,.3);animation:ahFade 900ms cubic-bezier(.22,.8,.22,1) 60ms both"><span style="width:8px;height:8px;border-radius:50%;background:#a55a34;flex:none"></span> {{ t.heroEyebrow }}</span>
-    <h1 style="margin:18px 0 0;max-width:15ch;font:400 clamp(40px,5.8vw,92px)/.96 'DM Sans',sans-serif;color:#102a3a;letter-spacing:-.015em;text-wrap:balance;text-shadow:0 2px 22px rgba(248,240,231,.9);animation:ahFade 900ms cubic-bezier(.22,.8,.22,1) 160ms both">{{ t.heroTitle }}</h1>
+    <h1 style="margin:18px 0 0;max-width:15ch;font:400 clamp(34px,4.2vw,68px)/.98 'DM Sans',sans-serif;color:#102a3a;letter-spacing:-.015em;text-wrap:balance;text-shadow:0 2px 22px rgba(248,240,231,.9);animation:ahFade 900ms cubic-bezier(.22,.8,.22,1) 160ms both">{{ t.heroTitle }}</h1>
     <p style="margin:22px 0 0;max-width:44ch;font:300 clamp(16px,1.35vw,22px)/1.5 'DM Sans',sans-serif;color:rgba(24,19,16,.92);text-wrap:pretty;text-shadow:0 2px 16px rgba(248,240,231,.7);animation:ahFade 900ms cubic-bezier(.22,.8,.22,1) 280ms both">{{ t.heroSub }}</p>
     <div style="display:flex;flex-wrap:wrap;align-items:center;gap:22px;margin-top:clamp(26px,3.6vh,38px);animation:ahFade 900ms cubic-bezier(.22,.8,.22,1) 400ms both">
       <a href="#s02" onClick="{{ goCollections }}" style="display:inline-flex;align-items:center;gap:12px;min-height:54px;padding:0 32px;border-radius:18px;background:#4c260f;color:#f6ece2;font:500 13px/1 'DM Sans',sans-serif;letter-spacing:.14em;text-transform:uppercase;box-shadow:0 18px 40px -22px rgba(76,38,15,.85),inset 0 1px 0 rgba(255,255,255,.16);transition:transform 260ms cubic-bezier(.22,.8,.22,1),background 260ms" style-hover="transform:translateY(-2px);background:#5d3116;color:#f6ece2">{{ t.exploreCta }} <span aria-hidden="true">→</span></a>
-      <a href="TicariHesap.dc.html" style="display:inline-flex;align-items:center;gap:9px;min-height:54px;padding:0 26px;border-radius:18px;background:rgba(255,251,246,.62);border:1px solid rgba(76,38,15,.42);color:#3a1f0f;font:500 12.5px/1 'DM Sans',sans-serif;letter-spacing:.1em;text-transform:uppercase;box-shadow:0 10px 26px -18px rgba(34,28,24,.4);transition:transform 220ms cubic-bezier(.22,.8,.22,1),background 220ms,border-color 220ms" style-hover="transform:translateY(-2px);background:rgba(255,251,246,.92);border-color:rgba(76,38,15,.6)">{{ t.tradeCta }} <span aria-hidden="true">→</span></a>
     </div>
     </div>
   </div>
@@ -330,8 +328,8 @@ button::-moz-focus-inner{border:0;padding:0}
     <div aria-hidden="true" style="position:absolute;left:0;right:0;bottom:-40px;top:6px;pointer-events:none;background:linear-gradient(to bottom,rgba(244,234,222,.42) 0%,rgba(245,236,225,.88) 26%,#f2e7dd 66%,#f2e7dd 100%)"></div>
     <div style="position:relative;max-width:1560px;margin:0 auto;padding-top:clamp(18px,2.4vh,26px);border-top:1px solid rgba(76,38,15,.22);display:grid;grid-template-columns:{{ stripCols }};gap:clamp(18px,3vw,52px);align-items:end">
       <sc-for list="{{ proofs }}" as="p" hint-placeholder-count="3">
-        <div style="display:flex;flex-direction:column;gap:8px">
-          <span style="font:400 clamp(32px,3.2vw,54px)/1 'DM Sans',sans-serif;color:#102a3a;letter-spacing:-.015em;font-variant-numeric:tabular-nums;text-shadow:0 1px 14px rgba(248,240,231,.6)">{{ p.title }}</span>
+        <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px">
+          <span style="font:700 clamp(32px,3.2vw,54px)/1 'DM Sans',sans-serif;color:#102a3a;letter-spacing:-.015em;font-variant-numeric:tabular-nums;text-shadow:0 1px 14px rgba(248,240,231,.6)">{{ p.title }}</span>
           <span style="font:500 clamp(11.5px,.95vw,13px)/1.35 'DM Sans',sans-serif;letter-spacing:.18em;text-transform:uppercase;color:#8f4a28">{{ p.body }}</span>
         </div>
       </sc-for>
@@ -339,42 +337,8 @@ button::-moz-focus-inner{border:0;padding:0}
   </div>
 </section>
 
-<!-- 01B — SOLUTIONS -->
-<section id="s01b" data-screen-label="01B Solutions" style="position:relative;min-height:{{ sectionMinH }};scroll-snap-align:start;background:#f2e7dd">
-  <div aria-hidden="true" data-bg="assets/bg/solutions.webp" style="position:absolute;inset:0;pointer-events:none;opacity:.4;background-image:none;background-size:cover;background-position:center 22%"></div>
-  <div aria-hidden="true" style="position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(242,231,221,.62) 0%,rgba(243,233,223,.34) 34%,rgba(242,231,221,.58) 100%)"></div>
-  <div aria-hidden="true" style="position:absolute;left:0;right:0;top:0;height:clamp(90px,12vh,150px);z-index:2;pointer-events:none;background:linear-gradient(to bottom,#f2e7dd 0%,rgba(242,231,221,.72) 46%,rgba(242,231,221,0) 100%)"></div>
-  <div aria-hidden="true" style="position:absolute;left:0;right:0;bottom:calc(-1 * clamp(90px,12vh,150px));height:clamp(180px,24vh,300px);z-index:2;pointer-events:none;background:linear-gradient(to bottom,rgba(242,231,221,0) 0%,rgba(242,231,221,.78) 48%,#f2e7dd 100%)"></div>
-  <div style="position:relative;max-width:1560px;margin:0 auto;min-height:{{ sectionMinH }};padding:clamp(104px,12vh,150px) clamp(20px,3vw,48px) clamp(40px,6vh,72px);display:flex;flex-direction:column;justify-content:center;gap:clamp(26px,4vh,48px)">
-    <div style="display:grid;grid-template-columns:{{ solHeadCols }};gap:clamp(20px,3vw,56px);align-items:end">
-      <div style="max-width:620px">
-        <span style="display:inline-flex;align-items:center;gap:12px;font:500 11px/1.4 'DM Sans',sans-serif;letter-spacing:.24em;text-transform:uppercase;color:#a55a34">01 <span style="width:34px;height:1px;background:#c29263"></span> {{ t.solEyebrow }}</span>
-        <h2 style="margin:16px 0 0;font:400 clamp(32px,3.8vw,60px)/1.04 'DM Sans',sans-serif;color:#102a3a;letter-spacing:-.01em;text-wrap:balance">{{ t.solTitle }}</h2>
-      </div>
-      <p style="margin:0;max-width:44ch;font:300 clamp(14px,1.15vw,17.5px)/1.62 'DM Sans',sans-serif;color:rgba(34,28,24,.76);text-wrap:pretty">{{ t.solBody }}</p>
-    </div>
-
-    <div style="display:grid;grid-template-columns:{{ solCols }};gap:1px;background:rgba(76,38,15,.12);border-radius:26px;overflow:hidden;box-shadow:0 40px 74px -40px rgba(34,28,24,.5),inset 0 1px 0 rgba(255,255,255,.7)">
-      <sc-for list="{{ solCards }}" as="c" hint-placeholder-count="4">
-        <a href="{{ c.href }}" onClick="{{ c.onClick }}" style="{{ c.style }}" style-hover="background:#fffdfa">
-          <span style="display:flex;align-items:baseline;gap:12px">
-            <span style="font:500 10.5px/1 'DM Sans',sans-serif;letter-spacing:.2em;color:rgba(165,90,52,.95)">{{ c.num }}</span>
-            <span aria-hidden="true" style="flex:1;height:1px;background:rgba(76,38,15,.14)"></span>
-          </span>
-          <h3 style="margin:16px 0 0;font:400 clamp(19px,1.6vw,27px)/1.14 'DM Sans',sans-serif;color:#102a3a;text-wrap:balance">{{ c.t }}</h3>
-          <p style="margin:10px 0 0;font:300 clamp(13px,1.05vw,15.5px)/1.58 'DM Sans',sans-serif;color:rgba(34,28,24,.74);text-wrap:pretty">{{ c.b }}</p>
-          <span style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:auto;padding-top:22px">
-            <span style="font:500 10.5px/1.35 'DM Sans',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#a55a34">{{ c.d }}</span>
-            <span aria-hidden="true" style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;flex:none;border-radius:50%;border:1px solid rgba(76,38,15,.18);color:#4c260f;font:400 14px/1 'DM Sans',sans-serif;transition:transform 260ms cubic-bezier(.22,.8,.22,1),border-color 260ms cubic-bezier(.22,.8,.22,1)" style-hover="transform:translateX(4px);border-color:rgba(165,90,52,.6)">→</span>
-          </span>
-        </a>
-      </sc-for>
-    </div>
-  </div>
-</section>
-
 <!-- 02 — COLLECTIONS -->
-<section id="s02" data-screen-label="02 Collections" style="position:relative;min-height:{{ sectionMinH }};scroll-snap-align:start;overflow:hidden;background:linear-gradient(180deg,#f2e7dd 0%,#efe2d6 62%,#f2e7dd 100%)">
+<section id="s02" data-screen-label="02 Collections" style="user-select:none;-webkit-user-select:none;position:relative;min-height:{{ sectionMinH }};scroll-snap-align:start;overflow:hidden;background:linear-gradient(180deg,#f2e7dd 0%,#efe2d6 62%,#f2e7dd 100%)">
   <div aria-hidden="true" data-bg="assets/bg/02_collections.webp" style="position:absolute;inset:0;background-image:none;background-size:cover;background-position:center;pointer-events:none"></div>
   <div aria-hidden="true" style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(242,231,221,.44) 0%,rgba(242,231,221,.22) 40%,rgba(242,231,221,.62) 100%);pointer-events:none"></div>
   <div aria-hidden="true" style="position:absolute;top:-8%;right:-4%;width:48%;height:52%;background:radial-gradient(60% 60% at 70% 30%,rgba(194,146,99,.22) 0%,rgba(242,231,221,0) 70%);pointer-events:none"></div>
@@ -428,7 +392,7 @@ button::-moz-focus-inner{border:0;padding:0}
 </section>
 
 <!-- 03 — SELECTED RUGS -->
-<section id="s03" data-screen-label="03 Selected Rugs" style="position:relative;min-height:{{ sectionMinH }};scroll-snap-align:start;overflow:hidden;background:linear-gradient(180deg,#f2e7dd 0%,#f4ece4 40%,#eee2d5 100%)">
+<section id="s03" data-screen-label="03 Selected Rugs" style="user-select:none;-webkit-user-select:none;position:relative;min-height:{{ sectionMinH }};scroll-snap-align:start;overflow:hidden;background:linear-gradient(180deg,#f2e7dd 0%,#f4ece4 40%,#eee2d5 100%)">
   <div aria-hidden="true" data-bg="assets/bg/03_selected.webp" style="position:absolute;inset:0;background-image:none;background-size:cover;background-position:center;pointer-events:none"></div>
   <div aria-hidden="true" style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(244,236,228,.58) 0%,rgba(242,231,221,.44) 50%,rgba(238,226,213,.66) 100%);pointer-events:none"></div>
   <div aria-hidden="true" style="position:absolute;bottom:-10%;left:-6%;width:56%;height:46%;background:radial-gradient(55% 55% at 40% 60%,rgba(16,42,58,.1) 0%,rgba(242,231,221,0) 72%);pointer-events:none"></div>
@@ -442,7 +406,7 @@ button::-moz-focus-inner{border:0;padding:0}
 
     <div style="display:flex;flex-direction:column;align-items:flex-start;gap:12px;margin:clamp(22px,3.4vh,38px) 0 clamp(18px,2.6vh,30px)">
     <div style="display:flex;align-items:center;justify-content:space-between;gap:20px;width:100%">
-      <div ref="{{ filterRail }}" role="group" aria-label="{{ t.filterLabel }}" style="position:relative;display:flex;align-items:stretch;gap:2px;padding:6px;border-radius:27px;background:rgba(255,251,246,.72);border:1px solid rgba(76,38,15,.12);box-shadow:inset 0 1px 0 rgba(255,255,255,.6);flex:0 1 auto;min-width:0;max-width:100%;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none">
+      <div ref="{{ filterRail }}" role="group" aria-label="{{ t.filterLabel }}" style="position:relative;display:flex;align-items:stretch;gap:2px;padding:6px;border-radius:27px;background:rgba(255,251,246,.72);border:1px solid rgba(76,38,15,.12);box-shadow:inset 0 1px 0 rgba(255,255,255,.6);flex:0 1 auto;min-width:0;max-width:100%;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;-ms-overflow-style:none">
         <span aria-hidden="true" style="{{ filterPillStyle }}"></span>
         <sc-for list="{{ filters }}" as="f" hint-placeholder-count="5">
           <button type="button" onClick="{{ f.onClick }}" aria-pressed="{{ f.active }}" style="{{ f.style }}">{{ f.label }}</button>
@@ -455,6 +419,13 @@ button::-moz-focus-inner{border:0;padding:0}
         </div>
       </div>
     </div>
+    <sc-if value="{{ hasSub }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-wrap:wrap;gap:8px">
+        <sc-for list="{{ subFilters }}" as="sf" hint-placeholder-count="4">
+          <button type="button" onClick="{{ sf.onClick }}" style="{{ sf.style }}" style-hover="background:rgba(165,90,52,.1)">{{ sf.label }}</button>
+        </sc-for>
+      </div>
+    </sc-if>
     <sc-if value="{{ rugCountLabel }}" hint-placeholder-val="{{ true }}">
       <span style="font:500 11px/1.2 'DM Sans',sans-serif;letter-spacing:.1em;text-transform:uppercase;color:rgba(34,28,24,.6)">{{ rugCountLabel }}</span>
     </sc-if>
@@ -480,8 +451,7 @@ button::-moz-focus-inner{border:0;padding:0}
               <h3 style="margin:0;min-height:1.25em;font:400 clamp(15px,1.25vw,20px)/1.2 'DM Sans',sans-serif;color:#102a3a;text-wrap:balance">{{ card.name }}</h3>
               <p style="margin:8px 0 0;font:500 10.5px/1.3 'DM Sans',sans-serif;letter-spacing:.18em;text-transform:uppercase;color:rgba(34,28,24,.6)">{{ card.group }}</p>
               <div style="display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px;margin-top:10px;padding-top:8px;border-top:1px solid rgba(76,38,15,.14)">
-                <button type="button" onClick="{{ card.onOpen }}" style="display:inline-flex;align-items:center;gap:8px;padding:0;border:none;background:none;cursor:pointer;font:500 12px/1 'DM Sans',sans-serif;letter-spacing:.13em;text-transform:uppercase;color:#4c260f;min-height:40px;white-space:nowrap">{{ t.viewRug }} <span aria-hidden="true">→</span></button>
-                <button type="button" onClick="{{ card.onSample }}" aria-pressed="{{ card.sampleAdded }}" aria-label="{{ card.sampleAria }}" style="{{ card.sampleBtnStyle }}" style-hover="background:rgba(165,90,52,.24);color:#4c260f">{{ card.sampleShort }}</button>
+                <button type="button" onClick="{{ card.onOpen }}" style="display:inline-flex;align-items:center;gap:8px;padding:0;border:none;background:none;cursor:pointer;font:500 12px/1 'DM Sans',sans-serif;letter-spacing:.13em;text-transform:uppercase;color:#4c260f;min-height:40px;white-space:nowrap">{{ t.viewCollection }} <span aria-hidden="true">→</span></button>
               </div>
             </div>
           </div>
@@ -500,65 +470,32 @@ button::-moz-focus-inner{border:0;padding:0}
   </div>
 </section>
 
-<!-- 04 — BUILT FOR TRADE -->
-<section id="s04" data-screen-label="04 Built for Trade" style="position:relative;min-height:{{ sectionMinH }};scroll-snap-align:start;overflow:hidden;background:linear-gradient(180deg,#eee2d5 0%,#f2e7dd 34%,#efe3d7 100%);display:flex;flex-direction:column">
-  <div aria-hidden="true" data-bg="assets/bg/04_trade.webp" style="position:absolute;inset:0;opacity:.45;background-image:none;background-size:cover;background-position:center;pointer-events:none"></div>
-  <div aria-hidden="true" style="position:absolute;inset:0;background:linear-gradient(100deg,rgba(242,231,221,.94) 0%,rgba(242,231,221,.66) 40%,rgba(238,226,213,.30) 100%);pointer-events:none"></div>
-  <div aria-hidden="true" style="position:absolute;top:-6%;right:-8%;width:54%;height:60%;background:radial-gradient(58% 58% at 62% 38%,rgba(16,42,58,.10) 0%,rgba(242,231,221,0) 72%);pointer-events:none"></div>
-  <div style="position:relative;flex:1;max-width:1560px;width:100%;margin:0 auto;padding:clamp(104px,11vh,140px) clamp(20px,3vw,48px) clamp(24px,3vh,40px);display:grid;grid-template-columns:{{ colGridCols }};gap:clamp(28px,4vw,72px);align-items:center">
-
-    <div style="max-width:520px">
-      <span style="display:inline-flex;align-items:center;flex-wrap:wrap;gap:12px;font:500 11px/1.4 'DM Sans',sans-serif;letter-spacing:.24em;text-transform:uppercase;color:#a55a34">04 <span style="width:34px;height:1px;background:#c29263"></span> {{ t.tradeEyebrow }}</span>
-      <h2 style="margin:16px 0 0;font:400 clamp(32px,3.8vw,62px)/1.02 'DM Sans',sans-serif;color:#102a3a;letter-spacing:-.01em;text-wrap:balance">{{ t.tradeTitle }}</h2>
-      <p style="margin:18px 0 0;font:300 clamp(14px,1.15vw,17px)/1.6 'DM Sans',sans-serif;color:rgba(34,28,24,.7);text-wrap:pretty">{{ t.tradeBody }}</p>
-      <a href="#s10" onClick="{{ goContact }}" style="display:inline-flex;align-items:center;gap:11px;margin-top:22px;min-height:52px;padding:0 28px;border-radius:16px;background:#4c260f;color:#f6ece2;font:500 12.5px/1 'DM Sans',sans-serif;letter-spacing:.13em;text-transform:uppercase;box-shadow:0 22px 44px -22px rgba(76,38,15,.55);transition:transform 260ms cubic-bezier(.22,.8,.22,1),background 260ms" style-hover="transform:translateY(-2px);background:#5d3116;color:#f6ece2">{{ t.tradeCtaStrong }} <span aria-hidden="true">→</span></a>
-      <div style="display:flex;flex-wrap:wrap;gap:10px 22px;margin-top:20px">
-        <sc-for list="{{ tradeFacts }}" as="f" hint-placeholder-count="4">
-          <span style="display:inline-flex;align-items:center;gap:8px;font:500 11px/1.2 'DM Sans',sans-serif;letter-spacing:.04em;color:rgba(34,28,24,.66)"><span aria-hidden="true" style="width:6px;height:6px;border-radius:50%;background:#a55a34;flex:none"></span>{{ f }}</span>
-        </sc-for>
-      </div>
-      <div ref="{{ audRail }}" role="tablist" style="position:relative;margin-top:clamp(22px,3.6vh,40px);display:flex;flex-direction:column;border-left:1px solid rgba(76,38,15,.16)">
-        <span aria-hidden="true" style="{{ audPillStyle }}"></span>
-        <sc-for list="{{ audiences }}" as="a" hint-placeholder-count="5">
-          <button type="button" role="tab" aria-selected="{{ a.active }}" onClick="{{ a.onClick }}" style="{{ a.style }}" style-hover="color:#4c260f;background:rgba(165,90,52,.07)">
-            <span style="{{ a.numStyle }}">{{ a.num }}</span>
-            <span style="{{ a.nameStyle }}">{{ a.label }}</span>
-            <span aria-hidden="true" style="{{ a.markStyle }}">→</span>
-          </button>
-        </sc-for>
-      </div>
+<!-- 04 — ABOUT -->
+<section id="s04a" data-screen-label="04 About" style="position:relative;min-height:{{ sectionMinH }};scroll-snap-align:start;overflow:hidden;background:linear-gradient(180deg,#eee2d5 0%,#f2e7dd 34%,#efe3d7 100%)">
+  <div style="position:relative;max-width:1560px;margin:0 auto;min-height:{{ sectionMinH }};padding:clamp(104px,11vh,140px) clamp(20px,3vw,48px) clamp(40px,6vh,72px);display:flex;flex-direction:column;justify-content:center;gap:clamp(24px,4vh,44px)">
+    <div style="max-width:620px">
+      <span style="display:inline-flex;align-items:center;gap:12px;font:500 11px/1 'DM Sans',sans-serif;letter-spacing:.24em;text-transform:uppercase;color:#a55a34">04 <span style="width:34px;height:1px;background:#c29263"></span> {{ aboutEyebrow }}</span>
     </div>
-
-    <div>
-      <div style="max-width:640px">
-        <span style="{{ audienceLabelStyle }}">{{ audienceLabel }}</span>
-        <p style="{{ tradeLeadStyle }}">{{ audienceLead }}</p>
-      </div>
-      <div aria-hidden="true" style="margin-top:clamp(20px,2.8vh,30px);height:1px;background:linear-gradient(90deg,rgba(165,90,52,.5) 0%,rgba(76,38,15,.14) 34%,rgba(76,38,15,0) 100%)"></div>
-      <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-columns:{{ tradeCardCols }};gap:1px;margin-top:clamp(18px,2.4vh,26px);background:rgba(76,38,15,.1);border-radius:24px;overflow:hidden;box-shadow:0 34px 66px -38px rgba(34,28,24,.5),inset 0 1px 0 rgba(255,255,255,.7)">
-        <sc-for list="{{ tradeCards }}" as="c" hint-placeholder-count="4">
-          <a href="{{ c.href }}" aria-label="{{ c.aria }}" style="{{ c.style }}" style-hover="background:rgba(255,251,246,.99)">
-            <span style="display:flex;align-items:baseline;gap:12px">
-              <span style="font:500 10.5px/1 'DM Sans',sans-serif;letter-spacing:.2em;color:rgba(165,90,52,.95)">{{ c.num }}</span>
-              <span aria-hidden="true" style="flex:1;height:1px;background:rgba(76,38,15,.14)"></span>
-            </span>
-            <p style="margin:14px 0 0;font:400 clamp(16px,1.35vw,21px)/1.16 'DM Sans',sans-serif;color:#102a3a">{{ c.t }}</p>
-            <p style="margin:7px 0 0;font:300 clamp(12.5px,1vw,14.5px)/1.55 'DM Sans',sans-serif;color:rgba(34,28,24,.7);text-wrap:pretty">{{ c.b }}</p>
-            <span style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:auto;padding-top:18px">
-              <span style="font:500 10.5px/1.3 'DM Sans',sans-serif;letter-spacing:.13em;text-transform:uppercase;color:#a55a34">{{ c.focus }}</span>
-              <span aria-hidden="true" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;flex:none;border-radius:50%;border:1px solid rgba(76,38,15,.16);color:#4c260f;font:400 14px/1 'DM Sans',sans-serif;transition:transform 260ms cubic-bezier(.22,.8,.22,1),border-color 260ms cubic-bezier(.22,.8,.22,1)" style-hover="transform:translateX(4px);border-color:rgba(165,90,52,.6)">→</span>
-            </span>
-          </a>
-        </sc-for>
-      </div>
-      <a href="TicariHesap.dc.html" style="display:inline-flex;align-items:center;gap:11px;margin-top:clamp(18px,2.6vh,30px);padding-bottom:7px;border-bottom:1px solid rgba(76,38,15,.34);font:500 11.5px/1 'DM Sans',sans-serif;letter-spacing:.15em;text-transform:uppercase;color:#4c260f;min-height:44px">{{ t.tradeLink }} <span aria-hidden="true">→</span></a>
-    </div>
-  </div>
-
-  <div aria-hidden="true" style="position:relative;height:clamp(88px,10.5vh,118px);background:#a55a34;display:flex;align-items:center;overflow:hidden;box-shadow:inset 0 1px 0 rgba(255,255,255,.14)">
-    <div style="display:flex;align-items:center;gap:64px;white-space:nowrap;font:500 clamp(20px,1.7vw,28px)/1 'DM Sans',sans-serif;letter-spacing:.18em;text-transform:uppercase;color:rgba(248,240,231,.96);animation:ahTicker 46s linear infinite;padding-left:56px">
-      <sc-for list="{{ tickerItems }}" as="ti" hint-placeholder-count="6">
-        <span>{{ ti.text }}</span>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:clamp(14px,1.6vw,24px);align-items:stretch">
+      <sc-for list="{{ aboutCols }}" as="c" hint-placeholder-count="3">
+        <article data-seq="1" style="display:flex;flex-direction:column;padding:clamp(22px,2.2vw,34px);border-radius:26px;background:rgba(236,224,211,.62);border:1px solid rgba(76,38,15,.1);box-shadow:0 34px 60px -46px rgba(34,28,24,.4)">
+          <span style="font:500 10.5px/1 'DM Sans',sans-serif;letter-spacing:.2em;color:rgba(165,90,52,.95)">{{ c.num }}</span>
+          <h2 style="margin:14px 0 0;font:400 clamp(24px,2.2vw,34px)/1.1 'DM Sans',sans-serif;color:#102a3a;letter-spacing:-.01em">{{ c.title }}</h2>
+          <sc-if value="{{ c.hasHead }}" hint-placeholder-val="{{ false }}"><p style="margin:14px 0 0;font:500 clamp(14.5px,1.1vw,16.5px)/1.4 'DM Sans',sans-serif;color:#4c260f;text-wrap:balance">{{ c.head }}</p></sc-if>
+          <sc-for list="{{ c.paras }}" as="p" hint-placeholder-count="3">
+            <p style="margin:12px 0 0;font:300 clamp(13px,.98vw,14.5px)/1.6 'DM Sans',sans-serif;color:rgba(34,28,24,.78);text-wrap:pretty">{{ p }}</p>
+          </sc-for>
+          <sc-if value="{{ c.hasBullets }}" hint-placeholder-val="{{ false }}">
+            <ul style="margin:14px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px">
+              <sc-for list="{{ c.bullets }}" as="b" hint-placeholder-count="3">
+                <li style="display:flex;gap:10px;font:400 clamp(13px,.98vw,14.5px)/1.45 'DM Sans',sans-serif;color:#102a3a"><span aria-hidden="true" style="flex:none;width:6px;height:6px;margin-top:7px;border-radius:50%;background:#a55a34"></span>{{ b }}</li>
+              </sc-for>
+            </ul>
+          </sc-if>
+          <sc-for list="{{ c.after }}" as="p" hint-placeholder-count="1">
+            <p style="margin:14px 0 0;font:300 clamp(13px,.98vw,14.5px)/1.6 'DM Sans',sans-serif;color:rgba(34,28,24,.78);text-wrap:pretty">{{ p }}</p>
+          </sc-for>
+        </article>
       </sc-for>
     </div>
   </div>
@@ -576,25 +513,12 @@ button::-moz-focus-inner{border:0;padding:0}
       <div style="{{ lensStyle }}">
         <img loading="lazy" decoding="async" src="assets/collections/aurora.webp" alt="" style="{{ lensImgStyle }}">
       </div>
-      <div style="position:absolute;left:18px;bottom:18px;display:inline-flex;align-items:center;gap:10px;padding:11px 18px;border-radius:16px;background:rgba(242,231,221,.9);backdrop-filter:blur(8px);pointer-events:none">
-        <span style="font:400 14px/1.1 'DM Sans',sans-serif;color:#102a3a">Lima Rust</span>
-        <span style="width:1px;height:12px;background:rgba(34,28,24,.25)"></span>
-        <span style="font:500 10.5px/1 'DM Sans',sans-serif;letter-spacing:.16em;text-transform:uppercase;color:rgba(34,28,24,.55)">Textured</span>
-      </div>
     </div>
 
     <div style="max-width:600px;width:100%">
       <span style="display:inline-flex;align-items:center;gap:12px;font:500 11px/1 'DM Sans',sans-serif;letter-spacing:.24em;text-transform:uppercase;color:#a55a34">05 <span style="width:34px;height:1px;background:#c29263"></span> {{ t.craftEyebrow }}</span>
       <h2 style="margin:16px 0 0;font:400 clamp(30px,3.4vw,54px)/1.06 'DM Sans',sans-serif;color:#102a3a;letter-spacing:-.01em;text-wrap:balance">{{ t.craftTitle }}</h2>
       <p style="margin:18px 0 0;font:300 clamp(14px,1.15vw,17px)/1.62 'DM Sans',sans-serif;color:rgba(34,28,24,.78);text-wrap:pretty">{{ t.craftBody }}</p>
-      <div style="margin-top:clamp(24px,3.6vh,44px);border-top:1px solid rgba(76,38,15,.2);display:grid;grid-template-columns:minmax(84px,auto) 1fr;align-items:baseline;column-gap:clamp(16px,2vw,30px)">
-        <sc-for list="{{ facts }}" as="f" hint-placeholder-count="3">
-          <div style="display:contents">
-            <p style="margin:0;padding:clamp(14px,2vh,20px) 0;border-bottom:1px solid rgba(76,38,15,.12);font:400 clamp(30px,3.2vw,50px)/1 'DM Sans',sans-serif;letter-spacing:-.02em;color:#102a3a;font-variant-numeric:tabular-nums">{{ f.n }}</p>
-            <p style="margin:0;padding:clamp(14px,2vh,20px) 0;border-bottom:1px solid rgba(76,38,15,.12);font:300 clamp(12.5px,1vw,14.5px)/1.5 'DM Sans',sans-serif;color:rgba(34,28,24,.68);text-wrap:pretty">{{ f.l }}</p>
-          </div>
-        </sc-for>
-      </div>
       <p style="display:inline-flex;align-items:center;gap:10px;margin:clamp(18px,2.6vh,28px) 0 0;font:500 10.5px/1.4 'DM Sans',sans-serif;letter-spacing:.18em;text-transform:uppercase;color:rgba(34,28,24,.64)"><span aria-hidden="true" style="width:22px;height:1px;background:rgba(165,90,52,.7)"></span>{{ t.craftLensHint }}</p>
     </div>
   </div>
@@ -648,8 +572,7 @@ button::-moz-focus-inner{border:0;padding:0}
       <span aria-hidden="true" style="{{ hubImgStyle }}"></span>
       <div style="{{ hubCopyOuterStyle }}">
         <div style="{{ hubCopyInnerStyle }}">
-          <p style="margin:0;font:500 11.5px/1.2 'DM Sans',sans-serif;letter-spacing:.18em;text-transform:uppercase;color:#a55a34">{{ t.modelHubKicker }}</p>
-          <p style="margin:4px 0 3px;font:400 clamp(19px,2.2vw,27px)/1.1 'DM Sans',sans-serif;color:#102a3a;letter-spacing:-.015em;text-wrap:balance">{{ t.modelHubTitle }}</p>
+          <p style="margin:4px 0 3px;font:400 clamp(14px,1.55vw,19px)/1.1 'DM Sans',sans-serif;color:#102a3a;letter-spacing:-.015em;text-wrap:balance">{{ t.modelHubTitle }}</p>
           <p style="margin:0 auto;max-width:92%;font:300 clamp(12.5px,1.05vw,14.5px)/1.34 'DM Sans',sans-serif;color:rgba(34,28,24,.78);text-wrap:pretty">{{ t.modelHubBody }}</p>
         </div>
       </div>
@@ -1125,7 +1048,7 @@ button::-moz-focus-inner{border:0;padding:0}
 
   <div style="position:relative;max-width:1560px;margin:0 auto clamp(28px,4vh,44px);display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:20px 40px">
     <p style="margin:0;font:400 clamp(22px,2.2vw,32px)/1.05 'DM Sans',sans-serif;color:#f6ece2;letter-spacing:-.01em">Gaziantep <span style="color:#c29263">→ London</span></p>
-    <a href="TicariHesap.dc.html" style="display:inline-flex;align-items:center;gap:11px;min-height:52px;padding:0 28px;border-radius:16px;background:#c29263;color:#221c18;font:500 12.5px/1 'DM Sans',sans-serif;letter-spacing:.13em;text-transform:uppercase;transition:transform 260ms cubic-bezier(.22,.8,.22,1),background 260ms" style-hover="transform:translateY(-2px);background:#d7a878;color:#221c18" style-focus="outline:2px solid #f6ece2;outline-offset:2px">{{ t.tradeCta }} <span aria-hidden="true">→</span></a>
+    <a href="https://shopify.com/authentication/7672149/login?analytics_trace_id=0edefd09-eb37-44f8-803e-45ab7b49fe57&amp;client_id=88fd3db5-cb94-4cfd-9780-a5be09b93e63&amp;locale=en-GB&amp;redirect_uri=%2Fauthentication%2F7672149%2Foauth%2Fauthorize%3Fanalytics_trace_id%3D0edefd09-eb37-44f8-803e-45ab7b49fe57%26buyer_flags%3DeyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJhc2lhdGljLm15c2hvcGlmeS5jb20iLCJmbGFncyI6W10sImV4cCI6MTc5NDgzMzU1OCwibmJmIjoxNzk0MjI4NzU4fQ.fX_TmjAtykpAmGyAAgDhbj7kzyEm0dvnM-FLP8GDn8M%26client_id%3D88fd3db5-cb94-4cfd-9780-a5be09b93e63%26locale%3Den-GB%26nonce%3D9577b094-cb48-4894-b313-d266cdca7230%26redirect_uri%3Dhttps%253A%252F%252Fshopify.com%252F7672149%252Faccount%252Fcallback%26region_country%3DGB%26response_type%3Dcode%26scope%3Dopenid%2Bemail%2Bcustomer-account-api%253Afull%26state%3DhWNIwqx6M0bw9t2pYnP07vDK&amp;region_country=GB" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:11px;min-height:52px;padding:0 28px;border-radius:16px;background:#c29263;color:#221c18;font:500 12.5px/1 'DM Sans',sans-serif;letter-spacing:.13em;text-transform:uppercase;transition:transform 260ms cubic-bezier(.22,.8,.22,1),background 260ms" style-hover="transform:translateY(-2px);background:#d7a878;color:#221c18" style-focus="outline:2px solid #f6ece2;outline-offset:2px">{{ t.tradeCta }} <span aria-hidden="true">→</span></a>
   </div>
 
   <div style="position:relative;max-width:1560px;margin:0 auto;display:grid;grid-template-columns:{{ footerMainCols }};gap:clamp(28px,5vw,80px);align-items:start;padding:clamp(26px,4vh,40px) 0;border-top:1px solid rgba(246,236,226,.16)">
@@ -1196,10 +1119,6 @@ button::-moz-focus-inner{border:0;padding:0}
   <header style="{{ mHeaderStyle }}">
     <img fetchpriority="high" decoding="async" src="assets/logo-mark.webp" alt="Asiatic Halı Türkiye" style="height:44px;width:auto">
     <div style="flex:1"></div>
-    <button type="button" onClick="{{ openMobileSamples }}" aria-label="{{ samplesCta }}" style="position:relative;display:flex;align-items:center;justify-content:center;width:44px;height:44px;border:none;background:transparent;color:#102a3a;cursor:pointer">
-      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-6-4-6 4z"></path></svg>
-      <sc-if value="{{ mSamplesBadge }}" hint-placeholder-val="{{ false }}"><span style="{{ mSamplesBadgeStyle }}">{{ samplesCount }}</span></sc-if>
-    </button>
     <button type="button" onClick="{{ toggleMobileMenu }}" aria-label="Menü" aria-expanded="{{ mobileMenuOpen }}" style="{{ mBurgerStyle }}">
       <span style="display:block;width:19px;height:1.5px;background:#102a3a"></span>
       <span style="display:block;width:19px;height:1.5px;background:#102a3a;margin-top:5px"></span>
@@ -1227,7 +1146,6 @@ button::-moz-focus-inner{border:0;padding:0}
           <p style="margin:12px 0 0;max-width:34ch;font:300 15px/1.55 'DM Sans',sans-serif;color:rgba(34,28,24,.78);text-wrap:pretty">{{ mHeroSub }}</p>
           <div style="display:flex;flex-direction:column;gap:6px;margin-top:22px">
             <button type="button" onClick="{{ setTabCollections }}" style="min-height:54px;border:none;border-radius:14px;background:#4c260f;color:#f6ece2;font:500 13.5px/1 'DM Sans',sans-serif;letter-spacing:.06em;text-transform:uppercase;cursor:pointer">{{ mExploreCta }}</button>
-            <a href="TicariHesap.dc.html" style="display:flex;align-items:center;justify-content:center;gap:8px;min-height:48px;color:#4c260f;font:500 12px/1 'DM Sans',sans-serif;letter-spacing:.08em;text-transform:uppercase;text-decoration:none">{{ mTradeCta }} <span aria-hidden="true">→</span></a>
           </div>
         </div>
       </section>
@@ -1287,10 +1205,6 @@ button::-moz-focus-inner{border:0;padding:0}
         <p style="margin:10px 0 0;font:300 14.5px/1.55 'DM Sans',sans-serif;color:rgba(34,28,24,.78)">{{ mCraftBody }}</p>
       </section>
 
-      <section style="margin:0 20px 40px;padding:26px 22px;border-radius:20px;background:#102a3a;color:#f6ece2">
-        <p style="margin:0;font:400 19px/1.28 'DM Sans',sans-serif">{{ t.tradeCtaStrong }}</p>
-        <a href="TicariHesap.dc.html" style="display:flex;align-items:center;justify-content:center;margin-top:16px;min-height:48px;border:none;border-radius:14px;background:#c29263;color:#221c18;font:500 12.5px/1 'DM Sans',sans-serif;letter-spacing:.06em;text-transform:uppercase">{{ t.tradeCtaStrong }}</a>
-      </section>
     </sc-if>
 
     <sc-if value="{{ isTabCollections }}" hint-placeholder-val="{{ false }}">
@@ -1353,7 +1267,6 @@ button::-moz-focus-inner{border:0;padding:0}
           <p style="margin:6px 0 0;font:400 16px/1.3 'DM Sans',sans-serif;color:#102a3a">{{ t.modelHubTitle }}</p>
           <p style="margin:8px 0 0;font:300 13.5px/1.5 'DM Sans',sans-serif;color:rgba(34,28,24,.7)">{{ t.modelHubBody }}</p>
         </div>
-        <a href="TicariHesap.dc.html" style="display:flex;align-items:center;justify-content:center;margin-top:26px;min-height:50px;border:none;border-radius:14px;background:#4c260f;color:#f6ece2;font:500 12.5px/1 'DM Sans',sans-serif;letter-spacing:.08em;text-transform:uppercase">{{ t.tradeCtaStrong }}</a>
       </div>
     </sc-if>
 
@@ -1370,7 +1283,6 @@ button::-moz-focus-inner{border:0;padding:0}
           <p style="margin:10px 0 0;font:300 13.5px/1.65 'DM Sans',sans-serif;color:rgba(34,28,24,.72)">Block O, OCC, 105 Eade Road<br>London N4 1TJ, United Kingdom<br>Company No. 01332676</p>
           <p style="margin:10px 0 0;font:300 13.5px/1.65 'DM Sans',sans-serif"><a href="tel:+442088002000" style="display:inline-block;padding:9px 0;color:#a55a34">+44 (0)20 8800 2000</a><br><a href="mailto:sales@asiatic.co.uk" style="display:inline-block;padding:9px 0;color:#a55a34">sales@asiatic.co.uk</a></p>
         </div>
-        <a href="TicariHesap.dc.html" style="display:flex;align-items:center;justify-content:center;margin-top:20px;min-height:50px;border:none;border-radius:14px;background:#4c260f;color:#f6ece2;font:500 12.5px/1 'DM Sans',sans-serif;letter-spacing:.08em;text-transform:uppercase">{{ t.fSubmit }}</a>
       </div>
     </sc-if>
 
@@ -1444,7 +1356,6 @@ button::-moz-focus-inner{border:0;padding:0}
       </dl>
       <div style="display:flex;flex-direction:column;gap:10px;margin-top:18px">
         <sc-if value="{{ mModalIsRug }}" hint-placeholder-val="{{ false }}">
-          <button type="button" onClick="{{ mAddSampleFromModal }}" style="min-height:50px;border:none;border-radius:14px;background:#4c260f;color:#f6ece2;font:500 12.5px/1 'DM Sans',sans-serif;letter-spacing:.08em;text-transform:uppercase;cursor:pointer">{{ mModalSampleLabel }}</button>
         </sc-if>
         <sc-if value="{{ mModalHasCollectionLink }}" hint-placeholder-val="{{ false }}">
           <button type="button" onClick="{{ mModalViewCollection }}" style="min-height:50px;border:1px solid rgba(76,38,15,.3);border-radius:14px;background:none;color:#4c260f;font:500 12.5px/1 'DM Sans',sans-serif;letter-spacing:.08em;text-transform:uppercase;cursor:pointer">{{ t.viewCollection }}</button>
@@ -1521,7 +1432,6 @@ button::-moz-focus-inner{border:0;padding:0}
     </div>
     <div style="{{ modalFooterStyle }}">
         <a href="{{ modalSampleHref }}" style="display:inline-flex;align-items:center;gap:10px;min-height:50px;padding:0 26px;border-radius:16px;background:#4c260f;color:#f6ece2;font:500 12px/1 'DM Sans',sans-serif;letter-spacing:.13em;text-transform:uppercase;transition:transform 260ms cubic-bezier(.22,.8,.22,1),background 260ms" style-hover="transform:translateY(-2px);background:#5d3116;color:#f6ece2">{{ t.openCatalogue }} <span aria-hidden="true">→</span></a>
-        <a href="{{ modalInquiryHref }}" style="display:inline-flex;align-items:center;gap:10px;min-height:50px;padding:0 26px;border-radius:16px;border:1px solid rgba(76,38,15,.34);color:#4c260f;font:500 12px/1 'DM Sans',sans-serif;letter-spacing:.13em;text-transform:uppercase;transition:transform 260ms cubic-bezier(.22,.8,.22,1),border-color 260ms" style-hover="transform:translateY(-2px);border-color:rgba(76,38,15,.66);color:#4c260f">{{ t.modalInquiry }} <span aria-hidden="true">→</span></a>
     </div>
     </div>
   </div>
@@ -1537,7 +1447,7 @@ function galleryFor(id) {
   if (id === 'atlas') return GAL_COLOURS.reduce((a, c) => a.concat([resUrl('assets/atlas/' + c + '.webp', 'res-atlas-' + c), resUrl('assets/atlas/' + c + '-2.webp', 'res-atlas-' + c + '-2')]), []);
   return null;
 }
-function catHref(p) { const m = /\/collections\/([a-z-]+)/.exec((p && p.url) || ''); if (m && m[1] === 'atlas') return P('AtlasKatalog'); return P('Kataloglar') + (m ? '#' + m[1] : ''); }
+function catHref(p) { const m = /\/collections\/([a-z-]+)/.exec((p && p.url) || ''); return P('AtlasKatalog') + (m ? '?c=' + m[1] : ''); }
 function colImg(id) { return (window.__resources && window.__resources['res-col-' + id]) || (['assets', 'collections', id + '.webp'].join('/')); }
 const SUPABASE_URL = 'https://dytyehxybhzlmwxarbpc.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_oMWdZv_LTS3-3KbnzElAeg_tXBpy-cO';
@@ -1702,11 +1612,11 @@ const HERO_PLATES = [
 
 const T = {
   en: {
-    heroTitle: 'From Gaziantep to London.',
-    heroEyebrow: 'Asiatic Halı Türkiye — trade supply',
+    heroTitle: 'From Gaziantep to London and Beyond.',
+    heroEyebrow: 'Asiatic Halı Türkiye — Trade Supply · FOB · Consolidation Service',
     noteLabel: 'Note',
     heroSub: 'One point of access to Asiatic collections, Turkish production and commercial rug supply.',
-    exploreCta: 'Explore collections', tradeCta: 'Open a trade account',
+    exploreCta: 'Explore collections', tradeCta: 'Open a trade',
     scrollCue: 'See what we supply',
     close: 'Close', modalInquiry: 'Trade enquiry',
     colHint: 'Drag, or use the arrows',
@@ -1721,15 +1631,15 @@ const T = {
     colEyebrow: 'Collections', colTitle: 'Curated for every market.',
     colBody: 'From timeless heritage to modern expression—explore the collections we supply from Türkiye, drawn from the full Asiatic range.',
     colCta: 'Explore all collections', viewCollection: 'View collection',
-    rugEyebrow: 'Our selection', rugTitle: 'Selected Rugs',
+    rugEyebrow: 'Catalogue', rugTitle: 'Catalogue',
     rugBody: 'Handpicked highlights from our collections. Each rug is crafted to elevate interiors and endure beautifully over time.',
-    viewRug: 'View rug', openCatalogue: 'View in catalogue', requestSample: 'Request sample',
+    viewRug: 'View rug', openCatalogue: 'Open catalogue', requestSample: 'Request sample',
     addToSamples: 'Add to sample list', samplesAdded: 'Added',
     samplesEmpty: 'No samples added yet.', samplesRemove: 'Remove', samplesSendAll: 'Email this list',
     filterLabel: 'Filter by collection', prev: 'Previous', next: 'Next',
     rugCountOne: '1 rug matches this filter', rugCountMany: '{n} rugs match this filter',
     rugEmptyTitle: 'No rugs match this filter yet', rugEmptyBody: 'Try another collection group, or view all rugs.', rugEmptyCta: 'View all rugs',
-    navCollections: 'Collections', navSelected: 'Selected Rugs',
+    navCollections: 'Collections', navSelected: 'Catalogue',
     footerNav: 'Navigate', backToTop: 'Back to top',
     footerAbout: 'Asiatic Halı Türkiye is the Gaziantep arm of Asiatic Carpets. We consolidate production from partner mills, hold the Asiatic range in stock and ship wholesale rugs and trade carpets to retailers, hospitality projects and distributors. Gaziantep rug production, private label programmes and export documentation are handled from one office.',
     footerRights: '© 2026 Asiatic Halı Türkiye. All rights reserved.',
@@ -1740,11 +1650,11 @@ const T = {
     dataNote: 'Product names, collection groups and imagery are taken from the official Asiatic Carpets range at asiatic.co.uk. Material, pile height and trade sizes are pending confirmation and are deliberately not shown yet.'
   },
   tr: {
-    heroTitle: 'Gaziantep’ten Londra’ya.',
-    heroEyebrow: 'Asiatic Halı Türkiye — toptan tedarik',
+    heroTitle: 'Gaziantep’ten Londra’ya ve Ötesine.',
+    heroEyebrow: 'Asiatic Halı Türkiye — Toptan Tedarik · FOB · Konsolidasyon Hizmeti',
     noteLabel: 'Not',
     heroSub: 'Asiatic koleksiyonlarına, Türkiye üretimine ve ticari halı tedarikine tek noktadan erişin.',
-    exploreCta: 'Koleksiyonları inceleyin', tradeCta: 'Ticari hesap açın',
+    exploreCta: 'Koleksiyonları inceleyin', tradeCta: 'Open a trade',
     scrollCue: 'Ne tedarik ediyoruz',
     close: 'Kapat', modalInquiry: 'Ticari talep',
     colHint: 'Sürükleyin veya okları kullanın',
@@ -1759,15 +1669,15 @@ const T = {
     colEyebrow: 'Koleksiyonlar', colTitle: 'Her pazara özel koleksiyonlar.',
     colBody: 'Zamansız heritage’dan modern ifadeye—Asiatic ürün gamının tamamından seçilerek Türkiye’den tedarik ettiğimiz koleksiyonları keşfedin.',
     colCta: 'Tüm koleksiyonlar', viewCollection: 'Koleksiyonu gör',
-    rugEyebrow: 'Seçkimiz', rugTitle: 'Seçilmiş Halılar',
+    rugEyebrow: 'Katalog', rugTitle: 'Katalog',
     rugBody: 'Koleksiyonlarımızdan özenle seçilmiş öne çıkanlar. Her halı mekânı yükseltmek ve zamana güzelce dayanmak için üretilir.',
-    viewRug: 'Halıyı gör', openCatalogue: 'Katalogda gör', requestSample: 'Numune talebi',
+    viewRug: 'Halıyı gör', openCatalogue: 'Kataloğu aç', requestSample: 'Numune talebi',
     addToSamples: 'Numune listesine ekle', samplesAdded: 'Eklendi',
     samplesEmpty: 'Henüz numune eklenmedi.', samplesRemove: 'Kaldır', samplesSendAll: 'Bu listeyi e-postayla gönder',
     filterLabel: 'Koleksiyona göre filtrele', prev: 'Önceki', next: 'Sonraki',
     rugCountOne: 'Bu filtreye uyan 1 halı var', rugCountMany: 'Bu filtreye uyan {n} halı var',
     rugEmptyTitle: 'Bu filtreye uyan halı yok', rugEmptyBody: 'Başka bir koleksiyon grubu deneyin ya da tüm halıları görün.', rugEmptyCta: 'Tüm halıları gör',
-    navCollections: 'Koleksiyonlar', navSelected: 'Seçilmiş Halılar',
+    navCollections: 'Koleksiyonlar', navSelected: 'Katalog',
     footerNav: 'Bölümler', backToTop: 'Başa dön',
     footerAbout: 'Asiatic Halı Türkiye, Asiatic Carpets’in Gaziantep kolu. Partner üreticilerden gelen üretimi tek merkezde konsolide ediyor, Asiatic ürün gamını stokta tutuyor; perakendecilere, konaklama projelerine ve distribütörlere toptan halı tedarik ediyoruz. Gaziantep halı üretimi, özel marka programları ve ihracat evrakları tek ofisten yürütülür.',
     footerRights: '© 2026 Asiatic Halı Türkiye. Tüm hakları saklıdır.',
@@ -1796,13 +1706,13 @@ const SOLUTION_CARDS = {
 
 const PROOFS = {
   en: [
-    { title: '700+', body: 'Products in range' },
+    { title: '1000+', body: 'SKUs in range' },
     { title: 'Türkiye', body: 'Own-country production' },
     { title: '1960', body: 'Asiatic founded' }
   ],
   tr: [
-    { title: '700+', body: 'Ürün çeşidi' },
-    { title: 'TÜRKİYE', body: 'Kendi üretimimiz' },
+    { title: '1000+', body: 'SKU çeşidi' },
+    { title: 'Türkiye', body: 'Kendi üretimimiz' },
     { title: '1960', body: 'Asiatic kuruluş yılı' }
   ]
 };
@@ -1814,7 +1724,7 @@ const T2 = {
     tradeLead: 'Elevate your offerings with collections your customers love—backed by the reliability you need.',
     tradeLink: 'Learn more about trade access',
     tradeCtaStrong: 'Request wholesale pricing',
-    tradeFactMoq: 'No MOQ on stock lines', tradeFactLead: 'Weekly dispatch from Gaziantep', tradeFactStock: '700+ rugs in range', tradeFactSample: 'Samples on request',
+    tradeFactMoq: 'No MOQ on stock lines', tradeFactLead: 'Weekly dispatch from Gaziantep', tradeFactStock: '1000+ SKUs in range', tradeFactSample: 'Samples on request',
     craftEyebrow: 'Why Asiatic', craftTitle: 'The range behind the relationship.',
     craftBody: 'Asiatic Carpets has supplied the UK rug trade since 1960. The Türkiye operation puts that catalogue — and the mills behind it — one border closer to your warehouse.',
     craftLensHint: 'Move the cursor over the rug to inspect the weave — on touch, drag your finger',
@@ -1836,7 +1746,7 @@ const T2 = {
     tradeLead: 'Müşterilerinizin seveceği koleksiyonlarla teklifinizi yükseltin — ihtiyacınız olan güvenilirlikle desteklenmiş.',
     tradeLink: 'Ticari erişim hakkında bilgi al',
     tradeCtaStrong: 'Toptan fiyat iste',
-    tradeFactMoq: 'Stok serilerde MOQ yok', tradeFactLead: "Gaziantep'ten haftalık sevkiyat", tradeFactStock: '700+ halı çeşidi', tradeFactSample: 'Talep üzerine numune',
+    tradeFactMoq: 'Stok serilerde MOQ yok', tradeFactLead: "Gaziantep'ten haftalık sevkiyat", tradeFactStock: '1000+ SKU çeşidi', tradeFactSample: 'Talep üzerine numune',
     craftEyebrow: 'Neden Asiatic', craftTitle: 'İlişkinin arkasındaki ürün gamı.',
     craftBody: 'Asiatic Carpets 1960’tan beri İngiltere halı ticaretine tedarik yapıyor. Türkiye operasyonu bu kataloğu ve arkasındaki üretimi deponuza bir sınır daha yaklaştırıyor.',
     craftLensHint: 'Dokuyu incelemek için imleci halının üzerinde gezdirin — dokunmatikte parmağınızı sürükleyin',
@@ -1856,14 +1766,14 @@ const T2 = {
 
 const MAKERS = {
   en: [
-    { t: 'Manufacturer', b: 'Gaziantep mill' },
-    { t: 'Manufacturer', b: 'Gaziantep mill' },
-    { t: 'Manufacturer', b: 'Gaziantep mill' }
+    { t: 'Manufacturer', b: 'Türkiye mill' },
+    { t: 'Manufacturer', b: 'Türkiye mill' },
+    { t: 'Manufacturer', b: 'Türkiye mill' }
   ],
   tr: [
-    { t: 'Üretici', b: 'Gaziantep üretim' },
-    { t: 'Üretici', b: 'Gaziantep üretim' },
-    { t: 'Üretici', b: 'Gaziantep üretim' }
+    { t: 'Üretici', b: 'Türkiye üretim' },
+    { t: 'Üretici', b: 'Türkiye üretim' },
+    { t: 'Üretici', b: 'Türkiye üretim' }
   ]
 };
 
@@ -1926,12 +1836,12 @@ const SERVICES = {
 
 const FACTS = {
   en: [
-    { n: '700+', l: 'rugs in the current range' },
+    { n: '1000+', l: 'SKUs in the current range' },
     { n: '6', l: 'collections curated for this range' },
     { n: '3', l: 'brands: Asiatic, Katherine Carnaby, The Rug Edit' }
   ],
   tr: [
-    { n: '700+', l: 'Güncel gamdaki halı' },
+    { n: '1000+', l: 'Güncel gamdaki SKU' },
     { n: '6', l: 'küratörlü koleksiyon' },
     { n: '3', l: 'marka: Asiatic, Katherine Carnaby, The Rug Edit' }
   ]
@@ -2077,15 +1987,11 @@ const RB = {
 
 const TOOLKIT = {
   en: [
-    { t: 'Catalogues', b: 'Full Asiatic, Katherine Carnaby and The Rug Edit catalogues.', a: 'Open catalogues', href: 'Kataloglar.dc.html' },
-    { t: 'Samples', b: 'Request cuttings and full-size samples for your showroom.', a: 'Request samples', href: '#s10' },
-    { t: 'Trade account', b: 'Apply for a trade account and pricing.', a: 'Apply now', href: 'TicariHesap.dc.html' },
+    { t: 'Catalogues', b: 'Full Asiatic, Katherine Carnaby and The Rug Edit catalogues.', a: 'Open catalogues', href: '#s03' },
     { t: 'Rug care', b: 'Care and maintenance guidance you can pass to your customers.', a: 'Read the guide', href: 'HaliBakimi.dc.html' }
   ],
   tr: [
-    { t: 'Kataloglar', b: 'Asiatic, Katherine Carnaby ve The Rug Edit kataloglarının tamamı.', a: 'Katalogları aç', href: 'Kataloglar.dc.html' },
-    { t: 'Numuneler', b: 'Showroom’unuz için kesit ve tam ölçü numune talep edin.', a: 'Numune talep et', href: '#s10' },
-    { t: 'Ticari hesap', b: 'Ticari hesap ve fiyat listesi için başvurun.', a: 'Başvur', href: 'TicariHesap.dc.html' },
+    { t: 'Kataloglar', b: 'Asiatic, Katherine Carnaby ve The Rug Edit kataloglarının tamamı.', a: 'Katalogları aç', href: '#s03' },
     { t: 'Halı bakımı', b: 'Müşterilerinize aktarabileceğiniz bakım rehberi.', a: 'Rehberi oku', href: 'HaliBakimi.dc.html' }
   ]
 };
@@ -2095,7 +2001,39 @@ const CUSTOMER_TYPES = {
   tr: ['Toptan tedarik', 'Numune', 'Özel marka', 'Konaklama / kontrat', 'Distribütörlük', 'E-ticaret', 'İç mimarlık']
 };
 
-const FILTERS = ['All', 'Collections', 'Textured', 'Design', 'Heritage', 'Natural Weaves', 'Shaggy', 'Plain'];
+const ABOUT = {
+  en: [
+    { title: 'About Us', paras: ['With over 12 years of experience in the rug/carpet industry and exports to more than 20 countries, Asiatic Halı was established in 2020 in Gaziantep, Türkiye.',
+      'Our strength lies in our extensive network and close relationships with trusted rug manufacturers across Türkiye. By bringing together a wide range of manufacturers, products, designs, and production capabilities on a single platform, we make sourcing from Türkiye easier, more flexible, and more efficient for our international customers.',
+      'We offer a wide selection of rugs with low minimum order quantities, competitive sourcing opportunities, and private label solutions. Whether our customers are looking for established designs or customized products, we help them find the right product and the right production partner for their specific market.',
+      'At Asiatic Halı, we believe that successful business is built on trust, flexibility, quality, and long-term relationships. Our role goes beyond simply supplying rugs — we act as a reliable sourcing partner, connecting our customers with the right products and manufacturers while managing the process with a clear understanding of their needs.',
+      'From Türkiye to the world, we are committed to creating lasting partnerships and delivering sourcing solutions that help our customers grow.'] },
+    { title: 'Our Mission', head: 'Making Carpet Sourcing Simple, Flexible & Reliable', paras: ['Our mission is to provide international customers with easy and efficient access to Türkiye’s extensive rug manufacturing capabilities.', 'We aim to simplify the sourcing process by offering:'],
+      bullets: ['Wide product variety across different styles, qualities, and price segments', 'Low minimum order quantities to support flexibility and market testing', 'Private label solutions tailored to individual customer requirements', 'Access to a trusted network of Turkish manufacturers', 'Competitive sourcing opportunities', 'Professional and customer-focused service'],
+      after: ['We listen to our customers, understand their markets, and connect them with the products and production capabilities that best match their needs.'] },
+    { title: 'Our Vision', head: 'To Become a Trusted Global Sourcing Partner for Carpets from Türkiye', paras: ['Our vision is to become one of the most trusted and respected sourcing partners for international rug buyers looking to source from Türkiye.',
+      'We aim to continuously expand our product portfolio, strengthen our manufacturer network, and develop long-term partnerships with customers around the world.',
+      'By combining Türkiye’s strong manufacturing heritage with a modern, flexible, and customer-oriented sourcing model, we aspire to create a seamless bridge between Turkish rug manufacturers and global markets.',
+      'Our vision is simple: to make sourcing from Türkiye easier — and to build partnerships that last.'] }
+  ],
+  tr: [
+    { title: 'Hakkımızda', paras: ['Halı sektöründe 12 yılı aşkın deneyime ve 20’den fazla ülkeye ihracata sahip Asiatic Halı, 2020 yılında Gaziantep’te kuruldu.',
+      'Gücümüz, Türkiye genelindeki güvenilir halı üreticileriyle kurduğumuz geniş ağ ve yakın ilişkilerde yatıyor. Çok sayıda üreticiyi, ürünü, deseni ve üretim kabiliyetini tek bir platformda buluşturarak, uluslararası müşterilerimiz için Türkiye’den tedariği daha kolay, esnek ve verimli hale getiriyoruz.',
+      'Düşük minimum sipariş adetleri, rekabetçi tedarik fırsatları ve özel marka çözümleriyle geniş bir halı seçkisi sunuyoruz. Müşterilerimiz yerleşik tasarımlar da arasa, özel ürünler de, kendi pazarları için doğru ürünü ve doğru üretim ortağını bulmalarına yardımcı oluyoruz.',
+      'Asiatic Halı’da başarılı bir işin güven, esneklik, kalite ve uzun vadeli ilişkiler üzerine kurulduğuna inanıyoruz. Rolümüz yalnızca halı tedarik etmenin ötesinde; müşterilerimizi doğru ürün ve üreticilerle buluştururken süreci ihtiyaçlarını net biçimde anlayarak yöneten güvenilir bir tedarik ortağıyız.',
+      'Türkiye’den dünyaya, kalıcı ortaklıklar kurmaya ve müşterilerimizin büyümesine katkı sağlayan tedarik çözümleri sunmaya kararlıyız.'] },
+    { title: 'Misyonumuz', head: 'Halı Tedarikini Basit, Esnek ve Güvenilir Kılmak', paras: ['Misyonumuz, uluslararası müşterilere Türkiye’nin geniş halı üretim kabiliyetine kolay ve verimli erişim sağlamaktır.', 'Tedarik sürecini şunları sunarak basitleştirmeyi hedefliyoruz:'],
+      bullets: ['Farklı stil, kalite ve fiyat segmentlerinde geniş ürün çeşitliliği', 'Esneklik ve pazar testi için düşük minimum sipariş adetleri', 'Müşteri ihtiyaçlarına göre özel marka çözümleri', 'Güvenilir Türk üretici ağına erişim', 'Rekabetçi tedarik fırsatları', 'Profesyonel ve müşteri odaklı hizmet'],
+      after: ['Müşterilerimizi dinliyor, pazarlarını anlıyor ve onları ihtiyaçlarına en uygun ürün ve üretim kabiliyetleriyle buluşturuyoruz.'] },
+    { title: 'Vizyonumuz', head: 'Türkiye’den Halı Tedarikinde Güvenilir Küresel Ortak Olmak', paras: ['Vizyonumuz, Türkiye’den tedarik etmek isteyen uluslararası halı alıcıları için en güvenilir ve saygın tedarik ortaklarından biri olmaktır.',
+      'Ürün portföyümüzü sürekli genişletmeyi, üretici ağımızı güçlendirmeyi ve dünya genelindeki müşterilerle uzun vadeli ortaklıklar geliştirmeyi hedefliyoruz.',
+      'Türkiye’nin güçlü üretim mirasını modern, esnek ve müşteri odaklı bir tedarik modeliyle birleştirerek, Türk halı üreticileri ile küresel pazarlar arasında kesintisiz bir köprü kurmayı amaçlıyoruz.',
+      'Vizyonumuz basit: Türkiye’den tedariği kolaylaştırmak ve kalıcı ortaklıklar kurmak.'] }
+  ]
+};
+
+const CATALOG = {"atlas":[{"t":"Atlas Emerald","h":"atlas-emerald-rug"},{"t":"Atlas Gunmetal","h":"atlas-gunmetal-rug"},{"t":"Atlas Ivory","h":"atlas-ivory-rug"},{"t":"Atlas Natural","h":"atlas-natural-rug"},{"t":"Atlas Navy","h":"atlas-navy-rug"},{"t":"Atlas Orange","h":"atlas-orange-rug"},{"t":"Atlas Sage","h":"atlas-sage-rug"},{"t":"Atlas Silver","h":"atlas-silver-rug"}],"quantum":[{"t":"Quantum Giraffe Animal Print Rug QU02","h":"quantum-giraffe-animal-print-rug-qu02"},{"t":"Quantum Leopard Animal Print Rug QU01","h":"quantum-leopard-animal-print-rug-qu01"},{"t":"Quantum Zebra Animal Print Rug QU04","h":"quantum-zebra-animal-print-rug-qu04"}],"como":[{"t":"Como Blue","h":"como-blue-rug"},{"t":"Como Charcoal","h":"como-charcoal-rug"},{"t":"Como Ivory","h":"como-ivory-rug"},{"t":"Como Marsalla","h":"como-marsalla-rug"},{"t":"Como Natural","h":"como-natural-rug"},{"t":"Como Pink","h":"como-pink-rug"},{"t":"Como Sage","h":"como-sage-rug"},{"t":"Como Silver","h":"como-silver-rug"}],"colores-cloud":[{"t":"Colores Cloud C002 Arabesque","h":"colores-cloud-arabesque-multi-colour-abstract-rug-c002"},{"t":"Colores Cloud CO009 Jungle","h":"colores-cloud-co009-jungle-rug"},{"t":"Colores Cloud CO10 Sunset","h":"colores-cloud-co10-sunset-rug"},{"t":"Colores Cloud CO11 Everest","h":"colores-cloud-co11-everest-rug"},{"t":"Colores Cloud CO12 Magma","h":"colores-cloud-co12-magma"},{"t":"Colores Cloud C005 Digital","h":"colores-cloud-digital-multi-colour-abstract-rug-c005"},{"t":"Colores Cloud C003 Ethereal","h":"colores-cloud-ethereal-multi-colour-abstract-rug-c003"},{"t":"Colores Cloud CO08 Magenta","h":"colores-cloud-magenta-co08-rug"},{"t":"Colores Cloud CO07 Pixel","h":"colores-cloud-pixel-co07-rug"},{"t":"Colores Cloud CO06 Splash","h":"colores-cloud-splash-co06-rugs"}],"kaya":[{"t":"Kaya KY09 Esfir","h":"kaya-esfir-vintage-style-flatweave-rug-ky09"},{"t":"Kaya KY12 Lila","h":"kaya-lila-vintage-style-flatweave-rug-ky12"},{"t":"Kaya KY10 Mona","h":"kaya-mona-vintage-style-flatweave-rug-ky10"},{"t":"Kaya KY03 Noor","h":"kaya-noor-vintage-style-flatweave-rug-ky03"},{"t":"Kaya KY11 Rana","h":"kaya-rana-vintage-style-flatweave-rug-ky11"},{"t":"Kaya KY05 Roya","h":"kaya-roya-vintage-style-flatweave-rug-ky05"},{"t":"Kaya KY13 Tara","h":"kaya-tara-vintage-style-flatweave-rug-ky13"},{"t":"Kaya KY04 Vida","h":"kaya-vida-vintage-style-flatweave-rug-ky04"}],"zola":[{"t":"Zola Aras Traditional Persian","h":"zola-aras-traditional-persian"},{"t":"Zola Evin Traditional Persian","h":"zola-evin-traditional-persian"},{"t":"Zola Fasa Traditional Persian","h":"zola-fasa-traditional-persian"},{"t":"Zola Heris Traditional Persian","h":"zola-heris-traditional-persian"},{"t":"Zola Kian Traditional Persian","h":"zola-kian-traditional-persian"},{"t":"Zola Lisar Traditional Persian","h":"zola-lisar-traditional-persian"},{"t":"Zola Razan Traditional Persian","h":"zola-razan-traditional-persian"},{"t":"Zola Sarab Traditional Persian","h":"zola-sarab-traditional-persian"},{"t":"Zola Tark Traditional Persian","h":"zola-tark-traditional-persian"}],"flores":[{"t":"Flores Azin FR01","h":"flores-azin-classic-persian-medallion-rug-fr01"},{"t":"Flores Ester FR05","h":"flores-ester-classic-persian-medallion-rug-fr05"},{"t":"Flores Farah FR07","h":"flores-farah-classic-persian-border-rug-fr07"},{"t":"Flores Fiza FR06","h":"flores-fiza-classic-persian-medallion-rug-fr06"},{"t":"Flores Gita FR03","h":"flores-gita-classic-persian-border-rug-fr03"},{"t":"Flores Kira FR04","h":"flores-kira-classic-persian-medallion-rug-fr04"},{"t":"Flores Laleh FR08","h":"flores-laleh-classic-persian-medallion-rug-fr08"},{"t":"Flores Mina FR02","h":"flores-mina-abstract-persian-rug-fr02"}],"aurora":[{"t":"Aurora Cliff Rug AU24","h":"aurora-cliff-rug-au24"},{"t":"Aurora Crystal Metallic Silver Rug AU12","h":"aurora-crystal-metallic-silver-rug-au12"},{"t":"Aurora Elexus Metallic Rug AU15","h":"aurora-elexus-metallic-rug-au15"},{"t":"Aurora Etch Rug AU23","h":"aurora-etch-rug-au23"},{"t":"Aurora Impression Rug AU25","h":"aurora-impression-rug-au25"},{"t":"Aurora Lattice Metallic Silver Rug AU11","h":"aurora-lattice-metallic-silver-rug-au11"},{"t":"Aurora Lustre Metallic Gold Rug AU06","h":"aurora-lustre-metallic-gold-rug-au06"},{"t":"Aurora Marble Metallic Gold Rug AU08","h":"aurora-marble-metallic-gold-rug-au08"},{"t":"Aurora Mica Metallic Rug AU13","h":"aurora-mica-metallic-rug-au13"},{"t":"Aurora Ripple Metallic Rug AU14","h":"aurora-ripple-metallic-rug-au14"}],"jasper":[{"t":"Jasper 01","h":"jasper-01-rug"},{"t":"Jasper 02","h":"jasper-02-rug"},{"t":"Jasper 03","h":"jasper-03-rug"},{"t":"Jasper 05","h":"jasper-05-rug"},{"t":"Jasper 06","h":"jasper-06-rug"},{"t":"Jasper JA04","h":"jasper-ja04-rug"}],"mirage":[{"t":"Mirage Blur Terra","h":"mirage-blur-terra"},{"t":"Mirage Haze Beige","h":"mirage-haze-beige"},{"t":"Mirage Illusion Blue","h":"mirage-illusion-blue-rug"},{"t":"Mirage Mineral Green","h":"mirage-mineral-green"},{"t":"Mirage Oasis Blue","h":"mirage-oasis-blue"},{"t":"Mirage Oasis Green","h":"mirage-oasis-green"},{"t":"Mirage Oasis Grey","h":"mirage-oasis-grey"},{"t":"Mirage Quartz Beige","h":"mirage-quartz-beige"},{"t":"Mirage Quartz Green","h":"mirage-quartz-green"},{"t":"Mirage Quartz Terra","h":"mirage-quartz-terra-rug"}],"seville":[{"t":"Seville 06 Oro","h":"seville-06-oro-rug"},{"t":"Seville 04 Nasrid","h":"seville-nasrid-04-rug"},{"t":"Seville 03 Olite","h":"seville-olite-03-rug"},{"t":"Seville 01 Ribera","h":"seville-ribera-01-rug"},{"t":"Seville 02 Setas","h":"seville-setas-02-rug"},{"t":"Seville 05 Zafra","h":"seville-zafra-05-rug"}],"anders":[{"t":"Anders AN01","h":"anders-an01-rug"},{"t":"Anders AN02","h":"anders-an02-rug"},{"t":"Anders AN03","h":"anders-an03-rug"},{"t":"Anders AN04","h":"anders-an04-rug"},{"t":"Anders AN05","h":"anders-an05-rug"},{"t":"Anders AN06","h":"anders-an06-rug"},{"t":"Anders AN07","h":"anders-an07-rug"},{"t":"Anders AN08","h":"anders-an08-rug"},{"t":"Anders AN09","h":"anders-an09-rug"},{"t":"Anders AN10","h":"anders-an10-rug"}],"stellar":[{"t":"Stellar ST03","h":"stellar-st03"},{"t":"Stellar ST04","h":"stellar-st04-rug"},{"t":"Stellar ST05","h":"stellar-st05-rug"},{"t":"Stellar ST06","h":"stellar-st06-rug"},{"t":"Stellar ST07","h":"stellar-st07-rug"},{"t":"Stellar ST08","h":"stellar-st08-rug"},{"t":"Stellar ST09","h":"stellar-st09-rug"},{"t":"Stellar ST10","h":"stellar-st10-rug"},{"t":"Stellar ST11","h":"stellar-st11-rug"},{"t":"Stellar ST12","h":"stellar-st12-rug"}],"laurent":[{"t":"Laurent LA01","h":"laurent-la01-rug"},{"t":"Laurent LA02","h":"laurent-la02-rug"},{"t":"Laurent LA03","h":"laurent-la03-rug"},{"t":"Laurent LA04","h":"laurent-la04-rug"},{"t":"Laurent LA05","h":"laurent-la05-rug"},{"t":"Laurent LA06","h":"laurent-la06-rug"},{"t":"Laurent LA07","h":"laurent-la07-rug"},{"t":"Laurent LA08","h":"laurent-la08-rug"}],"nova":[{"t":"Nova NV35 Aztec Grey","h":"nova-aztec-grey-rug-nv35"},{"t":"Nova NV40 Illusion Blue","h":"nova-illusion-blue-rug-nv40"},{"t":"Nova NV39 Illusion Ochre","h":"nova-illusion-ochre-rug-nv39"},{"t":"Nova NV36 Mirage Blue","h":"nova-mirage-blue-nv36-rug"},{"t":"Nova NV37 Mirage Charcoal","h":"nova-mirage-charcoal-rug-nv37"},{"t":"Nova NV34 Nomadic Grey","h":"nova-nomadic-grey-rug-nv34"},{"t":"Nova NV41 Sonic","h":"nova-nv41-sonic-rug"},{"t":"Nova NV42 Vista","h":"nova-nv42-vista-rug"},{"t":"Nova NV38 Pastel Multi","h":"nova-pastel-multi-rug-nv38"},{"t":"Nova NV33 Tribal Grey","h":"nova-tribal-grey-rug-nv33"}],"muse":[{"t":"Muse MU19 Blue Cross","h":"muse-blue-cross-flatweave-rug-mu19"},{"t":"Muse MU16 Cream Arch","h":"muse-cream-arch-flatweave-rug-mu16"},{"t":"Muse MU24 Harlequin Pink","h":"muse-mu24-harlequin-pink-rug"},{"t":"Muse MU25 Harlequin Blue","h":"muse-mu25-harlequin-blue-rug"},{"t":"Muse MU26 Tribal Bright","h":"muse-mu26-tribal-bright-rug"},{"t":"Muse MU27 Heritage Grey","h":"muse-mu27-heritage-grey-rug"},{"t":"Muse MU28 Heritage Pink","h":"muse-mu28-heritage-pink-rug"},{"t":"Muse MU29 Medallion Bright","h":"muse-mu29-medallion-bright-rug"},{"t":"Muse MU30 Check Bright","h":"muse-mu30-check-bright-rug"},{"t":"Muse MU04 Pink Shapes","h":"muse-pink-shapes-flatweave-runner-rug-mu04"}],"oslo":[{"t":"Oslo OS01","h":"oslo-os01-rug"},{"t":"Oslo OS02","h":"oslo-os02-rug"},{"t":"Oslo OS03","h":"oslo-os03-rug"},{"t":"Oslo OS04","h":"oslo-os04-rug"},{"t":"Oslo OS05","h":"oslo-os05-rug"},{"t":"Oslo OS06","h":"oslo-os06-rug"},{"t":"Oslo OS07","h":"oslo-os07-rug"},{"t":"Oslo OS08","h":"oslo-os08-rug"}],"miro":[{"t":"Miro MI01","h":"miro-mi01-rug"},{"t":"Miro MI03","h":"miro-mi03-rug"},{"t":"Miro MI04","h":"miro-mi04-rug"},{"t":"Miro MI05","h":"miro-mi05-rug"},{"t":"Miro MI06","h":"miro-mi06-rug"}],"raja":[{"t":"Raja RA01","h":"raja-ra01-rug"},{"t":"Raja RA02","h":"raja-ra02-rug"},{"t":"Raja RA03","h":"raja-ra03-rug"},{"t":"Raja RA04","h":"raja-ra04-rug"},{"t":"Raja RA05","h":"raja-ra05-rug"},{"t":"Raja RA06","h":"raja-ra06-rug"},{"t":"Raja RA07","h":"raja-ra07-rug"},{"t":"Raja RA08","h":"raja-ra08-rug"},{"t":"Raja RA09","h":"raja-ra09-rug"}],"sovereign":[{"t":"Sovereign Antique Medallion","h":"sovereign-antique-medallion-rug"},{"t":"Sovereign Ash Medallion","h":"sovereign-ash-medallion-rug"},{"t":"Sovereign Black Vintage Floral","h":"sovereign-black-vintage-floral-rug"},{"t":"Sovereign Blue Medallion","h":"sovereign-blue-medallion-rug"},{"t":"Sovereign Charcoal Medallion","h":"sovereign-charcoal-medallion-rug"},{"t":"Sovereign Gold Medallion","h":"sovereign-gold-medallion-rug"},{"t":"Sovereign Terracotta Medallion","h":"sovereign-terracotta-medallion-rug"}],"ritz":[{"t":"Ritz RI02","h":"ritz-ri02-rug"},{"t":"Ritz RI03","h":"ritz-ri03-rug"},{"t":"Ritz RI04","h":"ritz-ri04-rug"},{"t":"Ritz RI05","h":"ritz-ri05-rug"},{"t":"Ritz RI07","h":"ritz-ri07-rug"},{"t":"Ritz RI08","h":"ritz-ri08-rug"},{"t":"Ritz RI09","h":"ritz-ri09-rug"},{"t":"Ritz RI10","h":"ritz-ri10-rug"}],"heriz":[{"t":"Heriz HE01 Serapi Beige","h":"heriz-he01-serapi-beige-rug"},{"t":"Heriz HE02 Serapi Green","h":"heriz-he02-serapi-green-rug"},{"t":"Heriz HE03 Serapi Copper","h":"heriz-he03-serapi-copper-rug"},{"t":"Heriz HE04 Ornate Green","h":"heriz-he04-ornate-green-rug"},{"t":"Heriz HE05 Ornate Beige","h":"heriz-he05-ornate-beige-rug"},{"t":"Heriz HE06 Patina Green","h":"heriz-he06-patina-green-rug"},{"t":"Heriz HE07 Patina Copper","h":"heriz-he07-patina-copper-rug"}],"axel":[{"t":"Axel AX01","h":"axel-ax01-rug"},{"t":"Axel AX02","h":"axel-ax02-rug"},{"t":"Axel AX03","h":"axel-ax03-rug"},{"t":"Axel AX05","h":"axel-ax05-rug"},{"t":"Axel AX06","h":"axel-ax06-rug"},{"t":"Axel AX07","h":"axel-ax07-rug"},{"t":"Axel AX08","h":"axel-ax08-rug"}],"kuza":[{"t":"Kuza Abstract Grey","h":"kuza-abstract-grey-rug"},{"t":"Kuza Plain Stripe Beige","h":"kuza-plain-stripe-beige-rug"},{"t":"Kuza Plain Stripe Khaki","h":"kuza-plain-stripe-khaki-rug"},{"t":"Kuza Plain Stripe Navy","h":"kuza-plain-stripe-navy"},{"t":"Kuza Plain Stripe Silver","h":"kuza-plain-stripe-silver-rug"},{"t":"Kuza Portrait Beige","h":"kuza-portrait-beige"},{"t":"Kuza Portrait Gold","h":"kuza-portrait-gold-rug"},{"t":"Kuza Portrait Grey","h":"kuza-portrait-grey-rug"},{"t":"Kuza Portrait Khaki","h":"kuza-portrait-khaki-rug"},{"t":"Kuza Portrait Navy","h":"kuza-portrait-navy-rug"}]};
+const FILTERS = ['All', 'Textured', 'Design', 'Heritage', 'Natural Weaves', 'Shaggy', 'Plain'];
 
 const GROUP_LABEL = {
   en: { All: 'All', Collections: 'Collections', Textured: 'Textured', Design: 'Design', Heritage: 'Heritage', 'Natural Weaves': 'Natural Weaves', Shaggy: 'Shaggy', Plain: 'Plain' },
@@ -2103,8 +2041,8 @@ const GROUP_LABEL = {
 };
 
 const TICKER = {
-  en: ['Gaziantep → London', '·', 'Trade supply since 1960', '·', '700+ rugs in range', '·'],
-  tr: ['Gaziantep → Londra', '·', '1960’tan beri toptan tedarik', '·', '700+ halı çeşidi', '·']
+  en: ['Gaziantep → London', '·', 'Trade supply since 1960', '·', '1000+ SKUs in range', '·'],
+  tr: ['Gaziantep → Londra', '·', '1960’tan beri toptan tedarik', '·', '1000+ SKU çeşidi', '·']
 };
 const EASE = 'cubic-bezier(.22,.8,.22,1)';
 
@@ -2144,7 +2082,7 @@ class Component extends DCLogic {
   state = {
     lang: 'tr', scrolled: false, showTop: false, active: 's01', menu: false,
     rugX: 0, rugHover: null, rugDrag: false, audTick: 0,
-    col: 0, rug: 0, filter: 'All', aud: 'retail', stage: 'hub', lens: null,
+    col: 0, rug: 0, sub: null, filter: 'All', aud: 'retail', stage: 'hub', lens: null,
     theatre: 0, tilt: { x: 0, y: 0 }, model: 0, sol: -1,
     rb: { group: 'Textured', colour: 'Beige', size: '160x230', use: 'Retail floor' },
     rbStep: 0,
@@ -2184,6 +2122,7 @@ class Component extends DCLogic {
   }
 
   componentDidMount() {
+    this._noCtx = (e) => e.preventDefault(); document.addEventListener('contextmenu', this._noCtx);
     try {
       const load = (el) => { const s = el.getAttribute('data-bg'); if (s) { el.style.backgroundImage = "url('" + s + "')"; el.removeAttribute('data-bg'); } };
       const io = 'IntersectionObserver' in window ? new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { load(e.target); io.unobserve(e.target); } }), { rootMargin: '1500px 0px' }) : null;
@@ -2224,7 +2163,7 @@ class Component extends DCLogic {
       const hp = hero ? Math.max(0, Math.min(1, y / hero.offsetHeight)) : 0;
       if (Math.abs(hp - this.state.heroP) > 0.004) this.setState({ heroP: hp });
       let active = 's01';
-      ['s01', 's01b', 's02', 's03', 's04', 's05', 's05b', 's06', 's07', 's08', 's09', 's10'].forEach((id) => {
+      ['s01', 's02', 's03', 's04a', 's05', 's05b', 's06', 's07', 's08', 's09', 's10'].forEach((id) => {
         const el = document.getElementById(id);
         if (el && el.offsetTop - 160 <= y) active = id;
       });
@@ -2324,7 +2263,7 @@ class Component extends DCLogic {
 
   // Section content rises into place as each section enters the viewport.
   initReveal() {
-    const SEL = 'h2,h3,p,article,form,label,li,[data-reveal]';
+    const SEL = 'h2,h3,p,article,form,label,li,[data-reveal],[data-seq]';
     this.revealIO = new IntersectionObserver((entries) => {
       entries.forEach((en) => {
         if (!en.isIntersecting) return;
@@ -2335,17 +2274,19 @@ class Component extends DCLogic {
           if (el.closest('[aria-hidden="true"]')) return;
           // Never animate a node the logic positions itself (carousel cards).
           if (el.style.transform || el.style.animation) return;
+          if (el.closest('[data-seq]') && !el.hasAttribute('data-seq')) return;
           if (nodes.length < 14) nodes.push(el);
         });
         const eyebrow = sec.querySelector('span');
         if (eyebrow) nodes.unshift(eyebrow);
+        let seq = 0;
         nodes.forEach((el, i) => {
-          el.style.animation = 'ahReveal 760ms cubic-bezier(.22,.8,.22,1) '
-            + Math.min(560, i * 70) + 'ms both';
+          const d = el.hasAttribute('data-seq') ? 200 + (seq++) * 420 : Math.min(560, i * 70);
+          el.style.animation = 'ahReveal 760ms cubic-bezier(.22,.8,.22,1) ' + d + 'ms both';
         });
       });
     }, { threshold: 0.18 });
-    ['s02', 's03', 's04', 's05', 's05b', 's06', 's07', 's08', 's09', 's10'].forEach((id) => {
+    ['s02', 's03', 's04a', 's05', 's05b', 's06', 's07', 's08', 's09', 's10'].forEach((id) => {
       const el = document.getElementById(id);
       if (el) this.revealIO.observe(el);
     });
@@ -2423,7 +2364,7 @@ class Component extends DCLogic {
           { k: t.mDispatch, v: t.mDispatchVal },
           { k: t.mSupport, v: t.mSupportVal }
         ],
-        sample: c.id === 'atlas' ? P('AtlasKatalog') : P('Kataloglar') + '#' + c.id,
+        sample: P('AtlasKatalog') + '?c=' + c.id,
         inquiry: P('TicariHesap')
       };
     }
@@ -2570,7 +2511,7 @@ class Component extends DCLogic {
 
   list() {
     const f = this.state.filter;
-    return f === 'All' ? PRODUCTS : PRODUCTS.filter((p) => p.group === f);
+    return f === 'All' ? PRODUCTS : PRODUCTS.filter((p) => p.rbGroup === f && (!this.state.sub || p.id === this.state.sub));
   }
 
   dismissHint() {
@@ -2796,7 +2737,7 @@ class Component extends DCLogic {
           transition: 'opacity 520ms ' + EASE + ', transform 620ms ' + EASE
         },
         onOpen: () => {
-          if (active) { window.location.href = c.id === 'atlas' ? P('AtlasKatalog') : P('Kataloglar') + '#' + c.id; }
+          if (active) { window.location.href = P('AtlasKatalog') + '?c=' + c.id; }
           else { this.dismissHint(); this.setState({ col: i }); }
         },
         slotId: 'col-' + c.id,
@@ -2897,7 +2838,7 @@ class Component extends DCLogic {
         },
         onEnter: () => this.setState({ rugHover: p.id }),
         onLeave: () => this.setState({ rugHover: null }),
-        onOpen: () => { window.location.href = catHref(p); },
+        onOpen: () => { window.location.href = P('Koleksiyon') + '?c=' + p.id; },
         slotId: 'rug-' + p.id,
         img: p.img,
         placeholder: p.name,
@@ -2905,7 +2846,7 @@ class Component extends DCLogic {
         group: p.group === 'Collections' ? 'Asiatic London' : GROUP_LABEL[s.lang][p.group] + (s.lang === 'tr' ? ' koleksiyonu' : ' collection'),
         url: p.url,
         wrapStyle: !isCarousel ? {
-          position: 'relative', width: 'min(392px,100%)', height: '100%', margin: 0, padding: '8px 16px 30px', boxSizing: 'border-box',
+          position: 'absolute', top: 0, left: 0, width: cw + 'px', height: '100%', padding: '8px 16px 30px', boxSizing: 'border-box',
           opacity: !s.measured ? 0 : 1, transition: !s.measured ? 'none' : 'opacity 380ms ' + EASE
         } : {
           position: 'absolute',
@@ -2923,12 +2864,25 @@ class Component extends DCLogic {
       };
     });
 
+    const catGroups = (s.filter === 'All' ? PRODUCTS : PRODUCTS.filter((p) => p.id === s.filter)).map((p) => {
+      const nm = p.name.replace(' Collection', '');
+      const list = CATALOG[p.id] || [];
+      const cards = list.length ? list.map((r) => ({ title: r.t, img: 'assets/catalog/' + p.id + '/' + r.h + '.jpg', href: P('AtlasKatalog') + '?c=' + p.id + '#' + (p.id === 'atlas' ? r.h.split('-')[1] : r.h) })) : [{ title: nm, img: p.img, href: P('AtlasKatalog') + '?c=' + p.id }];
+      return { id: p.id, name: nm, count: cards.length + (s.lang === 'tr' ? ' halı' : ' rugs'), href: P('AtlasKatalog') + '?c=' + p.id, cards };
+    });
+    const subOpts = s.filter === 'All' ? [] : [{ id: null, label: s.lang === 'tr' ? 'Tümü' : 'All' }].concat(PRODUCTS.filter((p) => p.rbGroup === s.filter).map((p) => ({ id: p.id, label: p.name.replace(' Collection', '') })));
+    const subFilters = subOpts.map((o) => ({
+      label: o.label,
+      onClick: () => this.setState({ sub: o.id, rug: 0, rugX: 0 }, () => this.measure()),
+      style: { minHeight: '36px', padding: '0 16px', borderRadius: '999px', cursor: 'pointer', font: '500 12px/1 "DM Sans", sans-serif', letterSpacing: '.08em', textTransform: 'uppercase', border: (s.sub || null) === o.id ? '1px solid #a55a34' : '1px solid rgba(76,38,15,.22)', background: (s.sub || null) === o.id ? 'rgba(165,90,52,.14)' : 'transparent', color: '#4c260f', transition: 'background 240ms, border-color 240ms' }
+    }));
+    const aboutEyebrow = s.lang === 'tr' ? 'Kurumsal' : 'Company';
+    const aboutCols = ABOUT[s.lang].map((c, i) => ({ num: '0' + (i + 1), title: c.title, head: c.head || '', hasHead: !!c.head, paras: c.paras || [], bullets: c.bullets || [], hasBullets: !!(c.bullets && c.bullets.length), after: c.after || [] }));
     const navDefs = [
-      { id: 's01b', label: s.lang === 'tr' ? 'Çözümler' : 'Solutions' },
+      { id: 's01', label: s.lang === 'tr' ? 'Anasayfa' : 'Home' },
       { id: 's02', label: t.navCollections },
-      { id: 's03', label: t.navSelected },
-      { id: 's04', label: s.lang === 'tr' ? 'Toptan' : 'Trade' },
-      { id: 's05', label: s.lang === 'tr' ? 'Üretim' : 'Craft' },
+      { id: 's03', label: s.lang === 'tr' ? 'Katalog' : 'Catalogue' },
+      { id: 's04a', label: s.lang === 'tr' ? 'Hakkımızda' : 'About' },
       { id: 's05b', label: s.lang === 'tr' ? 'İş Modeli' : 'How it works' },
       ...(this.props.showRangeBuilder ? [{ id: 's08', label: s.lang === 'tr' ? 'Seri Kur' : 'Range' }] : []),
       { id: 's10', label: s.lang === 'tr' ? 'İletişim' : 'Contact' }
@@ -2957,7 +2911,7 @@ class Component extends DCLogic {
       label: GROUP_LABEL[s.lang][f] || f,
       active: s.filter === f,
       onClick: () => {
-        this.setState({ filter: f, rug: 0, rugX: 0 }, () => this.measure());
+        this.setState({ filter: f, sub: null, rug: 0, rugX: 0 }, () => this.measure());
       },
       style: {
         position: 'relative',
@@ -3115,7 +3069,7 @@ class Component extends DCLogic {
 
     const hubImgUrl = (window.__resources && window.__resources['res-asiatic-hub']) || 'assets/model/asiatic-hub.webp';
     const hubImgStyle = {
-      position: 'absolute', left: '37.65%', top: '23.145%', width: '35.63%', height: '34.28%', zIndex: 5,
+      position: 'absolute', left: '37.65%', top: 'calc(23.145% - 10px)', width: '35.63%', height: '34.28%', zIndex: 5,
       backgroundImage: 'url(' + hubImgUrl + ')',
       backgroundSize: 'contain', backgroundPosition: 'center', backgroundRepeat: 'no-repeat',
       filter: 'drop-shadow(0 22px 24px rgba(76,38,15,.2))',
@@ -3123,7 +3077,7 @@ class Component extends DCLogic {
       animation: noMo ? 'none' : (active ? 'ahHubFade .62s cubic-bezier(.2,.75,.2,1) 3.68s forwards' : 'none')
     };
     const hubCopyOuterStyle = {
-      position: 'absolute', left: '55.46875%', top: '45%', width: '40%', transform: 'translateX(-50%)',
+      position: 'absolute', left: '55.46875%', top: '53%', width: '40%', transform: 'translate(-50%,-50%)',
       zIndex: 7, textAlign: 'center'
     };
     const hubCopyInnerStyle = {
@@ -3516,7 +3470,7 @@ class Component extends DCLogic {
     const mobileFilters = FILTERS.map((f) => ({
       label: GROUP_LABEL[s.lang][f] || f,
       active: s.filter === f,
-      onClick: () => this.setState({ filter: f }),
+      onClick: () => this.setState({ filter: f, sub: null }),
       style: {
         flex: 'none', minHeight: '44px', padding: '0 18px', borderRadius: '999px',
         border: s.filter === f ? 'none' : '1px solid rgba(76,38,15,.22)',
@@ -3541,7 +3495,7 @@ class Component extends DCLogic {
           color: added ? '#3a6b3a' : '#a55a34', cursor: 'pointer'
         },
         onSample: () => toggleSample(p.id),
-        onOpen: () => { window.location.href = catHref(p); }
+        onOpen: () => { window.location.href = P('Koleksiyon') + '?c=' + p.id; }
       };
     });
     const mFacts = [t.tradeFactMoq, t.tradeFactLead, t.tradeFactStock, t.tradeFactSample];
@@ -3670,7 +3624,7 @@ class Component extends DCLogic {
       goSolutions: this.go('s01b'),
       goSelected: this.go('s03'),
       goContact: this.go('s10'),
-      tradeFacts: [t.tradeFactMoq, t.tradeFactLead, t.tradeFactStock, t.tradeFactSample],
+      tradeFacts: [t.tradeFactMoq, t.tradeFactLead, t.tradeFactStock],
       stop: (e) => e.stopPropagation(),
       closeModal: () => this.setState({ modal: null }),
       solCards: SOLUTION_CARDS[s.lang].map((c, i) => ({
@@ -3691,7 +3645,7 @@ class Component extends DCLogic {
       skyT: 'translate3d(0,' + (this.reduced ? 0 : s.heroP * 30) + 'px,0)',
       cityT: 'translate3d(0,' + (this.reduced ? 0 : s.heroP * 62) + 'px,0) scale(1.06)',
       carpetT: 'translate3d(0,' + (this.reduced ? 0 : s.heroP * 96) + 'px,0) scaleY(.58)',
-      navItems, filters,
+      navItems, filters, subFilters, hasSub: false, aboutCols, aboutEyebrow, catGroups,
       colRail: this.colRail, rugRail: this.rugRail, filterRail: this.filterRail,
       colDown: (e) => { this.dismissHint(); this.colDown(e); },
       colStripDown: (e) => { this.dismissHint(); this.colStripDown(e); },
@@ -4096,7 +4050,7 @@ class Component extends DCLogic {
       showRangeBuilder: !!this.props.showRangeBuilder,
       showProductTheatre: !!this.props.showProductTheatre,
       noteCols: s.desktop ? '1fr auto' : '1fr',
-      rugCount: (s.lang === 'tr' ? '700+ halı çeşidi' : '700+ rugs in range'),
+      rugCount: (s.lang === 'tr' ? '1000+ SKU çeşidi' : '1000+ SKUs in range'),
       heroPlates: HERO_PLATES.map((p) => ({
         slotId: p.id,
         img: p.img,
@@ -4262,10 +4216,9 @@ class Component extends DCLogic {
         { label: s.lang === 'tr' ? 'Asiatic Hakkında' : 'About Asiatic', onClick: () => this.setState({ mobileTab: 'asiatic', mobileMenuOpen: false }) },
         { label: t.craftEyebrow2 || (s.lang === 'tr' ? 'Neden Asiatic' : 'Why Asiatic'), onClick: () => this.setState({ mobileTab: 'asiatic', mobileMenuOpen: false }) },
         { label: s.lang === 'tr' ? 'Nasıl Çalışıyoruz' : 'How We Work', onClick: () => this.setState({ mobileTab: 'asiatic', mobileMenuOpen: false }) },
-        { label: t.tradeEyebrow, onClick: () => { window.location.href = P('TicariHesap'); this.setState({ mobileMenuOpen: false }); } },
         { label: t.fcUk, onClick: () => this.setState({ mobileTab: 'contact', mobileMenuOpen: false }) },
         { label: t.fcContact, onClick: () => this.setState({ mobileTab: 'contact', mobileMenuOpen: false }) },
-        { label: t.tradeCta, onClick: () => { window.location.href = P('TicariHesap'); this.setState({ mobileMenuOpen: false }); } },
+        { label: t.tradeCta, onClick: () => { window.open('https://shopify.com/authentication/7672149/login?analytics_trace_id=0edefd09-eb37-44f8-803e-45ab7b49fe57&client_id=88fd3db5-cb94-4cfd-9780-a5be09b93e63&locale=en-GB&redirect_uri=%2Fauthentication%2F7672149%2Foauth%2Fauthorize%3Fanalytics_trace_id%3D0edefd09-eb37-44f8-803e-45ab7b49fe57%26buyer_flags%3DeyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJhc2lhdGljLm15c2hvcGlmeS5jb20iLCJmbGFncyI6W10sImV4cCI6MTc5NDgzMzU1OCwibmJmIjoxNzk0MjI4NzU4fQ.fX_TmjAtykpAmGyAAgDhbj7kzyEm0dvnM-FLP8GDn8M%26client_id%3D88fd3db5-cb94-4cfd-9780-a5be09b93e63%26locale%3Den-GB%26nonce%3D9577b094-cb48-4894-b313-d266cdca7230%26redirect_uri%3Dhttps%253A%252F%252Fshopify.com%252F7672149%252Faccount%252Fcallback%26region_country%3DGB%26response_type%3Dcode%26scope%3Dopenid%2Bemail%2Bcustomer-account-api%253Afull%26state%3DhWNIwqx6M0bw9t2pYnP07vDK&region_country=GB','_blank'); this.setState({ mobileMenuOpen: false }); } },
         { label: t.myAccount, onClick: () => { window.location.href = P('Hesabim'); } }
       ],
       mobileLegalLinks: [
@@ -4294,7 +4247,7 @@ class Component extends DCLogic {
       mModalIsRug: !!mModalData && mModalData.kind === 'rug',
       mModalIsCol: !!mModalData && mModalData.kind === 'col',
       mModalHasCollectionLink: !!mModalData && mModalData.kind === 'rug' && !!mModalData.onViewCollection,
-      mModalOpenCatalogue: () => { const m = s.modal; const c = m && m.kind === 'col' ? COLLECTIONS[m.i] : null; if (c) window.location.href = c.id === 'atlas' ? P('AtlasKatalog') : P('Kataloglar') + '#' + c.id; },
+      mModalOpenCatalogue: () => { const m = s.modal; const c = m && m.kind === 'col' ? COLLECTIONS[m.i] : null; if (c) window.location.href = P('AtlasKatalog') + '?c=' + c.id; },
       mModalViewCollection: mModalData ? mModalData.onViewCollection : null,
       mModalSampleLabel: mModalData && mModalData.sampleAdded ? t.samplesAdded : t.addToSamples,
       cookieDisplay: s.cookieOpen ? 'flex' : 'none',
